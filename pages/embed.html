@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tool · Trading Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1 id="title">Tool</h1>
+          <div class="sub">Embedded journaling tool — data stored in this browser</div>
+        </div>
+        <a class="btn" id="openNew" target="_blank">Open full screen ↗</a>
+      </div>
+      <iframe id="frame" class="tool-frame" title="tool"></iframe>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/shell.js"></script>
+  <script>
+    Shell.mount('', '../');
+    const params = new URLSearchParams(location.search);
+    const tool = (params.get('tool') || '').replace(/[^a-z0-9\-]/gi, '');
+    const title = params.get('title') || 'Tool';
+    document.getElementById('title').textContent = title;
+    document.title = title + ' · Trading Hub';
+    const src = '../tools/' + tool + '.html';
+    document.getElementById('frame').src = src;
+    document.getElementById('openNew').href = src;
+  </script>
+</body>
+</html>

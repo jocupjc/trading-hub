@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trades & PnL · Trading Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>Trades &amp; PnL</h1>
+          <div class="sub">Log executions — R is auto-computed from entry / stop / exit</div>
+        </div>
+        <div class="row">
+          <button class="btn" id="btnExport">Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Running totals -->
+      <div class="grid g4" id="totals"></div>
+
+      <!-- Entry form -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">New / edit trade</div>
+        <input type="hidden" id="f-id">
+        <div class="grid g4" style="gap:12px">
+          <label class="field"><span class="fl">Date</span><input type="date" id="f-date"></label>
+          <label class="field"><span class="fl">Entry time</span><input type="time" id="f-time"></label>
+          <label class="field"><span class="fl">Instrument</span><select id="f-inst"></select></label>
+          <label class="field"><span class="fl">Direction</span>
+            <select id="f-dir"><option>LONG</option><option>SHORT</option></select></label>
+
+          <label class="field"><span class="fl">Entry price</span><input type="number" step="any" id="f-entry"></label>
+          <label class="field"><span class="fl">Stop level</span><input type="number" step="any" id="f-stop"></label>
+          <label class="field"><span class="fl">Target</span><input type="number" step="any" id="f-target"></label>
+          <label class="field"><span class="fl">Exit price</span><input type="number" step="any" id="f-exit"></label>
+
+          <label class="field"><span class="fl">Contracts</span><input type="number" step="any" id="f-contracts"></label>
+          <label class="field"><span class="fl">R result <span id="f-rr-auto" class="mono" style="color:var(--mu)"></span></span><input type="number" step="any" id="f-rr" placeholder="auto"></label>
+          <label class="field"><span class="fl">$ PnL (optional)</span><input type="number" step="any" id="f-dollar"></label>
+          <label class="field"><span class="fl">Outcome</span>
+            <select id="f-outcome"><option value="">auto</option><option value="win">win</option><option value="loss">loss</option><option value="be">break-even</option></select></label>
+
+          <label class="field" style="grid-column:span 2"><span class="fl">Model / setup</span><input type="text" id="f-model" placeholder="e.g. RDR M7B, box reversal…"></label>
+          <label class="field" style="grid-column:span 2"><span class="fl">Notes</span><input type="text" id="f-notes"></label>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn pri" id="btnSave">Save trade</button>
+          <button class="btn" id="btnClear">Clear</button>
+          <div class="spacer"></div>
+          <span id="rr-preview" class="mono" style="color:var(--mu)"></span>
+        </div>
+      </div>
+
+      <!-- Daily running overview -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">Daily result &amp; running cumulative (R)</div>
+        <div style="overflow-x:auto">
+          <table class="data" id="dayTable"></table>
+        </div>
+      </div>
+
+      <!-- All trades -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">All trades</div>
+        <div style="overflow-x:auto">
+          <table class="data" id="tradeTable"></table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/stats.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/trades.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pre / Post Market · Trading Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>Daily Journal</h1>
+          <div class="sub">Pre-market plan &amp; post-market review — stored per day</div>
+        </div>
+        <div class="row">
+          <input type="date" id="j-date" style="width:auto">
+          <button class="btn pri" id="btnSave">Save day</button>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <!-- PRE MARKET -->
+        <div class="card">
+          <div class="card-label">Pre-market — the plan</div>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Daily bias & context</span>
+            <textarea id="pre-context" placeholder="Overnight, gaps, key levels, higher-timeframe read…"></textarea></label>
+          <div class="grid g2" style="gap:12px;margin-bottom:12px">
+            <label class="field"><span class="fl">Directional bias</span>
+              <select id="pre-bias"><option value="">—</option><option>Long</option><option>Short</option><option>Neutral / Two-sided</option></select></label>
+            <label class="field"><span class="fl">A/B/C game today</span>
+              <select id="pre-game"><option value="">—</option><option>A-Game</option><option>B-Game</option><option>C-Game</option></select></label>
+          </div>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Setups I will take</span>
+            <textarea id="pre-setups" placeholder="Only these setups qualify today…"></textarea></label>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Process goal (not P&L)</span>
+            <textarea id="pre-goal" placeholder="e.g. Wait for confirmation, no pre-empting the box…"></textarea></label>
+          <label class="field"><span class="fl">Biggest mental risk today</span>
+            <textarea id="pre-risk" placeholder="Where am I most likely to break a rule?"></textarea></label>
+        </div>
+
+        <!-- POST MARKET -->
+        <div class="card">
+          <div class="card-label">Post-market — the review</div>
+          <div class="grid g2" style="gap:12px;margin-bottom:12px">
+            <label class="field"><span class="fl">Rule-compliant day?</span>
+              <select id="post-rules"><option value="">—</option><option>Yes, fully</option><option>Mostly</option><option>No</option></select></label>
+            <label class="field"><span class="fl">Process score (1–10)</span><input type="number" min="1" max="10" id="post-score"></label>
+          </div>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Best decision today</span>
+            <textarea id="post-best" placeholder="What did I do well and why?"></textarea></label>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Worst decision / biggest leak</span>
+            <textarea id="post-worst" placeholder="Be honest — what cost me?"></textarea></label>
+          <label class="field" style="margin-bottom:12px"><span class="fl">Dominant emotion</span>
+            <textarea id="post-emotion" placeholder="What did I feel, and what triggered it?"></textarea></label>
+          <label class="field"><span class="fl">One thing I do differently tomorrow</span>
+            <textarea id="post-tomorrow" placeholder="Specific and actionable."></textarea></label>
+        </div>
+      </div>
+
+      <!-- Deep-dive tools -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">Deep-dive journaling tools</div>
+        <div class="row">
+          <a class="btn" href="ooda.html">◈ OODA Live Journal</a>
+          <a class="btn" href="embed.html?tool=committee-of-self&title=Committee%20of%20Self">❂ Committee of Self</a>
+          <a class="btn" href="embed.html?tool=mental-game&title=Mental%20Game">☯ Mental Game</a>
+          <a class="btn" href="embed.html?tool=reflection&title=Daily%20Reflection">❖ Daily Reflection</a>
+          <a class="btn" href="embed.html?tool=ronin-sequence&title=Ronin%20Sequence">⌘ Ronin Sequence</a>
+        </div>
+      </div>
+
+      <!-- Archive -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">Saved days</div>
+        <div id="archive"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/journal.js"></script>
+</body>
+</html>

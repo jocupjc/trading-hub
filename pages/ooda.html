@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OODA Live Journal · Trading Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .ooda-ctx { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px; }
+    .ooda-ctx label.field { flex:1; min-width:160px; }
+    .ooda-table-wrap { overflow:auto; border:.5px solid var(--b); border-radius:12px; background:var(--card); max-height:calc(100vh - 250px); }
+    table.ooda { width:100%; border-collapse:collapse; min-width:980px; }
+    table.ooda thead th { position:sticky; top:0; background:var(--card2); z-index:2; font-family:var(--mono); font-size:9.5px; letter-spacing:.7px; text-transform:uppercase; color:var(--mu); text-align:left; padding:9px 10px; border-bottom:.5px solid var(--bh); }
+    table.ooda td { padding:2px 6px; border-bottom:.5px solid var(--b); vertical-align:middle; }
+    table.ooda tr.now td { background:rgba(79,142,247,.05); }
+    table.ooda tr.hoursep td { height:2px; padding:0; border-top:.5px solid rgba(255,255,255,.12); }
+    .tl { font-family:var(--mono); font-size:11px; white-space:nowrap; color:var(--tx); }
+    table.ooda textarea { border:none; background:transparent; min-height:26px; padding:5px 6px; font-size:12px; }
+    table.ooda textarea:focus { background:var(--card2); }
+    table.ooda select { border:.5px solid transparent; background-color:transparent; font-family:var(--mono); font-size:11px; padding:4px 20px 4px 7px; }
+    table.ooda select:hover { border-color:var(--bh); background-color:var(--card2); }
+    .ag { display:flex; gap:3px; }
+    .ab { font-family:var(--mono); font-size:10px; padding:3px 7px; border-radius:5px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; }
+    .ab.on-WAIT { background:rgba(107,114,128,.2); border-color:#6b7280; color:#9ca3af; }
+    .ab.on-HUNT { background:var(--amg); border-color:var(--am); color:var(--am); }
+    .ab.on-ENTER { background:var(--acg); border-color:var(--ac); color:var(--ac); }
+    .ab.on-TRAIL { background:var(--grg); border-color:var(--gr); color:var(--gr); }
+    .ab.on-STOP { background:var(--cog); border-color:var(--co); color:var(--co); }
+    .col-t { width:96px; } .col-a { width:120px; } .col-b { width:120px; } .col-m { width:110px; } .col-act { width:250px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>OODA Live Journal</h1>
+          <div class="sub">Observe · Orient · Decide · Act — 5-minute bars</div>
+        </div>
+        <div class="row">
+          <input type="date" id="o-date" style="width:auto">
+          <button class="btn pri" id="btnSave">Save</button>
+        </div>
+      </div>
+
+      <div class="ooda-ctx">
+        <label class="field"><span class="fl">Instrument</span><input id="o-inst" placeholder="ES / NQ…"></label>
+        <label class="field" style="flex:2"><span class="fl">Daily context</span><input id="o-ctx" placeholder="Bias, key levels, plan…"></label>
+        <label class="field"><span class="fl">Key level</span><input id="o-lvl" placeholder="5420 / 5390"></label>
+        <label class="field"><span class="fl">Bias</span>
+          <select id="o-bias"><option value="">—</option><option value="bull">Bullish</option><option value="bear">Bearish</option><option value="neut">Neutral</option></select></label>
+        <label class="field"><span class="fl">Session window</span>
+          <select id="o-window">
+            <option value="08:30-13:00">08:30–13:00</option>
+            <option value="08:30-17:30" selected>08:30–17:30</option>
+            <option value="09:30-16:00">09:30–16:00</option>
+          </select></label>
+      </div>
+
+      <div class="ooda-table-wrap">
+        <table class="ooda">
+          <thead><tr>
+            <th class="col-t">Time</th><th>Observe</th><th>Orient</th>
+            <th class="col-a">Algo Structure</th><th class="col-act">Action (Decide)</th>
+            <th class="col-b">Body</th><th class="col-m">Mind</th>
+          </tr></thead>
+          <tbody id="obody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/ooda.js"></script>
+</body>
+</html>

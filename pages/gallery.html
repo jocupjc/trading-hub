@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charts & Screens · Trading Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>Charts &amp; Screenshots</h1>
+          <div class="sub">TradingView links and screenshots for every trading day, grouped by year</div>
+        </div>
+        <select id="yearFilter" style="width:auto"></select>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Add a chart link or screenshot</div>
+        <div class="grid g4" style="gap:12px">
+          <label class="field"><span class="fl">Date</span><input type="date" id="a-date"></label>
+          <label class="field" style="grid-column:span 2"><span class="fl">Title</span><input type="text" id="a-title" placeholder="e.g. ES — RDR reversal at 5420"></label>
+          <label class="field"><span class="fl">Kind</span>
+            <select id="a-kind"><option value="link">TradingView link</option><option value="screenshot">Screenshot upload</option></select></label>
+          <label class="field" id="wrap-url" style="grid-column:span 3"><span class="fl">TradingView URL</span><input type="text" id="a-url" placeholder="https://www.tradingview.com/x/..."></label>
+          <label class="field" id="wrap-file" style="grid-column:span 3;display:none"><span class="fl">Image file</span><input type="file" id="a-file" accept="image/*"></label>
+          <div style="display:flex;align-items:flex-end"><button class="btn pri" id="btnAdd" style="width:100%">Add</button></div>
+        </div>
+        <div class="mono" id="uploadNote" style="font-size:10px;color:var(--mu);margin-top:8px"></div>
+      </div>
+
+      <div id="galWrap" style="margin-top:18px"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/shell.js"></script>
+  <script src="../js/gallery.js"></script>
+</body>
+</html>
