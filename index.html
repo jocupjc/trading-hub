@@ -28,28 +28,22 @@
       <!-- Headline stat tiles -->
       <div class="grid g4" id="tiles"></div>
 
-      <!-- Equity curves -->
+      <!-- Equity curve + per-trade R -->
       <div class="grid g2" style="margin-top:14px">
         <div class="card">
           <div class="card-label">Equity Curve — cumulative R</div>
           <div class="chart-box"><canvas id="chartEqR"></canvas></div>
         </div>
         <div class="card">
-          <div class="card-label">Equity Curve — cumulative $</div>
-          <div class="chart-box"><canvas id="chartEqD"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Per-trade distribution -->
-      <div class="grid g2" style="margin-top:14px">
-        <div class="card">
           <div class="card-label">Every trade — R multiple</div>
           <div class="chart-box"><canvas id="chartTradeR"></canvas></div>
         </div>
-        <div class="card">
-          <div class="card-label">Every trade — $ result</div>
-          <div class="chart-box"><canvas id="chartTradeD"></canvas></div>
-        </div>
+      </div>
+
+      <!-- Scatter plot: each trade as a dot (trade # vs P&L in R) -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">Scatter — P&amp;L (R) per trade</div>
+        <div class="chart-box"><canvas id="chartScatter"></canvas></div>
       </div>
 
       <!-- Secondary metrics + rule adherence -->
