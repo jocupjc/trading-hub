@@ -43,6 +43,10 @@ a:hover { text-decoration: underline; }
 .brand .backend .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .backend.cloud .dot { background: var(--gr); } .backend.cloud { color: var(--gr); }
 .backend.local .dot { background: var(--am); } .backend.local { color: var(--am); }
+.account { margin-top: 8px; }
+.account .acct-email { font-family: var(--mono); font-size: 10px; color: var(--mu); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account .acct-out { margin-top: 5px; font-family: var(--mono); font-size: 10px; color: var(--mu); background: transparent; border: .5px solid var(--bh); border-radius: 6px; padding: 4px 9px; cursor: pointer; width: 100%; }
+.account .acct-out:hover { color: var(--co); border-color: var(--co); }
 
 .nav { display: flex; flex-direction: column; gap: 2px; }
 .nav a {
