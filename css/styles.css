@@ -144,7 +144,9 @@ table.data tr:hover td { background: rgba(255, 255, 255, .02); }
 .empty { color: var(--mu); font-family: var(--mono); font-size: 12px; text-align: center; padding: 40px 0; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .spacer { flex: 1; }
-canvas { max-width: 100%; }
+/* Fixed-height wrapper prevents Chart.js from growing the canvas infinitely */
+.chart-box { position: relative; height: 190px; width: 100%; }
+.chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
 
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; }
