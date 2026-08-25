@@ -57,9 +57,8 @@ async function render() {
 
   // Charts
   drawLine('chartEqR', s.equityR, fmtR, '#4f8ef7');
-  drawLine('chartEqD', s.equityD, fmtD, '#2dd4bf');
   drawBars('chartTradeR', s.tradeR, fmtR);
-  drawBars('chartTradeD', s.tradeD, fmtD);
+  drawScatter('chartScatter', s.tradeR, fmtR);
 
   // Insights
   document.getElementById('insights').innerHTML =
@@ -83,6 +82,23 @@ function drawBars(id, data, fmt) {
       backgroundColor: data.map(d => d.y > 0 ? '#34d399' : d.y < 0 ? '#f87171' : '#f59e0b'),
       borderWidth: 0, _fmt: fmt }] },
     options: CHART_DEFAULTS,
+  });
+}
+
+function drawScatter(id, data, fmt) {
+  const ctx = document.getElementById(id); if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: [{ data,
+      pointBackgroundColor: data.map(d => d.y > 0 ? '#34d399' : d.y < 0 ? '#f87171' : '#f59e0b'),
+      pointBorderColor: 'rgba(0,0,0,0)', pointRadius: 5, pointHoverRadius: 7, _fmt: fmt }] },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        x: { ...CHART_DEFAULTS.scales.x, title: { display: true, text: 'Trade #', color: '#6b7280', font: { family: 'IBM Plex Mono', size: 10 } }, ticks: { ...CHART_DEFAULTS.scales.x.ticks, stepSize: 1, precision: 0 } },
+        y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'R', color: '#6b7280', font: { family: 'IBM Plex Mono', size: 10 } } },
+      },
+    },
   });
 }
 
