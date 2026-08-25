@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · Trading Hub</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="shell"></div>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>Performance Dashboard</h1>
+          <div class="sub">Everything below is computed live from your logged trades</div>
+        </div>
+        <div class="row">
+          <select id="range" style="width:auto">
+            <option value="all">All time</option>
+            <option value="ytd">Year to date</option>
+            <option value="30">Last 30 days</option>
+          </select>
+          <a class="btn pri" href="pages/trades.html">+ Log a trade</a>
+        </div>
+      </div>
+
+      <!-- Headline stat tiles -->
+      <div class="grid g4" id="tiles"></div>
+
+      <!-- Equity curves -->
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <div class="card-label">Equity Curve — cumulative R</div>
+          <canvas id="chartEqR" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-label">Equity Curve — cumulative $</div>
+          <canvas id="chartEqD" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- Per-trade distribution -->
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <div class="card-label">Every trade — R multiple</div>
+          <canvas id="chartTradeR" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-label">Every trade — $ result</div>
+          <canvas id="chartTradeD" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- Secondary metrics + rule adherence -->
+      <div class="grid g4" id="tiles2" style="margin-top:14px"></div>
+
+      <!-- Insights -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label">Automatic support — what the numbers are telling you</div>
+        <div id="insights"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
