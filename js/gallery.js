@@ -86,4 +86,4 @@ function card(l) {
 
 $('btnAdd').onclick = add;
 $('yearFilter').addEventListener('change', refresh);
-refresh();
+Auth.ready.then(refresh);

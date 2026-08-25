@@ -35,5 +35,4 @@ async function renderArchive() {
 
 $('btnSave').onclick = save;
 $('j-date').addEventListener('change', () => load($('j-date').value));
-load(todayStr());
-renderArchive();
+Auth.ready.then(() => { load(todayStr()); renderArchive(); });

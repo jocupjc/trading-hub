@@ -87,4 +87,4 @@ function drawBars(id, data, fmt) {
 }
 
 document.getElementById('range').addEventListener('change', render);
-render();
+Auth.ready.then(render);

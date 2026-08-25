@@ -9,11 +9,14 @@ const DB = (() => {
   const cfg = window.TH_CONFIG;
 
   function initSupabase() {
+    if (sb) return sb;
     if (cfg.SUPABASE_ENABLED && window.supabase) {
       sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
     }
     return sb;
   }
+
+  const ownerId = () => (window.Auth && window.Auth.userId) || undefined;
 
   const active = () => (sb ? 'supabase' : 'local');
 
@@ -53,6 +56,7 @@ const DB = (() => {
     const row = { ...t };
     if (sb) {
       if (!row.id) delete row.id;
+      if (ownerId()) row.user_id = ownerId();
       const { data, error } = await sb.from('trades').upsert(row).select().single();
       if (error) throw error;
       return data;
@@ -91,6 +95,7 @@ const DB = (() => {
   async function saveTradingDay(d) {
     const row = { ...d, updated_at: new Date().toISOString() };
     if (sb) {
+      if (ownerId()) row.user_id = ownerId();
       const { data, error } = await sb.from('trading_days').upsert(row).select().single();
       if (error) throw error;
       return data;
@@ -121,6 +126,7 @@ const DB = (() => {
     row.year = row.year || (row.date ? +row.date.slice(0, 4) : new Date().getFullYear());
     if (sb) {
       if (!row.id) delete row.id;
+      if (ownerId()) row.user_id = ownerId();
       const { data, error } = await sb.from('chart_links').upsert(row).select().single();
       if (error) throw error;
       return data;
@@ -145,7 +151,8 @@ const DB = (() => {
   async function uploadScreenshot(file, dateStr) {
     const year = dateStr ? dateStr.slice(0, 4) : String(new Date().getFullYear());
     if (sb) {
-      const path = `${year}/${(dateStr || 'undated')}-${Date.now()}-${file.name.replace(/[^\w.\-]/g, '_')}`;
+      const uid = (window.Auth && window.Auth.userId) || 'anon';
+      const path = `${uid}/${year}/${(dateStr || 'undated')}-${Date.now()}-${file.name.replace(/[^\w.\-]/g, '_')}`;
       const { error } = await sb.storage.from(cfg.SCREENSHOT_BUCKET).upload(path, file, { upsert: true });
       if (error) throw error;
       const { data } = sb.storage.from(cfg.SCREENSHOT_BUCKET).getPublicUrl(path);
@@ -181,8 +188,9 @@ const DB = (() => {
 
   async function saveJournal(date, type, payload) {
     if (sb) {
-      const { error } = await sb.from('journal_entries')
-        .upsert({ date, type, payload, updated_at: new Date().toISOString() });
+      const row = { date, type, payload, updated_at: new Date().toISOString() };
+      if (ownerId()) row.user_id = ownerId();
+      const { error } = await sb.from('journal_entries').upsert(row);
       if (error) throw error;
       return;
     }

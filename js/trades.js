@@ -138,4 +138,4 @@ function exportCSV() {
 $('btnSave').onclick = save;
 $('btnClear').onclick = clearForm;
 $('btnExport').onclick = exportCSV;
-refresh();
+Auth.ready.then(refresh);

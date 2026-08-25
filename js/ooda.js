@@ -95,4 +95,4 @@ $('btnSave').onclick = save;
 $('o-window').addEventListener('change', () => renderTable(collect()));
 $('o-date').addEventListener('change', () => load($('o-date').value));
 setInterval(highlightNow, 60000);
-load(todayStr());
+Auth.ready.then(() => load(todayStr()));

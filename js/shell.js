@@ -36,6 +36,7 @@ const Shell = {
           <div class="mark">Trading Hub</div>
           <div class="sub">Journal · Trades · Analytics</div>
           <div class="backend-wrap">${backend}</div>
+          <div id="account" class="account"></div>
         </div>
         <nav class="nav">${items}</nav>
       </aside>`;
@@ -45,6 +46,7 @@ const Shell = {
     DB.initSupabase();
     const host = document.getElementById('shell');
     if (host) host.innerHTML = this.render(activeHref, rel);
+    if (window.Auth && Auth.refresh) Auth.refresh();
   },
 
   toast(msg) {
