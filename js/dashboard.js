@@ -55,8 +55,8 @@ async function render() {
     tile('Best / Worst Day', s.bestDay ? `${fmtR(s.bestDay.r)} / ${fmtR(s.worstDay.r)}` : '—', 'performance score'),
   ].join('');
 
-  // Charts
-  drawLine('chartEqR', s.equityR, fmtR, '#4f8ef7');
+  // Charts — each trade is its own point/bar
+  drawLine('chartEqR', [{ x: 0, y: 0, label: 'Start' }].concat(s.equityR), fmtR, '#4f8ef7');
   drawBars('chartTradeR', s.tradeR, fmtR);
   drawScatter('chartScatter', s.tradeR, fmtR);
 
@@ -65,12 +65,31 @@ async function render() {
     Stats.insights(s).map(i => `<div class="insight ${i.type}">${i.text}</div>`).join('');
 }
 
+// Options for category-based line/bar charts (one slot per trade)
+function catOptions(fmt, meta) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: {
+      title: (items) => (meta[items[0].dataIndex] && meta[items[0].dataIndex].label) || '',
+      label: (item) => fmt(item.parsed.y),
+    } } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { family: 'IBM Plex Mono', size: 9 }, maxTicksLimit: 12 } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6b7280', font: { family: 'IBM Plex Mono', size: 10 } } },
+    },
+  };
+}
+
 function drawLine(id, data, fmt, color) {
   const ctx = document.getElementById(id); if (charts[id]) charts[id].destroy();
   charts[id] = new Chart(ctx, {
     type: 'line',
-    data: { datasets: [{ data, borderColor: color, backgroundColor: color + '22', fill: true, tension: .25, pointRadius: 0, borderWidth: 2, _fmt: fmt }] },
-    options: CHART_DEFAULTS,
+    data: {
+      labels: data.map(d => d.x),
+      datasets: [{ data: data.map(d => d.y), borderColor: color, backgroundColor: color + '22',
+        fill: true, tension: .25, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: color, borderWidth: 2 }],
+    },
+    options: catOptions(fmt, data),
   });
 }
 
@@ -78,10 +97,13 @@ function drawBars(id, data, fmt) {
   const ctx = document.getElementById(id); if (charts[id]) charts[id].destroy();
   charts[id] = new Chart(ctx, {
     type: 'bar',
-    data: { datasets: [{ data,
-      backgroundColor: data.map(d => d.y > 0 ? '#34d399' : d.y < 0 ? '#f87171' : '#f59e0b'),
-      borderWidth: 0, _fmt: fmt }] },
-    options: CHART_DEFAULTS,
+    data: {
+      labels: data.map(d => d.x),
+      datasets: [{ data: data.map(d => d.y),
+        backgroundColor: data.map(d => d.y > 0 ? '#34d399' : d.y < 0 ? '#f87171' : '#f59e0b'),
+        borderWidth: 0 }],
+    },
+    options: catOptions(fmt, data),
   });
 }
 
