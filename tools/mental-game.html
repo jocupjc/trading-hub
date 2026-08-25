@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mental Game — Daily Trading Guide</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --bg-card: #13161e;
+    --bg-card2: #181c26;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f8ef7;
+    --accent-glow: rgba(79,142,247,0.18);
+    --green: #34d399;
+    --green-glow: rgba(52,211,153,0.16);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245,158,11,0.15);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.15);
+    --coral: #f87171;
+    --coral-glow: rgba(248,113,113,0.15);
+    --teal: #2dd4bf;
+    --teal-glow: rgba(45,212,191,0.14);
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -.3px;
+    color: var(--text);
+  }
+  .page-header .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 4px;
+  }
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 0.5px solid rgba(79,142,247,0.3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .4px;
+  }
+
+  /* Phase tabs */
+  .phase-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+  .phase-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .5px;
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .phase-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .phase-btn.active {
+    background: var(--accent-glow);
+    border-color: rgba(79,142,247,0.4);
+    color: var(--accent);
+  }
+
+  .phase-panel { display: none; }
+  .phase-panel.active { display: block; }
+
+  /* Score bar */
+  .score-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .score-card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: .9rem 1rem;
+    text-align: center;
+    transition: border-color .2s;
+  }
+  .score-card:hover { border-color: var(--border-hover); }
+  .score-val {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .score-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--border-hover); }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .85rem;
+  }
+
+  /* Field label */
+  .field-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    letter-spacing: .3px;
+  }
+
+  /* Head grid */
+  .head-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  input[type="date"] {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color .2s;
+    color-scheme: dark;
+  }
+  input[type="date"]:focus { border-color: var(--accent); }
+
+  /* Checkboxes */
+  .check-list { display: flex; flex-direction: column; gap: 2px; }
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background .15s;
+    font-size: 13px;
+    color: var(--muted);
+    user-select: none;
+  }
+  .check-row:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .check-row.checked { color: var(--green); background: var(--green-glow); }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 0.5px solid var(--border-hover);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s, border-color .15s;
+    background: transparent;
+  }
+  .check-row.checked .check-box { background: var(--green); border-color: var(--green); }
+  .check-box svg { display: none; }
+  .check-row.checked .check-box svg { display: block; }
+  .check-row input[type="checkbox"] { display: none; }
+
+  /* Progress bar */
+  .progress-wrap {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    margin: 0 0 .85rem;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width .3s; }
+
+  /* Toggle Buttons */
+  .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tog {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+    letter-spacing: .2px;
+  }
+  .tog:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+  .tog:active { transform: scale(.97); }
+
+  [data-theme="blue"]   .tog.active { background: var(--accent-glow);  border-color: var(--accent);  color: var(--accent);  box-shadow: 0 0 12px var(--accent-glow); }
+  [data-theme="green"]  .tog.active { background: var(--green-glow);   border-color: var(--green);   color: var(--green);   box-shadow: 0 0 12px var(--green-glow); }
+  [data-theme="amber"]  .tog.active { background: var(--amber-glow);   border-color: var(--amber);   color: var(--amber);   box-shadow: 0 0 12px var(--amber-glow); }
+  [data-theme="purple"] .tog.active { background: var(--purple-glow);  border-color: var(--purple);  color: var(--purple);  box-shadow: 0 0 12px var(--purple-glow); }
+  [data-theme="coral"]  .tog.active { background: var(--coral-glow);   border-color: var(--coral);   color: var(--coral);   box-shadow: 0 0 12px var(--coral-glow); }
+  [data-theme="teal"]   .tog.active { background: var(--teal-glow);    border-color: var(--teal);    color: var(--teal);    box-shadow: 0 0 12px var(--teal-glow); }
+
+  /* Impl buttons */
+  .impl-row { display: flex; align-items: center; gap: 10px; margin-top: .75rem; }
+  .impl-label {
+    font-size: 10px; font-weight: 500; letter-spacing: .9px;
+    text-transform: uppercase; color: var(--muted);
+    font-family: var(--mono); white-space: nowrap; flex-shrink: 0;
+  }
+  .impl-btn {
+    font-family: var(--mono); font-size: 12px;
+    padding: 5px 18px; border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .18s cubic-bezier(.4,0,.2,1);
+  }
+  .impl-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+  .impl-btn.long.active  { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  .impl-btn.short.active { background: var(--coral-glow);  border-color: var(--coral);  color: var(--coral);  box-shadow: 0 0 12px var(--coral-glow); }
+
+  /* Scale buttons */
+  .scale-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .scale-btn {
+    font-family: var(--mono); font-size: 11px;
+    padding: 5px 10px; border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .15s; min-width: 34px; text-align: center;
+  }
+  .scale-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .scale-btn.sel-green  { background: var(--green-glow);  border-color: var(--green);  color: var(--green); }
+  .scale-btn.sel-amber  { background: var(--amber-glow);  border-color: var(--amber);  color: var(--amber); }
+  .scale-btn.sel-coral  { background: var(--coral-glow);  border-color: var(--coral);  color: var(--coral); }
+
+  /* 2-col */
+  .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+  /* Textareas */
+  textarea {
+    width: 100%;
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 64px;
+    outline: none;
+    transition: border-color .2s;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+
+  /* Dropdowns */
+  .select-field {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color .2s;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .select-field:focus { border-color: var(--accent); }
+  .select-field option { background: var(--bg-card2); color: var(--text); }
+
+  /* Alert box */
+  .alert-box {
+    padding: 10px 13px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 8px;
+    font-family: var(--font);
+    display: none;
+  }
+  .alert-box.show { display: block; }
+  .alert-box.warn { background: var(--amber-glow); border: 0.5px solid rgba(245,158,11,0.35); color: var(--amber); }
+  .alert-box.ok   { background: var(--green-glow);  border: 0.5px solid rgba(52,211,153,0.35);  color: var(--green); }
+  .alert-box.bad  { background: var(--coral-glow);  border: 0.5px solid rgba(248,113,113,0.35); color: var(--coral); }
+  .alert-box strong { font-weight: 500; }
+
+  /* Insight box */
+  .insight {
+    padding: 10px 13px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--muted);
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid var(--border);
+    margin-bottom: .85rem;
+  }
+  .insight strong { color: var(--text); font-weight: 500; }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .btn-action {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .4px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .btn-action:hover { border-color: rgba(255,255,255,0.2); color: var(--text); background: rgba(255,255,255,0.04); }
+  .btn-action:active { transform: scale(.97); }
+  .btn-save { background: var(--accent-glow); border-color: rgba(79,142,247,0.4); color: var(--accent); }
+  .btn-save:hover { background: rgba(79,142,247,0.28); border-color: var(--accent); color: #74aaff; }
+  .btn-calc { background: var(--green-glow); border-color: rgba(52,211,153,0.4); color: var(--green); }
+  .btn-calc:hover { background: rgba(52,211,153,0.28); border-color: var(--green); color: #6eeed0; }
+
+  /* Archive */
+  .archive-panel {
+    display: none;
+    margin-top: 1rem;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+  }
+  .archive-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+  }
+  .archive-entry:last-child { border-bottom: none; }
+  .entry-date { font-family: var(--mono); color: var(--text); }
+  .entry-meta { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 3px; }
+  .entry-actions { display: flex; gap: 5px; }
+  .entry-btn {
+    font-size: 10px; font-family: var(--mono);
+    padding: 3px 9px; border-radius: 4px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .15s;
+  }
+  .entry-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .entry-btn.del:hover { color: var(--coral); border-color: var(--coral); }
+
+  /* Reference items */
+  .ref-item {
+    padding: 10px 13px;
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    border: 0.5px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .ref-item-title {
+    font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px;
+    font-family: var(--mono);
+  }
+  .ref-item-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-card2); border: 0.5px solid var(--border-hover);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    padding: 9px 20px; border-radius: var(--radius);
+    opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 999;
+    white-space: nowrap;
+  }
+  .empty-msg { font-size: 12px; color: var(--muted); font-family: var(--mono); text-align: center; padding: 1rem 0; }
+
+  @media (max-width: 540px) {
+    .head-grid { grid-template-columns: 1fr; }
+    .row-2col { grid-template-columns: 1fr; }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page" id="main">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <h1>Mental Game — Daily Guide</h1>
+      <div class="subtitle">Jared Tendler · Pre &amp; Post Trading Routine</div>
+    </div>
+    <div class="header-tag" id="header-date-display">—</div>
+  </div>
+
+  <!-- SCORE OVERVIEW -->
+  <div class="score-grid">
+    <div class="score-card">
+      <div class="score-val" id="disp-pre-score">—</div>
+      <div class="score-lbl">Pre-Score</div>
+    </div>
+    <div class="score-card">
+      <div class="score-val" id="disp-post-score">—</div>
+      <div class="score-lbl">Post-Score</div>
+    </div>
+    <div class="score-card">
+      <div class="score-val" id="disp-streak">0</div>
+      <div class="score-lbl">Streak (Tage)</div>
+    </div>
+  </div>
+
+  <!-- PHASE TABS -->
+  <div class="phase-nav">
+    <button class="phase-btn active" onclick="switchPhase('pre')">PRE-TRADING</button>
+    <button class="phase-btn" onclick="switchPhase('post')">POST-TRADING</button>
+    <button class="phase-btn" onclick="switchPhase('ref')">REFERENZ</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ PRE-TRADING -->
+  <div class="phase-panel active" id="panel-pre">
+
+    <!-- Date + Basics -->
+    <div class="card">
+      <div class="card-label">Header</div>
+      <div class="head-grid">
+        <div>
+          <div class="field-label">Trading Tag</div>
+          <input type="date" id="trade-date">
+        </div>
+        <div class="check-list">
+          <label class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" id="chk-sleep">
+            <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Mindestens 7h geschlafen?</span>
+          </label>
+          <label class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" id="chk-food">
+            <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Gegessen &amp; getrunken?</span>
+          </label>
+          <label class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" id="chk-activity">
+            <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Körperliche Aktivität erledigt?</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mental State -->
+    <div class="card">
+      <div class="card-label">Mental State Check</div>
+      <div class="insight"><strong>Tendler:</strong> Das Ziel ist nicht, perfekt gestimmt zu sein – sondern ehrlich zu wissen, wo du stehst. Emotionaler Zustand bestimmt, welches Game du heute spielen kannst.</div>
+      <div class="field-label">Aktueller Zustand</div>
+      <div class="btn-group" id="grp-emotion" data-theme="blue">
+        <button class="tog" data-val="Neutral / Ruhig" onclick="onEmotionSelect('neutral')">Neutral / Ruhig</button>
+        <button class="tog" data-val="Zuversicht / Fokus" onclick="onEmotionSelect('conf')">Zuversicht / Fokus</button>
+        <button class="tog" data-val="Angst / Nervosität" onclick="onEmotionSelect('fear')">Angst / Nervosität</button>
+        <button class="tog" data-val="Tilt / Frustration" onclick="onEmotionSelect('tilt')">Tilt / Frustration</button>
+        <button class="tog" data-val="Euphorie / Winner-Tilt" onclick="onEmotionSelect('euphoria')">Euphorie / Winner-Tilt</button>
+      </div>
+      <div class="alert-box" id="alert-emotion"></div>
+
+      <div class="field-label" style="margin-top:.85rem;">Intensität (1 = kaum spürbar → 10 = überwältigend)</div>
+      <div class="scale-row" id="scale-intensity">
+        <button class="scale-btn" data-v="1" onclick="selectScale('intensity',this)">1</button>
+        <button class="scale-btn" data-v="2" onclick="selectScale('intensity',this)">2</button>
+        <button class="scale-btn" data-v="3" onclick="selectScale('intensity',this)">3</button>
+        <button class="scale-btn" data-v="4" onclick="selectScale('intensity',this)">4</button>
+        <button class="scale-btn" data-v="5" onclick="selectScale('intensity',this)">5</button>
+        <button class="scale-btn" data-v="6" onclick="selectScale('intensity',this)">6</button>
+        <button class="scale-btn" data-v="7" onclick="selectScale('intensity',this)">7</button>
+        <button class="scale-btn" data-v="8" onclick="selectScale('intensity',this)">8</button>
+        <button class="scale-btn" data-v="9" onclick="selectScale('intensity',this)">9</button>
+        <button class="scale-btn" data-v="10" onclick="selectScale('intensity',this)">10</button>
+      </div>
+      <div class="alert-box" id="alert-intensity"></div>
+
+      <div class="field-label" style="margin-top:.85rem;">Auslöser (optional)</div>
+      <textarea id="txt-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen..."></textarea>
+    </div>
+
+    <!-- A/B/C Game -->
+    <div class="card">
+      <div class="card-label">A / B / C — Game Einschätzung</div>
+      <div class="insight"><strong>Tendlers Kernprinzip:</strong> C-Game zu eliminieren ist wichtiger als A-Game zu spielen. Ein solides B-Game jeden Tag schlägt A/C-Game-Wechsel langfristig.</div>
+      <div class="field-label">Welches Game kannst du heute realistisch spielen?</div>
+      <div class="btn-group" id="grp-game" data-theme="green">
+        <button class="tog" data-val="A-Game" onclick="onGameSelect('A')">A-Game</button>
+        <button class="tog" data-val="B-Game" onclick="onGameSelect('B')">B-Game</button>
+        <button class="tog" data-val="C-Game" onclick="onGameSelect('C')">C-Game</button>
+      </div>
+      <div class="alert-box" id="alert-game"></div>
+      <div class="field-label" style="margin-top:.85rem;">Meine typischen C-Game Fehler</div>
+      <textarea id="txt-cgame" placeholder="1. Revenge-Trading nach Verlust&#10;2. FOMO-Einstieg ohne Setup&#10;3. Stop-Loss verschieben..."></textarea>
+    </div>
+
+    <!-- Warm-up Checklist -->
+    <div class="card">
+      <div class="card-label">Warm-up Checkliste <span id="warmup-counter" style="color:var(--muted)">0/8</span></div>
+      <div class="progress-wrap"><div class="progress-fill" id="pb-warmup" style="width:0%"></div></div>
+      <div class="check-list">
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w1">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Gestern-Bias überprüft: Gibt es unverarbeitete Verluste / Gewinne?</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w2">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Marktkontext gelesen (News, Gaps, Volatilität)</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w3">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Tages-Verlustlimit definiert und akzeptiert</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w4">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Max. Anzahl Positionen / Trades festgelegt</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w5">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Stop-Loss Strategie ist klar und unwiderruflich</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w6">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Persönliches Tilt-Warnsignal bewusst aktiviert</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w7">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Setup-Kriterien für heute klar definiert</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
+          <input type="checkbox" id="chk-w8">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Abbruchkriterien für heute definiert (wann höre ich auf?)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Tagesintention -->
+    <div class="card">
+      <div class="card-label">Tagesintention &amp; Fokus</div>
+      <div class="insight"><strong>Tendler:</strong> Das Gehirn lernt durch Wiederholung. Täglich bewusst formulierte Intentionen bauen neue neuronale Pfade und ersetzen automatische Reaktionsmuster.</div>
+      <div class="field-label">Mein Prozess-Ziel heute (kein P&amp;L-Ziel)</div>
+      <textarea id="txt-process-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld heraus..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">Mein größtes mentales Risiko heute</div>
+      <textarea id="txt-mental-risk" placeholder="z.B. Nach einem Verlust sofort wieder einsteigen wollen..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">Mantra / Anker für heute</div>
+      <textarea id="txt-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis." style="min-height:50px;"></textarea>
+    </div>
+
+    <!-- Action bar PRE -->
+    <div class="action-bar">
+      <button class="btn-action btn-calc" onclick="calcPreScore()">Score berechnen</button>
+      <button class="btn-action btn-save" onclick="saveEntry()">Speichern</button>
+      <button class="btn-action" onclick="exportCSV()">Export CSV</button>
+      <button class="btn-action" onclick="exportImage()">Export als Bild</button>
+      <button class="btn-action" onclick="toggleArchive()">Archiv</button>
+      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">Neu</button>
+    </div>
+    <div class="alert-box" id="alert-pre-score" style="margin-top:.75rem;"></div>
+
+  </div><!-- /pre -->
+
+
+  <!-- ══════════════════════════════════════════════════════════ POST-TRADING -->
+  <div class="phase-panel" id="panel-post">
+
+    <!-- Trade Debrief -->
+    <div class="card">
+      <div class="card-label">Trade Debrief <span id="debrief-counter" style="color:var(--muted)">0/6</span></div>
+      <div class="progress-wrap"><div class="progress-fill" id="pb-debrief" style="width:0%"></div></div>
+      <div class="check-list">
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d1">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Alle Trades dokumentiert (Entry, Exit, Begründung)</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d2">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Tages-Limit eingehalten?</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d3">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Prozess-Ziel von heute erreicht?</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d4">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Emotionale Momente identifiziert und notiert</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d5">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Regelbrüche notiert (neutral betrachtet, nicht verurteilt)</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+          <input type="checkbox" id="chk-d6">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Mindestens 1 positiver Aspekt des heutigen Handelns notiert</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Emotionsanalyse -->
+    <div class="card">
+      <div class="card-label">Emotionsanalyse</div>
+      <div class="insight"><strong>Tendler:</strong> Emotionen sind Informationen über ungelöste Lernbereiche — keine Schwäche. Die Frage ist nicht "warum werde ich emotional?" sondern "was zeigt mir diese Emotion?"</div>
+      <div class="field-label">Dominante Emotion heute</div>
+      <div class="btn-group" id="grp-post-emotion" data-theme="purple">
+        <button class="tog" data-val="Tilt / Frustration" onclick="onPostEmotionSelect('tilt')">Tilt / Frustration</button>
+        <button class="tog" data-val="Angst" onclick="onPostEmotionSelect('fear')">Angst</button>
+        <button class="tog" data-val="Gier / FOMO" onclick="onPostEmotionSelect('greed')">Gier / FOMO</button>
+        <button class="tog" data-val="Arroganz / Winner-Tilt" onclick="onPostEmotionSelect('euphoria')">Arroganz / Winner-Tilt</button>
+        <button class="tog" data-val="Selbstvertrauen" onclick="onPostEmotionSelect('conf')">Selbstvertrauen</button>
+      </div>
+      <div class="alert-box" id="alert-post-emotion"></div>
+
+      <div class="field-label" style="margin-top:.85rem;">Was hat diese Emotion konkret ausgelöst?</div>
+      <textarea id="txt-emo-trigger" placeholder="So konkret wie möglich: welcher Trade, welcher Moment, welcher Gedanke..."></textarea>
+
+      <div class="field-label" style="margin-top:.75rem;">Welche irrationale Überzeugung steckt dahinter?</div>
+      <textarea id="txt-irr-belief" placeholder="z.B. 'Ich muss diesen Verlust sofort zurückgewinnen' / 'Wenn ich diesen Trade verpasse bin ich ein Verlierer'..."></textarea>
+
+      <div class="field-label" style="margin-top:.75rem;">Die rationale Gegenperspektive (Reframing)</div>
+      <textarea id="txt-reframe" placeholder="z.B. 'Einzelne Trades definieren meine Performance nicht. Edge entfaltet sich über hunderte Trades.'..."></textarea>
+    </div>
+
+    <!-- Performance-Bewertung -->
+    <div class="card">
+      <div class="card-label">Performance-Bewertung</div>
+      <div class="insight"><strong>Wichtig:</strong> Bewerte Prozessqualität und emotionale Kontrolle getrennt vom P&amp;L. Ein verlustreicher Tag mit perfektem Prozess ist ein 9/10 Tag.</div>
+
+      <div class="field-label">Prozessqualität heute (1–10)</div>
+      <div class="scale-row" id="scale-process">
+        <button class="scale-btn" data-v="1" onclick="selectScale('process',this)">1</button>
+        <button class="scale-btn" data-v="2" onclick="selectScale('process',this)">2</button>
+        <button class="scale-btn" data-v="3" onclick="selectScale('process',this)">3</button>
+        <button class="scale-btn" data-v="4" onclick="selectScale('process',this)">4</button>
+        <button class="scale-btn" data-v="5" onclick="selectScale('process',this)">5</button>
+        <button class="scale-btn" data-v="6" onclick="selectScale('process',this)">6</button>
+        <button class="scale-btn" data-v="7" onclick="selectScale('process',this)">7</button>
+        <button class="scale-btn" data-v="8" onclick="selectScale('process',this)">8</button>
+        <button class="scale-btn" data-v="9" onclick="selectScale('process',this)">9</button>
+        <button class="scale-btn" data-v="10" onclick="selectScale('process',this)">10</button>
+      </div>
+
+      <div class="field-label" style="margin-top:.85rem;">Emotionale Kontrolle heute (1–10)</div>
+      <div class="scale-row" id="scale-emoctrl">
+        <button class="scale-btn" data-v="1" onclick="selectScale('emoctrl',this)">1</button>
+        <button class="scale-btn" data-v="2" onclick="selectScale('emoctrl',this)">2</button>
+        <button class="scale-btn" data-v="3" onclick="selectScale('emoctrl',this)">3</button>
+        <button class="scale-btn" data-v="4" onclick="selectScale('emoctrl',this)">4</button>
+        <button class="scale-btn" data-v="5" onclick="selectScale('emoctrl',this)">5</button>
+        <button class="scale-btn" data-v="6" onclick="selectScale('emoctrl',this)">6</button>
+        <button class="scale-btn" data-v="7" onclick="selectScale('emoctrl',this)">7</button>
+        <button class="scale-btn" data-v="8" onclick="selectScale('emoctrl',this)">8</button>
+        <button class="scale-btn" data-v="9" onclick="selectScale('emoctrl',this)">9</button>
+        <button class="scale-btn" data-v="10" onclick="selectScale('emoctrl',this)">10</button>
+      </div>
+
+      <div class="field-label" style="margin-top:.85rem;">Größter Lernmoment heute</div>
+      <textarea id="txt-learning" placeholder="Formuliere als Lernerkenntnis: 'Ich habe heute gelernt, dass ich bei großen Gaps dazu neige zu...'"></textarea>
+
+      <div class="field-label" style="margin-top:.75rem;">Was mache ich morgen konkret anders?</div>
+      <textarea id="txt-tmrw" placeholder="Konkret und umsetzbar. Keine vagen Vorsätze."></textarea>
+    </div>
+
+    <!-- Abschlussritual -->
+    <div class="card">
+      <div class="card-label">Abschlussritual <span id="close-counter" style="color:var(--muted)">0/4</span></div>
+      <div class="insight"><strong>Warum ein Ritual?</strong> Das Gehirn braucht ein klares Signal, dass der Handelstag beendet ist. Loss-Hangover ist die häufigste Ursache für Revenge-Trading am Folgemorgen.</div>
+      <div class="progress-wrap"><div class="progress-fill" id="pb-close" style="width:0%"></div></div>
+      <div class="check-list">
+        <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
+          <input type="checkbox" id="chk-c1">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Journal vollständig ausgefüllt &amp; gespeichert</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
+          <input type="checkbox" id="chk-c2">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Charts &amp; Terminal geschlossen — kein „nochmal reinschauen"</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
+          <input type="checkbox" id="chk-c3">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Körperliches Reset: Stretching, Spaziergang oder Atemübung</span>
+        </label>
+        <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
+          <input type="checkbox" id="chk-c4">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Ergebnis akzeptiert — Morgen ist ein neuer Tag</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card">
+      <div class="card-label">Notizen</div>
+      <textarea id="txt-post-notes" placeholder="Weitere Beobachtungen, Muster, Erkenntnisse..." style="min-height:80px;"></textarea>
+    </div>
+
+    <!-- Action bar POST -->
+    <div class="action-bar">
+      <button class="btn-action btn-calc" onclick="calcPostScore()">Score berechnen</button>
+      <button class="btn-action btn-save" onclick="saveEntry()">Speichern</button>
+      <button class="btn-action" onclick="exportCSV()">Export CSV</button>
+      <button class="btn-action" onclick="exportImage()">Export als Bild</button>
+      <button class="btn-action" onclick="toggleArchive()">Archiv</button>
+      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">Neu</button>
+    </div>
+    <div class="alert-box" id="alert-post-score" style="margin-top:.75rem;"></div>
+
+  </div><!-- /post -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════ REFERENZ -->
+  <div class="phase-panel" id="panel-ref">
+
+    <div class="card">
+      <div class="card-label">Tilt-Sofortprotokoll</div>
+      <div class="insight">Körperliche Signale: Erhöhte HF · Kieferspannung · Beschleunigtes Tippen · Gedankliches Rechtfertigen eines schlechten Trades · Ungeduld beim Warten auf Setup</div>
+      <div style="margin-top:.75rem; display:flex; flex-direction:column; gap:5px;">
+        <div class="ref-item">
+          <div class="ref-item-title">01 · STOP</div>
+          <div class="ref-item-body">Keine neuen Positionen öffnen. Hände vom Keyboard.</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">02 · Atemübung</div>
+          <div class="ref-item-body">4-7-8: 4s einatmen, 7s halten, 8s ausatmen. 3 Runden. Kortisol-Abbau aktivieren.</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">03 · Realitätscheck</div>
+          <div class="ref-item-body">"Würde ich diesen Trade in normalem Zustand eingehen?" — Wenn nein: Nicht handeln.</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">04 · 15 Minuten Pause</div>
+          <div class="ref-item-body">Bildschirm verlassen. Kurze Bewegung. Kein "noch kurz reinschauen".</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">05 · Dokumentieren</div>
+          <div class="ref-item-body">Tilt-Trigger sofort im Journal notieren. Daten für spätere Musteranalyse.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tendlers 5 emotionale Kernprobleme</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="ref-item" style="border-color:rgba(248,113,113,0.3); background:rgba(248,113,113,0.05);">
+          <div class="ref-item-title" style="color:var(--coral)">Tilt / Anger</div>
+          <div class="ref-item-body">Ursache: Erwartung verletzt. Kern: "Das darf nicht passieren." → Revenge-Trading, Over-Sizing, SL-Verschieben.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05);">
+          <div class="ref-item-title" style="color:var(--amber)">Angst / Fear</div>
+          <div class="ref-item-body">Ursache: Verlust-Konsequenzen überschätzt. Kern: "Ich kann das nicht verkraften." → Zu kleines Sizing, frühes Aussteigen, Zögern.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05);">
+          <div class="ref-item-title" style="color:var(--amber)">Gier / FOMO</div>
+          <div class="ref-item-body">Ursache: Kurzfristige Belohnungssucht. Kern: "Ich verpasse etwas." → Over-Trading, Chasing, zu frühes Einsteigen.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(79,142,247,0.3); background:rgba(79,142,247,0.05);">
+          <div class="ref-item-title" style="color:var(--accent)">Selbstvertrauen-Probleme</div>
+          <div class="ref-item-body">Ursache: Identifikation mit Trades. Kern: "Ich bin ein schlechter Trader." → Paralysis, Überanalyse, häufige Strategiewechsel.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(52,211,153,0.3); background:rgba(52,211,153,0.05);">
+          <div class="ref-item-title" style="color:var(--green)">Arroganz / Winner-Tilt</div>
+          <div class="ref-item-body">Ursache: Gewinn-Streak erzeugt Unbesiegbarkeitsgefühl. Kern: "Ich kann aktuell nichts falsch machen." → Over-Sizing, Regelbrüche, SL ignorieren.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tendlers 3 Schlüsselprinzipien</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="ref-item">
+          <div class="ref-item-title">Emotionen sind Symptome, nicht das Problem</div>
+          <div class="ref-item-body">Die wahre Ursache ist immer eine Überzeugung oder Erwartung. Arbeit an der Emotion ohne Arbeit an der Überzeugung ist reine Symptombehandlung.</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">Varianz ist real — akzeptiere sie strukturell</div>
+          <div class="ref-item-body">Edge zeigt sich erst über 100+ Trades. Einzelne Ergebnisse sind statistisches Rauschen. Trainiere das Gehirn, Verluste als Teil der Verteilung zu sehen.</div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-item-title">Mentale Performance ist ein Skill, kein Talent</div>
+          <div class="ref-item-body">Tägliches Journaling ist das Trainingsinstrument. Konsequenz über 90 Tage erzeugt messbare Veränderung der emotionalen Baseline.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Conscious Competence Ladder</div>
+      <div style="display:flex; flex-direction:column; gap:5px;">
+        <div class="ref-item" style="border-color:rgba(248,113,113,0.3);">
+          <div class="ref-item-title" style="color:var(--coral)">Stufe 1 · Unbewusst inkompetent</div>
+          <div class="ref-item-body">Du weißt nicht, was du nicht weißt. Fehler passieren, aber du erkennst sie nicht als solche.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(245,158,11,0.3);">
+          <div class="ref-item-title" style="color:var(--amber)">Stufe 2 · Bewusst inkompetent</div>
+          <div class="ref-item-body">Du erkennst deine Fehler, kannst sie aber noch nicht verhindern. Journaling beginnt hier zu wirken.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(79,142,247,0.3);">
+          <div class="ref-item-title" style="color:var(--accent)">Stufe 3 · Bewusst kompetent</div>
+          <div class="ref-item-body">Du kannst richtig handeln, aber es erfordert bewusste Anstrengung. Pre-Trading Routine stabilisiert diese Stufe.</div>
+        </div>
+        <div class="ref-item" style="border-color:rgba(52,211,153,0.3);">
+          <div class="ref-item-title" style="color:var(--green)">Stufe 4 · Unbewusst kompetent</div>
+          <div class="ref-item-body">Richtiges Handeln wird automatisch. Das Ziel: C-Game auf Stufe 3 bringen, A-Game auf Stufe 4.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /ref -->
+
+  <!-- ARCHIVE PANEL -->
+  <div class="archive-panel" id="archive-panel">
+    <div class="card-label" style="margin-bottom:.85rem;">Archiv</div>
+    <div id="archive-list"></div>
+    <div style="margin-top:.85rem;padding-top:.85rem;border-top:0.5px solid var(--border);display:flex;gap:8px;">
+      <button class="btn-action" onclick="exportAllCSV()">Alle als CSV exportieren</button>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Init ──────────────────────────────────────────────────────────────────────
+const todayStr = new Date().toISOString().slice(0,10);
+document.getElementById('trade-date').value = todayStr;
+updateHeaderDate();
+document.getElementById('trade-date').addEventListener('change', updateHeaderDate);
+
+function updateHeaderDate(){
+  const v = document.getElementById('trade-date').value;
+  const el = document.getElementById('header-date-display');
+  if(v){ const [y,m,d]=v.split('-'); el.textContent=d+'.'+m+'.'+y; }
+  else el.textContent='—';
+}
+
+// ── Phase Tabs ────────────────────────────────────────────────────────────────
+function switchPhase(tab){
+  document.querySelectorAll('.phase-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['pre','post','ref'][i] === tab);
+  });
+  document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ── Checkboxes ────────────────────────────────────────────────────────────────
+function toggleCheck(label){
+  event.preventDefault();
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  label.classList.toggle('checked', cb.checked);
+}
+
+const groupCounts = {};
+function toggleCheckGroup(label, group, total, pbId, counterId){
+  event.preventDefault();
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  label.classList.toggle('checked', cb.checked);
+  const parent = label.closest('.check-list') || label.parentElement;
+  const checked = parent.querySelectorAll('.check-row.checked').length;
+  groupCounts[group] = checked;
+  const pct = Math.round((checked/total)*100);
+  const pb = document.getElementById(pbId);
+  if(pb) pb.style.width = pct+'%';
+  const ctr = document.getElementById(counterId);
+  if(ctr) ctr.textContent = checked+'/'+total;
+}
+
+// ── Toggle Buttons ────────────────────────────────────────────────────────────
+document.querySelectorAll('.btn-group .tog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('active');
+    btn.animate([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],
+      {duration:200, easing:'cubic-bezier(.4,0,.2,1)'});
+  });
+});
+
+// ── Scale Buttons ─────────────────────────────────────────────────────────────
+const scaleVals = {};
+function selectScale(key, el){
+  const parent = el.closest('.scale-row');
+  parent.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('sel-green','sel-amber','sel-coral'));
+  const v = parseInt(el.dataset.v);
+  scaleVals[key] = v;
+  const cls = v >= 8 ? 'sel-green' : v >= 5 ? 'sel-amber' : 'sel-coral';
+  if(key === 'intensity'){
+    const realCls = v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green';
+    el.classList.add(realCls);
+    showIntensityAlert(v);
+  } else {
+    el.classList.add(cls);
+  }
+  el.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],
+    {duration:180, easing:'cubic-bezier(.4,0,.2,1)'});
+}
+
+function showIntensityAlert(v){
+  const el = document.getElementById('alert-intensity');
+  el.classList.remove('show','ok','warn','bad');
+  if(v >= 8){
+    el.innerHTML = '<strong>Intensität '+v+'/10</strong> — Erwäge, heute nicht zu handeln oder das Sizing auf 25% zu reduzieren. Hohes emotionales Arousal korreliert stark mit schlechteren Entscheidungen.';
+    el.classList.add('show','bad');
+  } else if(v >= 5){
+    el.innerHTML = '<strong>Mittlere Intensität '+v+'/10</strong> — Bleibe wachsam. Sizing reduzieren, extra Pausen einplanen.';
+    el.classList.add('show','warn');
+  } else {
+    el.innerHTML = '<strong>Niedrige Intensität '+v+'/10</strong> — Gute Voraussetzungen für regelkonformes Trading.';
+    el.classList.add('show','ok');
+  }
+}
+
+// ── Emotion Selects ───────────────────────────────────────────────────────────
+function onEmotionSelect(type){
+  const el = document.getElementById('alert-emotion');
+  el.classList.remove('show','ok','warn','bad');
+  const msgs = {
+    neutral: {cls:'ok', msg:'<strong>Neutraler Zustand.</strong> Optimal für objektives Trading. Halte diesen Zustand durch Selbstbeobachtung aktiv.'},
+    conf:    {cls:'ok', msg:'<strong>Zuversicht erkannt.</strong> Produktiv — aber achte auf Winner\'s Tilt bei einer guten Streak. Bleib diszipliniert.'},
+    fear:    {cls:'warn', msg:'<strong>Angst erkannt.</strong> Achte auf zu kleines Sizing und frühzeitiges Aussteigen bei intaktem Setup. Vertraue dem Prozess.'},
+    tilt:    {cls:'bad', msg:'<strong>Tilt erkannt.</strong> Sei heute besonders wachsam. Überprüfe dein Tages-Limit doppelt und definiere deinen Abbruch-Punkt im Voraus.'},
+    euphoria:{cls:'warn', msg:'<strong>Euphorie / Winner-Tilt erkannt.</strong> Gefährlichster Zustand für Over-Sizing und Regelbrüche. Setze dich explizit an dein normales Sizing.'}
+  };
+  const m = msgs[type];
+  if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
+}
+
+function onGameSelect(game){
+  const el = document.getElementById('alert-game');
+  el.classList.remove('show','ok','warn','bad');
+  const msgs = {
+    A: {cls:'ok',   msg:'<strong>A-Game bereit.</strong> Normales Sizing. Voller Plan. Volle Konzentration.'},
+    B: {cls:'warn', msg:'<strong>B-Game.</strong> Sizing um 25–50% reduzieren. Engere Regeln. Fokus auf Prozess, nicht P&L.'},
+    C: {cls:'bad',  msg:'<strong>C-Game erkannt.</strong> Erwäge, heute nicht zu handeln oder auf Paper-Trading zu wechseln. C-Game kostet langfristig mehr als es bringt.'}
+  };
+  const m = msgs[game];
+  if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
+}
+
+function onPostEmotionSelect(type){
+  const el = document.getElementById('alert-post-emotion');
+  el.classList.remove('show','ok','warn','bad');
+  const msgs = {
+    tilt:    {cls:'bad',  msg:'<strong>Tilt-Nachbearbeitung:</strong> Welche Erwartung wurde verletzt? Welche implizite Regel hattest du im Kopf, die der Markt gebrochen hat? Diese Erwartung ist das Problem, nicht der Trade.'},
+    fear:    {cls:'warn', msg:'<strong>Angst-Nachbearbeitung:</strong> Was ist das schlimmste reale Szenario? Ist es wirklich so katastrophal wie es sich anfühlt? Meist überschätzen wir Konsequenzen massiv.'},
+    greed:   {cls:'warn', msg:'<strong>FOMO-Nachbearbeitung:</strong> Hätte der verpasste Trade deinem Setup entsprochen? Wenn ja: Notiere die Regel. Wenn nein: Es war kein deiner Trades.'},
+    euphoria:{cls:'warn', msg:'<strong>Winner-Tilt Nachbearbeitung:</strong> Zähle alle Regelbrüche heute. Waren die Gewinne Können oder Glück? Kalibriere ehrlich neu.'},
+    conf:    {cls:'ok',   msg:'<strong>Selbstvertrauen stärken:</strong> Notiere, was heute gut lief und warum. Das Gehirn neigt dazu, Erfolge zu vergessen und Fehler zu speichern — aktiv gegensteuern.'}
+  };
+  const m = msgs[type];
+  if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
+}
+
+// ── Score Calculation ─────────────────────────────────────────────────────────
+function calcPreScore(){
+  const emotionActive = document.querySelectorAll('#grp-emotion .tog.active').length > 0;
+  const gameActive = document.querySelectorAll('#grp-game .tog.active').length > 0;
+  const intensity = scaleVals['intensity'] || 5;
+  const warmup = groupCounts['warmup'] || 0;
+  const basics = ['chk-sleep','chk-food','chk-activity'].filter(id => document.getElementById(id)?.checked).length;
+
+  let score = 0;
+  score += basics * 8;
+  score += emotionActive ? 10 : 0;
+  score += gameActive ? 10 : 0;
+  score += Math.round((10 - intensity) * 2.5);
+  score += warmup * 4;
+
+  const total = Math.min(100, score);
+  document.getElementById('disp-pre-score').textContent = total+'%';
+
+  const el = document.getElementById('alert-pre-score');
+  el.classList.remove('show','ok','warn','bad');
+  let cls, msg;
+  if(total >= 70){ cls='ok'; msg='<strong>Pre-Score: '+total+'%</strong> — Guter Ausgangszustand. Voll handeln nach Plan.'; }
+  else if(total >= 50){ cls='warn'; msg='<strong>Pre-Score: '+total+'%</strong> — Moderater Zustand. Sizing reduzieren, extra wachsam sein.'; }
+  else { cls='bad'; msg='<strong>Pre-Score: '+total+'%</strong> — Schlechter Zustand. Erwäge Pause oder Paper-Trading heute.'; }
+  el.innerHTML = msg;
+  el.classList.add('show', cls);
+  showToast('Pre-Score: '+total+'%');
+}
+
+function calcPostScore(){
+  const proc = scaleVals['process'] || 0;
+  const emoCtrl = scaleVals['emoctrl'] || 0;
+  const debrief = groupCounts['debrief'] || 0;
+  const close = groupCounts['close'] || 0;
+
+  const score = Math.min(100, proc*4 + emoCtrl*4 + debrief*5 + close*5);
+  document.getElementById('disp-post-score').textContent = score+'%';
+
+  const el = document.getElementById('alert-post-score');
+  el.classList.remove('show','ok','warn','bad');
+  let cls, msg;
+  if(score >= 70){ cls='ok'; msg='<strong>Post-Score: '+score+'%</strong> — Starkes Debriefing. Du lernst systematisch — das ist der Kompoundzins des mentalen Spiels.'; }
+  else if(score >= 50){ cls='warn'; msg='<strong>Post-Score: '+score+'%</strong> — Solides Debriefing. Gehe bei der Emotionsanalyse noch tiefer.'; }
+  else { cls='bad'; msg='<strong>Post-Score: '+score+'%</strong> — Unvollständiges Debriefing. Investiere morgen mehr Zeit in die Nachbereitung.'; }
+  el.innerHTML = msg;
+  el.classList.add('show', cls);
+
+  const current = parseInt(document.getElementById('disp-streak').textContent) || 0;
+  document.getElementById('disp-streak').textContent = current + 1;
+  showToast('Post-Score: '+score+'%');
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+function getState(){
+  const s = {};
+  s.date = document.getElementById('trade-date').value;
+  ['sleep','food','activity'].forEach(k => { s['chk_'+k] = document.getElementById('chk-'+k)?.checked||false; });
+  document.querySelectorAll('.btn-group').forEach(g => {
+    s[g.id] = [...g.querySelectorAll('.tog.active')].map(b => b.dataset.val);
+  });
+  s.intensity = scaleVals['intensity']||null;
+  s.process   = scaleVals['process']||null;
+  s.emoctrl   = scaleVals['emoctrl']||null;
+  ['txt-trigger','txt-cgame','txt-process-goal','txt-mental-risk','txt-mantra',
+   'txt-emo-trigger','txt-irr-belief','txt-reframe','txt-learning','txt-tmrw','txt-post-notes'
+  ].forEach(id => { s[id.replace(/-/g,'_')] = document.getElementById(id)?.value||''; });
+  const cids = ['w1','w2','w3','w4','w5','w6','w7','w8','d1','d2','d3','d4','d5','d6','c1','c2','c3','c4'];
+  cids.forEach(id => { s['chk_'+id] = document.getElementById('chk-'+id)?.checked||false; });
+  return s;
+}
+
+function loadState(s){
+  document.getElementById('trade-date').value = s.date||'';
+  updateHeaderDate();
+  ['sleep','food','activity'].forEach(k => {
+    const cb = document.getElementById('chk-'+k);
+    if(cb){ cb.checked=!!s['chk_'+k]; cb.closest('.check-row').classList.toggle('checked',!!s['chk_'+k]); }
+  });
+  document.querySelectorAll('.btn-group').forEach(g => {
+    const vals = s[g.id]||[];
+    g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', vals.includes(b.dataset.val)));
+  });
+  if(s.intensity){ const btn = document.querySelector('#scale-intensity [data-v="'+s.intensity+'"]'); if(btn) selectScale('intensity',btn); }
+  if(s.process)  { const btn = document.querySelector('#scale-process [data-v="'+s.process+'"]');   if(btn) selectScale('process',btn); }
+  if(s.emoctrl)  { const btn = document.querySelector('#scale-emoctrl [data-v="'+s.emoctrl+'"]');   if(btn) selectScale('emoctrl',btn); }
+  ['txt-trigger','txt-cgame','txt-process-goal','txt-mental-risk','txt-mantra',
+   'txt-emo-trigger','txt-irr-belief','txt-reframe','txt-learning','txt-tmrw','txt-post-notes'
+  ].forEach(id => { const el = document.getElementById(id); if(el) el.value=s[id.replace(/-/g,'_')]||''; });
+  const cids = ['w1','w2','w3','w4','w5','w6','w7','w8','d1','d2','d3','d4','d5','d6','c1','c2','c3','c4'];
+  const groups = {w:'warmup',d:'debrief',c:'close'};
+  const totals = {w:8,d:6,c:4};
+  cids.forEach(id => {
+    const cb = document.getElementById('chk-'+id);
+    if(!cb) return;
+    cb.checked=!!s['chk_'+id];
+    cb.closest('.check-row').classList.toggle('checked',!!s['chk_'+id]);
+  });
+  ['w','d','c'].forEach(prefix => {
+    const total = totals[prefix];
+    const group = groups[prefix];
+    const count = cids.filter(id => id.startsWith(prefix) && s['chk_'+id]).length;
+    groupCounts[group] = count;
+    const pb = document.getElementById('pb-'+group);
+    if(pb) pb.style.width = Math.round(count/total*100)+'%';
+    const ctr = document.getElementById(group+'-counter');
+    if(ctr) ctr.textContent = count+'/'+total;
+  });
+}
+
+// ── Archive ───────────────────────────────────────────────────────────────────
+function getArchive(){ try{ return JSON.parse(localStorage.getItem('mg-archive')||'[]'); }catch{ return []; } }
+function setArchive(a){ try{ localStorage.setItem('mg-archive', JSON.stringify(a)); }catch{} }
+
+function saveEntry(){
+  const s = getState();
+  if(!s.date){ showToast('Bitte Datum wählen.'); return; }
+  const a = getArchive();
+  const i = a.findIndex(e => e.date === s.date);
+  if(i>=0) a[i]=s; else a.unshift(s);
+  setArchive(a);
+  renderArchive();
+  showToast('Gespeichert: '+s.date);
+}
+
+function resetForm(){
+  document.getElementById('trade-date').value = todayStr;
+  updateHeaderDate();
+  document.querySelectorAll('.check-row').forEach(r => { r.classList.remove('checked'); const cb=r.querySelector('input'); if(cb) cb.checked=false; });
+  document.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+  ['pb-warmup','pb-debrief','pb-close'].forEach(id => { const el=document.getElementById(id); if(el) el.style.width='0%'; });
+  ['warmup-counter','debrief-counter','close-counter'].forEach((id,i) => { const el=document.getElementById(id); if(el) el.textContent='0/'+[8,6,4][i]; });
+  document.querySelectorAll('textarea').forEach(t => t.value='');
+  ['alert-emotion','alert-intensity','alert-game','alert-post-emotion','alert-pre-score','alert-post-score'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.classList.remove('show');
+  });
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('sel-green','sel-amber','sel-coral'));
+  Object.keys(scaleVals).forEach(k => delete scaleVals[k]);
+  Object.keys(groupCounts).forEach(k => delete groupCounts[k]);
+}
+
+function toggleArchive(){
+  const p = document.getElementById('archive-panel');
+  const open = p.style.display === 'block';
+  p.style.display = open ? 'none' : 'block';
+  if(!open) renderArchive();
+}
+
+function renderArchive(){
+  const a = getArchive();
+  const el = document.getElementById('archive-list');
+  if(!a.length){ el.innerHTML='<div class="empty-msg">Noch keine Einträge gespeichert.</div>'; return; }
+  el.innerHTML = a.map((e,i) => {
+    const game = (e['grp-game']||[]).join(' ');
+    const emo  = (e['grp-emotion']||[]).slice(0,1).join('');
+    return `<div class="archive-entry">
+      <div>
+        <div class="entry-date">${e.date}</div>
+        <div class="entry-meta">${game ? 'Game: '+game : '—'}${emo ? ' · '+emo : ''}</div>
+      </div>
+      <div class="entry-actions">
+        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Laden</button>
+        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Löschen</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadArchiveEntry(i){
+  const a = getArchive();
+  if(a[i]){ loadState(a[i]); showToast('Geladen: '+a[i].date); }
+}
+
+function deleteArchiveEntry(i){
+  const a = getArchive();
+  const date = a[i]?.date;
+  a.splice(i,1);
+  setArchive(a);
+  renderArchive();
+  showToast('Gelöscht: '+date);
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────────────
+const CSV_HEAD = '"Datum","Geschlafen","Gegessen","Aktivität","Zustand","Game","Intensität","Prozess-Ziel","Mentales Risiko","Prozess-Score","Emotions-Kontrolle","Lernmoment","Morgen","Notizen"';
+
+function toRow(s){
+  return [
+    s.date,
+    s.chk_sleep    ? 'Ja' : 'Nein',
+    s.chk_food     ? 'Ja' : 'Nein',
+    s.chk_activity ? 'Ja' : 'Nein',
+    (s['grp-emotion']||[]).join('; '),
+    (s['grp-game']||[]).join('; '),
+    s.intensity||'',
+    (s.txt_process_goal||'').replace(/"/g,'""'),
+    (s.txt_mental_risk||'').replace(/"/g,'""'),
+    s.process||'',
+    s.emoctrl||'',
+    (s.txt_learning||'').replace(/"/g,'""'),
+    (s.txt_tmrw||'').replace(/"/g,'""'),
+    (s.txt_post_notes||'').replace(/"/g,'""')
+  ].map(c=>`"${c}"`).join(',');
+}
+
+function dlFile(content, name, mime){
+  const blob = new Blob(['\uFEFF'+content], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportCSV(){
+  const s = getState();
+  dlFile(CSV_HEAD+'\n'+toRow(s), 'mental-game-'+s.date+'.csv', 'text/csv;charset=utf-8;');
+  showToast('CSV exportiert.');
+}
+
+function exportAllCSV(){
+  const a = getArchive();
+  if(!a.length){ showToast('Archiv ist leer.'); return; }
+  dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'mental-game-alle.csv', 'text/csv;charset=utf-8;');
+  showToast('Alle Einträge exportiert.');
+}
+
+// ── Image Export ──────────────────────────────────────────────────────────────
+function exportImage(){
+  showToast('Bild wird erstellt…');
+  const el = document.getElementById('main');
+  html2canvas(el, {scale:2, backgroundColor:'#0d0f14', useCORS:true}).then(canvas => {
+    const a = document.createElement('a');
+    a.download = 'mental-game-'+getState().date+'.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    showToast('Bild gespeichert.');
+  }).catch(() => showToast('Export fehlgeschlagen.'));
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity='1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.opacity='0', 2400);
+}
+</script>
+</body>
+</html>

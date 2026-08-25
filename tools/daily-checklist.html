@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Trading Preparation Checklist</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --bg-card: #13161e;
+    --bg-card2: #181c26;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f8ef7;
+    --accent-glow: rgba(79,142,247,0.18);
+    --green: #34d399;
+    --green-glow: rgba(52,211,153,0.16);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245,158,11,0.15);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.15);
+    --coral: #f87171;
+    --coral-glow: rgba(248,113,113,0.15);
+    --teal: #2dd4bf;
+    --teal-glow: rgba(45,212,191,0.14);
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .page-header h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -.3px;
+    color: var(--text);
+  }
+
+  .page-header .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 4px;
+  }
+
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 0.5px solid rgba(79,142,247,0.3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .4px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--border-hover); }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .85rem;
+  }
+
+  /* Header grid */
+  .head-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .field-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    letter-spacing: .3px;
+  }
+
+  input[type="date"] {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color .2s;
+    color-scheme: dark;
+  }
+  input[type="date"]:focus { border-color: var(--accent); }
+
+  /* Checkboxes */
+  .check-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background .15s;
+    font-size: 13px;
+    color: var(--muted);
+    user-select: none;
+  }
+  .check-row:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .check-row.checked { color: var(--green); background: var(--green-glow); }
+
+  .check-box {
+    width: 16px; height: 16px;
+    border: 0.5px solid var(--border-hover);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s, border-color .15s;
+    background: transparent;
+  }
+  .check-row.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .check-box svg { display: none; }
+  .check-row.checked .check-box svg { display: block; }
+  .check-row input[type="checkbox"] { display: none; }
+
+  /* Toggle Buttons */
+  .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .tog {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+    letter-spacing: .2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .18s;
+    border-radius: inherit;
+  }
+  .tog:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+  .tog:active { transform: scale(.97); }
+
+  /* Group color themes */
+  [data-theme="blue"] .tog.active    { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  [data-theme="green"] .tog.active   { background: var(--green-glow); border-color: var(--green); color: var(--green); box-shadow: 0 0 12px var(--green-glow); }
+  [data-theme="amber"] .tog.active   { background: var(--amber-glow); border-color: var(--amber); color: var(--amber); box-shadow: 0 0 12px var(--amber-glow); }
+  [data-theme="purple"] .tog.active  { background: var(--purple-glow); border-color: var(--purple); color: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+  [data-theme="coral"] .tog.active   { background: var(--coral-glow); border-color: var(--coral); color: var(--coral); box-shadow: 0 0 12px var(--coral-glow); }
+  [data-theme="teal"] .tog.active    { background: var(--teal-glow); border-color: var(--teal); color: var(--teal); box-shadow: 0 0 12px var(--teal-glow); }
+
+  /* Implication for direction — Long/Short single-select buttons */
+  .impl-row { display: flex; align-items: center; gap: 10px; margin-top: .75rem; }
+  .impl-label {
+    font-size: 10px; font-weight: 500; letter-spacing: .9px;
+    text-transform: uppercase; color: var(--muted);
+    font-family: var(--mono); white-space: nowrap; flex-shrink: 0;
+  }
+  .impl-btn {
+    font-family: var(--mono); font-size: 12px; font-weight: 400;
+    padding: 5px 18px; border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .18s cubic-bezier(.4,0,.2,1);
+    letter-spacing: .2px;
+  }
+  .impl-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+  .impl-btn:active { transform: scale(.97); }
+  .impl-btn.long.active  { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  .impl-btn.short.active { background: var(--amber-glow); border-color: var(--amber); color: var(--amber); box-shadow: 0 0 12px var(--amber-glow); }
+
+  /* 2-col layout */
+  .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+  /* Textareas */
+  textarea {
+    width: 100%;
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 64px;
+    outline: none;
+    transition: border-color .2s;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+
+  /* Dropdowns */
+  .select-field {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color .2s;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .select-field:focus { border-color: var(--accent); }
+  .select-field option { background: var(--bg-card2); color: var(--text); }
+
+  .dropdown-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: .75rem;
+    margin-top: .75rem;
+  }
+  .dropdown-item .field-label { margin-bottom: 6px; }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .btn-action {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .4px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .btn-action:hover { border-color: rgba(255,255,255,0.2); color: var(--text); background: rgba(255,255,255,0.04); }
+  .btn-action:active { transform: scale(.97); }
+
+  .btn-save {
+    background: var(--accent-glow);
+    border-color: rgba(79,142,247,0.4);
+    color: var(--accent);
+  }
+  .btn-save:hover { background: rgba(79,142,247,0.28); border-color: var(--accent); color: #74aaff; }
+
+  /* Archive panel */
+  .archive-panel {
+    display: none;
+    margin-top: 1rem;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+  }
+
+  .archive-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+  }
+  .archive-entry:last-child { border-bottom: none; }
+
+  .entry-date { font-family: var(--mono); color: var(--text); }
+
+  .entry-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+  .etag {
+    font-size: 10px; font-family: var(--mono);
+    padding: 2px 7px; border-radius: 3px;
+    background: var(--accent-glow); color: var(--accent);
+    border: 0.5px solid rgba(79,142,247,0.25);
+  }
+
+  .entry-actions { display: flex; gap: 5px; }
+  .entry-btn {
+    font-size: 10px; font-family: var(--mono);
+    padding: 3px 9px; border-radius: 4px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .15s;
+  }
+  .entry-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .entry-btn.del:hover { color: var(--coral); border-color: var(--coral); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-card2); border: 0.5px solid var(--border-hover);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    padding: 9px 20px; border-radius: var(--radius);
+    opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 999;
+    white-space: nowrap;
+  }
+
+  .empty-msg { font-size: 12px; color: var(--muted); font-family: var(--mono); text-align: center; padding: 1rem 0; }
+
+  @media (max-width: 540px) {
+    .head-grid { grid-template-columns: 1fr; }
+    .row-2col { grid-template-columns: 1fr; }
+    .dropdown-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page" id="main">
+
+  <div class="page-header">
+    <div>
+      <h1>Daily Preparation Checklist</h1>
+      <div class="subtitle">Trading · Pre-Session Review</div>
+    </div>
+    <div class="header-tag" id="header-date-display">—</div>
+  </div>
+
+  <!-- HEAD DATA -->
+  <div class="card">
+    <div class="card-label">Header</div>
+    <div class="head-grid">
+      <div>
+        <div class="field-label">Trading Day</div>
+        <input type="date" id="trade-date">
+      </div>
+      <div class="check-list">
+        <label class="check-row" onclick="toggleCheck(this)">
+          <input type="checkbox" id="chk-sleep">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Slept well and feeling good?</span>
+        </label>
+        <label class="check-row" onclick="toggleCheck(this)">
+          <input type="checkbox" id="chk-prayer">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Prayer done?</span>
+        </label>
+        <label class="check-row" onclick="toggleCheck(this)">
+          <input type="checkbox" id="chk-activity">
+          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Physical activity done?</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTRUMENT -->
+  <div class="card">
+    <div class="card-label">Instrument</div>
+    <div class="btn-group" id="grp-instrument" data-theme="blue">
+      <button class="tog" data-val="ES">ES</button>
+      <button class="tog" data-val="NQ">NQ</button>
+      <button class="tog" data-val="CL">CL</button>
+    </div>
+  </div>
+
+  <!-- DAY NUMBER DROPDOWNS -->
+  <div class="card">
+    <div class="card-label">Week Context</div>
+    <div class="dropdown-row">
+      <div class="dropdown-item">
+        <div class="field-label">Current day number</div>
+        <select class="select-field" id="sel-current-day">
+          <option value="">—</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+        </select>
+      </div>
+      <div class="dropdown-item">
+        <div class="field-label">Current low of the week day</div>
+        <select class="select-field" id="sel-low-day">
+          <option value="">—</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+        </select>
+      </div>
+      <div class="dropdown-item">
+        <div class="field-label">Current high of the week day</div>
+        <select class="select-field" id="sel-high-day">
+          <option value="">—</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- RDR DIRECTION -->
+  <div class="card">
+    <div class="card-label">Previous Day RDR — Direction</div>
+    <div class="btn-group" id="grp-rdr-dir" data-theme="blue">
+      <button class="tog" data-val="Long">Long</button>
+      <button class="tog" data-val="Short">Short</button>
+      <button class="tog" data-val="True">True</button>
+      <button class="tog" data-val="False">False</button>
+    </div>
+    <div class="impl-row">
+      <span class="impl-label">Implication for direction</span>
+      <button class="impl-btn long" id="impl-rdr-dir-long">Long</button>
+      <button class="impl-btn short" id="impl-rdr-dir-short">Short</button>
+    </div>
+  </div>
+
+  <!-- RDR TIMING -->
+  <div class="card">
+    <div class="card-label">Previous Day RDR — Timing</div>
+    <div class="btn-group" id="grp-rdr-timing" data-theme="amber">
+      <button class="tog" data-val="High">High</button>
+      <button class="tog" data-val="Low">Low</button>
+      <button class="tog" data-val="Early">Early</button>
+      <button class="tog" data-val="Late">Late</button>
+    </div>
+    <div class="impl-row">
+      <span class="impl-label">Implication for direction</span>
+      <button class="impl-btn long" id="impl-rdr-timing-long">Long</button>
+      <button class="impl-btn short" id="impl-rdr-timing-short">Short</button>
+    </div>
+  </div>
+
+  <!-- WDRRB CONFIRMATION -->
+  <div class="card">
+    <div class="card-label">WDRRB Confirmation</div>
+    <div class="btn-group" id="grp-wdrrb-conf" data-theme="green">
+      <button class="tog" data-val="Long">Long</button>
+      <button class="tog" data-val="Short">Short</button>
+      <button class="tog" data-val="No confirmation yet">No confirmation yet</button>
+    </div>
+    <div class="impl-row">
+      <span class="impl-label">Implication for direction</span>
+      <button class="impl-btn long" id="impl-wdrrb-conf-long">Long</button>
+      <button class="impl-btn short" id="impl-wdrrb-conf-short">Short</button>
+    </div>
+  </div>
+
+  <!-- ADR 2-col -->
+  <div class="row-2col">
+    <div class="card">
+      <div class="card-label">WDRRB ADR Positioning</div>
+      <div class="btn-group" id="grp-adr-pos" data-theme="purple">
+        <button class="tog" data-val="Above midline">Above midline</button>
+        <button class="tog" data-val="Below midline">Below midline</button>
+      </div>
+      <div class="impl-row">
+        <span class="impl-label">Implication for direction</span>
+        <button class="impl-btn long" id="impl-adr-pos-long">Long</button>
+        <button class="impl-btn short" id="impl-adr-pos-short">Short</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">ADR Midline</div>
+      <div class="btn-group" id="grp-adr-midline" data-theme="teal">
+        <button class="tog" data-val="Intact">Intact</button>
+        <button class="tog" data-val="Broken">Broken</button>
+      </div>
+      <div class="impl-row">
+        <span class="impl-label">Implication for direction</span>
+        <button class="impl-btn long" id="impl-adr-midline-long">Long</button>
+        <button class="impl-btn short" id="impl-adr-midline-short">Short</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEXTFIELDS -->
+  <div class="card">
+    <div class="card-label">Model Expectation</div>
+    <textarea id="txt-model" placeholder="Model expectation for today..."></textarea>
+    <div class="impl-row">
+      <span class="impl-label">Implication for direction</span>
+      <button class="impl-btn long" id="impl-model-long">Long</button>
+      <button class="impl-btn short" id="impl-model-short">Short</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">WDRR Structure / Positioning</div>
+    <textarea id="txt-structure" placeholder="WDRR structure and positioning..."></textarea>
+    <div class="impl-row">
+      <span class="impl-label">Implication for direction</span>
+      <button class="impl-btn long" id="impl-structure-long">Long</button>
+      <button class="impl-btn short" id="impl-structure-short">Short</button>
+    </div>
+  </div>
+
+  <!-- DAILY SEQUENCE -->
+  <div class="card">
+    <div class="card-label">Daily Sequence</div>
+    <div class="check-list" style="margin-bottom:.85rem">
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-box-model">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Current box model</span>
+      </label>
+      <div style="padding: 0 10px 6px 36px;">
+        <textarea id="txt-seq-box-model" placeholder="Current box model..." style="min-height:52px;font-size:12px"></textarea>
+      </div>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-conf-filter">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Apply confirmation filter in QX</span>
+      </label>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-false-day">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>If false day apply false day filter in QX</span>
+      </label>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-wdrb-tf">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Select WDRB confirmation timeframe</span>
+      </label>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-filter-wdrrs">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Filter out impossible WDRRS highs and lows (until now)</span>
+      </label>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-adr-filter">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Apply ADR Position filter</span>
+      </label>
+      <label class="check-row" onclick="toggleCheck(this)">
+        <input type="checkbox" id="chk-seq-edge">
+        <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Check if we get a percentage edge for some scenario</span>
+      </label>
+    </div>
+    <div class="field-label" style="padding: 0 10px 6px 0;">Result</div>
+    <textarea id="txt-seq-result" placeholder="Result..." style="min-height:52px"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Notes</div>
+    <textarea id="txt-notes" placeholder="Additional notes..." style="min-height:80px"></textarea>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn-action btn-save" onclick="saveEntry()">Save to Archive</button>
+    <button class="btn-action" onclick="exportCSV()">Export CSV</button>
+    <button class="btn-action" onclick="exportImage()">Export as Image</button>
+    <button class="btn-action" onclick="toggleArchive()">Archive</button>
+    <button class="btn-action" onclick="resetForm()" style="margin-left:auto">New</button>
+  </div>
+
+  <!-- ARCHIVE PANEL -->
+  <div class="archive-panel" id="archive-panel">
+    <div class="card-label" style="margin-bottom:.85rem">Archive</div>
+    <div id="archive-list"></div>
+    <div style="margin-top:.85rem;padding-top:.85rem;border-top:0.5px solid var(--border);display:flex;gap:8px">
+      <button class="btn-action" onclick="exportAllCSV()">Export All as CSV</button>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Init ─────────────────────────────────────────────────────────────────────
+const todayStr = new Date().toISOString().slice(0,10);
+document.getElementById('trade-date').value = todayStr;
+updateHeaderDate();
+
+document.getElementById('trade-date').addEventListener('change', updateHeaderDate);
+
+function updateHeaderDate(){
+  const v = document.getElementById('trade-date').value;
+  const el = document.getElementById('header-date-display');
+  if(v){ const [y,m,d]=v.split('-'); el.textContent=d+'.'+m+'.'+y; }
+  else el.textContent='—';
+}
+
+// ── Checkboxes ────────────────────────────────────────────────────────────────
+function toggleCheck(label){
+  event.preventDefault();
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  label.classList.toggle('checked', cb.checked);
+}
+
+// ── Toggle Buttons ────────────────────────────────────────────────────────────
+document.querySelectorAll('.btn-group .tog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('active');
+    btn.animate([
+      {transform:'scale(1)'},
+      {transform:'scale(1.07)'},
+      {transform:'scale(1)'}
+    ], {duration:200, easing:'cubic-bezier(.4,0,.2,1)'});
+  });
+});
+
+// Implication buttons — single-select per pair (Long deselects Short and vice versa)
+const IMPL_PAIRS = [
+  ['impl-rdr-dir-long',     'impl-rdr-dir-short'],
+  ['impl-rdr-timing-long',  'impl-rdr-timing-short'],
+  ['impl-wdrrb-conf-long',  'impl-wdrrb-conf-short'],
+  ['impl-adr-pos-long',     'impl-adr-pos-short'],
+  ['impl-adr-midline-long', 'impl-adr-midline-short'],
+  ['impl-model-long',       'impl-model-short'],
+  ['impl-structure-long',   'impl-structure-short'],
+];
+
+IMPL_PAIRS.forEach(([longId, shortId]) => {
+  const longBtn  = document.getElementById(longId);
+  const shortBtn = document.getElementById(shortId);
+  longBtn.addEventListener('click', () => {
+    const wasActive = longBtn.classList.contains('active');
+    longBtn.classList.toggle('active', !wasActive);
+    shortBtn.classList.remove('active');
+    longBtn.animate([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:200,easing:'cubic-bezier(.4,0,.2,1)'});
+  });
+  shortBtn.addEventListener('click', () => {
+    const wasActive = shortBtn.classList.contains('active');
+    shortBtn.classList.toggle('active', !wasActive);
+    longBtn.classList.remove('active');
+    shortBtn.animate([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:200,easing:'cubic-bezier(.4,0,.2,1)'});
+  });
+});
+
+function getImplVal(longId, shortId){
+  if(document.getElementById(longId).classList.contains('active'))  return 'Long';
+  if(document.getElementById(shortId).classList.contains('active')) return 'Short';
+  return '';
+}
+
+function setImplVal(longId, shortId, val){
+  document.getElementById(longId).classList.toggle('active',  val === 'Long');
+  document.getElementById(shortId).classList.toggle('active', val === 'Short');
+}
+
+// ── State helpers ─────────────────────────────────────────────────────────────
+function getState(){
+  const s = {};
+  s.date     = document.getElementById('trade-date').value;
+  s.sleep    = document.getElementById('chk-sleep').checked;
+  s.prayer   = document.getElementById('chk-prayer').checked;
+  s.activity = document.getElementById('chk-activity').checked;
+  document.querySelectorAll('.btn-group').forEach(g => {
+    s[g.id] = [...g.querySelectorAll('.tog.active')].map(b => b.dataset.val);
+  });
+  s.currentDay     = document.getElementById('sel-current-day').value;
+  s.lowDay         = document.getElementById('sel-low-day').value;
+  s.highDay        = document.getElementById('sel-high-day').value;
+  s.model          = document.getElementById('txt-model').value;
+  s.structure      = document.getElementById('txt-structure').value;
+  s.notes          = document.getElementById('txt-notes').value;
+  s.seqBoxModel    = document.getElementById('chk-seq-box-model').checked;
+  s.seqConfFilter  = document.getElementById('chk-seq-conf-filter').checked;
+  s.seqFalseDay    = document.getElementById('chk-seq-false-day').checked;
+  s.seqWdrbTf      = document.getElementById('chk-seq-wdrb-tf').checked;
+  s.seqFilterWdrrs = document.getElementById('chk-seq-filter-wdrrs').checked;
+  s.seqAdrFilter   = document.getElementById('chk-seq-adr-filter').checked;
+  s.seqEdge        = document.getElementById('chk-seq-edge').checked;
+  s.txtSeqBoxModel = document.getElementById('txt-seq-box-model').value;
+  s.txtSeqResult   = document.getElementById('txt-seq-result').value;
+  s.implRdrDir     = getImplVal('impl-rdr-dir-long',     'impl-rdr-dir-short');
+  s.implRdrTiming  = getImplVal('impl-rdr-timing-long',  'impl-rdr-timing-short');
+  s.implWdrrb      = getImplVal('impl-wdrrb-conf-long',  'impl-wdrrb-conf-short');
+  s.implAdrPos     = getImplVal('impl-adr-pos-long',     'impl-adr-pos-short');
+  s.implAdrMidline = getImplVal('impl-adr-midline-long', 'impl-adr-midline-short');
+  s.implModel      = getImplVal('impl-model-long',       'impl-model-short');
+  s.implStructure  = getImplVal('impl-structure-long',   'impl-structure-short');
+  return s;
+}
+
+function loadState(s){
+  document.getElementById('trade-date').value = s.date || '';
+  updateHeaderDate();
+  ['sleep','prayer','activity'].forEach(k => {
+    const cb = document.getElementById('chk-'+k);
+    cb.checked = !!s[k];
+    cb.closest('.check-row').classList.toggle('checked', !!s[k]);
+  });
+  document.querySelectorAll('.btn-group').forEach(g => {
+    const vals = s[g.id] || [];
+    g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', vals.includes(b.dataset.val)));
+  });
+  document.getElementById('sel-current-day').value = s.currentDay || '';
+  document.getElementById('sel-low-day').value     = s.lowDay     || '';
+  document.getElementById('sel-high-day').value    = s.highDay    || '';
+  document.getElementById('txt-model').value     = s.model     || '';
+  document.getElementById('txt-structure').value = s.structure || '';
+  document.getElementById('txt-notes').value     = s.notes     || '';
+  const seqChecks = ['seqBoxModel','seqConfFilter','seqFalseDay','seqWdrbTf','seqFilterWdrrs','seqAdrFilter','seqEdge'];
+  const seqIds    = ['chk-seq-box-model','chk-seq-conf-filter','chk-seq-false-day','chk-seq-wdrb-tf','chk-seq-filter-wdrrs','chk-seq-adr-filter','chk-seq-edge'];
+  seqChecks.forEach((k, i) => {
+    const cb = document.getElementById(seqIds[i]);
+    cb.checked = !!s[k];
+    cb.closest('.check-row').classList.toggle('checked', !!s[k]);
+  });
+  document.getElementById('txt-seq-box-model').value = s.txtSeqBoxModel || '';
+  document.getElementById('txt-seq-result').value    = s.txtSeqResult   || '';
+  setImplVal('impl-rdr-dir-long',     'impl-rdr-dir-short',     s.implRdrDir     || '');
+  setImplVal('impl-rdr-timing-long',  'impl-rdr-timing-short',  s.implRdrTiming  || '');
+  setImplVal('impl-wdrrb-conf-long',  'impl-wdrrb-conf-short',  s.implWdrrb      || '');
+  setImplVal('impl-adr-pos-long',     'impl-adr-pos-short',     s.implAdrPos     || '');
+  setImplVal('impl-adr-midline-long', 'impl-adr-midline-short', s.implAdrMidline || '');
+  setImplVal('impl-model-long',       'impl-model-short',       s.implModel      || '');
+  setImplVal('impl-structure-long',   'impl-structure-short',   s.implStructure  || '');
+}
+
+// ── Archive (localStorage) ────────────────────────────────────────────────────
+function getArchive(){ try{ return JSON.parse(localStorage.getItem('tcl-archive')||'[]'); }catch{ return []; } }
+function setArchive(a){ try{ localStorage.setItem('tcl-archive', JSON.stringify(a)); }catch{} }
+
+function saveEntry(){
+  const s = getState();
+  if(!s.date){ showToast('Please select a date.'); return; }
+  const a = getArchive();
+  const i = a.findIndex(e => e.date === s.date);
+  if(i >= 0) a[i] = s; else a.unshift(s);
+  setArchive(a);
+  renderArchive();
+  showToast('Saved: ' + s.date);
+}
+
+function resetForm(){
+  document.getElementById('trade-date').value = todayStr;
+  updateHeaderDate();
+  document.querySelectorAll('.check-row').forEach(r => { r.classList.remove('checked'); r.querySelector('input').checked = false; });
+  document.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.impl-btn').forEach(b => b.classList.remove('active'));
+  ['txt-model','txt-structure','txt-notes','txt-seq-box-model','txt-seq-result'].forEach(id => document.getElementById(id).value = '');
+  ['sel-current-day','sel-low-day','sel-high-day'].forEach(id => document.getElementById(id).value = '');
+}
+
+function toggleArchive(){
+  const p = document.getElementById('archive-panel');
+  const open = p.style.display === 'block';
+  p.style.display = open ? 'none' : 'block';
+  if(!open) renderArchive();
+}
+
+function renderArchive(){
+  const a = getArchive();
+  const el = document.getElementById('archive-list');
+  if(!a.length){ el.innerHTML = '<div class="empty-msg">No entries saved yet.</div>'; return; }
+  el.innerHTML = a.map((e,i) => {
+    const tags = (e['grp-rdr-dir']||[]).concat(e['grp-wdrrb-conf']||[]).slice(0,4).map(t=>`<span class="etag">${t}</span>`).join('');
+    return `<div class="archive-entry">
+      <div><div class="entry-date">${e.date}</div><div class="entry-tags">${tags}</div></div>
+      <div class="entry-actions">
+        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Load</button>
+        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadArchiveEntry(i){
+  const a = getArchive();
+  if(a[i]){ loadState(a[i]); showToast('Loaded: '+a[i].date); }
+}
+
+function deleteArchiveEntry(i){
+  const a = getArchive();
+  const date = a[i]?.date;
+  a.splice(i,1);
+  setArchive(a);
+  renderArchive();
+  showToast('Deleted: '+date);
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────────────
+const CSV_HEAD = '"Date","Slept well","Prayer","Physical activity","Instrument","Current Day Number","Low of Week Day","High of Week Day","RDR Direction","Impl. RDR Direction","RDR Timing","Impl. RDR Timing","WDRRB Confirmation","Impl. WDRRB Confirmation","ADR Positioning","Impl. ADR Positioning","ADR Midline","Impl. ADR Midline","Model Expectation","Impl. Model Expectation","WDRR Structure","Impl. WDRR Structure","Notes"';
+
+function toRow(s){
+  return [
+    s.date,
+    s.sleep    ? 'Yes' : 'No',
+    s.prayer   ? 'Yes' : 'No',
+    s.activity ? 'Yes' : 'No',
+    (s['grp-instrument']  ||[]).join('; '),
+    (s.currentDay         ||''),
+    (s.lowDay             ||''),
+    (s.highDay            ||''),
+    (s['grp-rdr-dir']    ||[]).join('; '),
+    (s.implRdrDir        ||'').replace(/"/g,'""'),
+    (s['grp-rdr-timing'] ||[]).join('; '),
+    (s.implRdrTiming     ||'').replace(/"/g,'""'),
+    (s['grp-wdrrb-conf'] ||[]).join('; '),
+    (s.implWdrrb         ||'').replace(/"/g,'""'),
+    (s['grp-adr-pos']    ||[]).join('; '),
+    (s.implAdrPos        ||'').replace(/"/g,'""'),
+    (s['grp-adr-midline']||[]).join('; '),
+    (s.implAdrMidline    ||'').replace(/"/g,'""'),
+    (s.model             ||'').replace(/"/g,'""'),
+    (s.implModel         ||'').replace(/"/g,'""'),
+    (s.structure         ||'').replace(/"/g,'""'),
+    (s.implStructure     ||'').replace(/"/g,'""'),
+    (s.notes             ||'').replace(/"/g,'""')
+  ].map(c=>`"${c}"`).join(',');
+}
+
+function dlFile(content, name, mime){
+  const blob = new Blob(['\uFEFF'+content], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportCSV(){
+  const s = getState();
+  dlFile(CSV_HEAD+'\n'+toRow(s), 'checklist-'+s.date+'.csv', 'text/csv;charset=utf-8;');
+  showToast('CSV exported.');
+}
+
+function exportAllCSV(){
+  const a = getArchive();
+  if(!a.length){ showToast('Archive is empty.'); return; }
+  dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'checklist-all.csv', 'text/csv;charset=utf-8;');
+  showToast('All entries exported.');
+}
+
+// ── Image Export ──────────────────────────────────────────────────────────────
+function exportImage(){
+  showToast('Creating image…');
+  const el = document.getElementById('main');
+  html2canvas(el, {scale:2, backgroundColor:'#0d0f14', useCORS:true}).then(canvas => {
+    const a = document.createElement('a');
+    a.download = 'checklist-'+getState().date+'.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    showToast('Image saved.');
+  }).catch(() => showToast('Export failed.'));
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.opacity='0', 2400);
+}
+</script>
+</body>
+</html>

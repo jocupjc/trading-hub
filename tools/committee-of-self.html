@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Trading Committee of Self</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --cream:#F5EFE2;
+  --paper:#FBF8F1;
+  --ink:#2A2420;
+  --ink-soft:#5C5348;
+  --line: rgba(42,36,32,0.14);
+
+  --orphan:#6E7FA0;      /* pale, cold, small */
+  --caregiver:#C17A63;   /* warm terracotta rose */
+  --warrior:#A8452E;     /* ember / rust */
+  --ruler:#AD7C2E;       /* brass / gold */
+  --sage:#66765A;        /* olive */
+  --magician:#6C4E82;    /* plum / violet */
+
+  --accent: var(--ruler);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Source Sans 3', sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background: var(--ruler); color:#fff; }
+
+.mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:.03em; }
+
+/* ---------- HERO ---------- */
+.hero{
+  padding:64px 24px 40px;
+  text-align:center;
+  max-width:900px;
+  margin:0 auto;
+}
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:14px;
+}
+h1{
+  font-family:'Playfair Display', serif;
+  font-weight:600;
+  font-size:clamp(32px,5vw,52px);
+  margin:0 0 14px;
+  letter-spacing:-0.01em;
+}
+h1 em{ font-style:italic; font-weight:500; color:var(--ruler); }
+.hero p.sub{
+  font-size:17px;
+  color:var(--ink-soft);
+  max-width:620px;
+  margin:0 auto;
+}
+
+/* ---------- ROUND TABLE ---------- */
+.table-wrap{
+  max-width:640px;
+  margin:36px auto 8px;
+  padding:0 20px;
+}
+#roundtable{ width:100%; height:auto; display:block; }
+.seat{ cursor:pointer; }
+.seat circle.dot{ transition: r .15s ease, opacity .15s ease; }
+.seat:hover circle.dot{ opacity:0.85; }
+.seat text{ font-family:'IBM Plex Mono', monospace; font-size:11px; fill:var(--ink); pointer-events:none; }
+.seat.active circle.dot{ stroke:var(--ink); stroke-width:2; }
+.table-caption{
+  text-align:center;
+  font-size:13px;
+  color:var(--ink-soft);
+  font-style:italic;
+  margin:6px 0 0;
+}
+
+/* ---------- NAV ---------- */
+nav.tabs{
+  max-width:980px;
+  margin:44px auto 0;
+  padding:0 20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  border-bottom:1px solid var(--line);
+  padding-bottom:18px;
+}
+.tab-btn{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  background:var(--paper);
+  border:1px solid var(--line);
+  color:var(--ink-soft);
+  padding:9px 16px;
+  border-radius:100px;
+  cursor:pointer;
+  transition:.15s ease;
+}
+.tab-btn:hover{ color:var(--ink); border-color:var(--ink-soft); }
+.tab-btn.active{
+  background:var(--accent-c, var(--ink));
+  color:#fff;
+  border-color:transparent;
+}
+
+main{ max-width:900px; margin:0 auto; padding:40px 20px 100px; }
+.panel{ display:none; animation:fade .25s ease; }
+.panel.active{ display:block; }
+@keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+/* ---------- OVERVIEW ---------- */
+.overview-lede{
+  font-size:16px;
+  color:var(--ink-soft);
+  max-width:680px;
+  margin:0 0 32px;
+}
+.overview-lede strong{ color:var(--ink); font-weight:600; }
+
+.delegation{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  overflow:hidden;
+}
+.delegation h3{
+  font-family:'Playfair Display', serif;
+  font-weight:600;
+  font-size:20px;
+  margin:0;
+  padding:20px 24px 4px;
+}
+.delegation p.hint{
+  padding:0 24px 16px;
+  color:var(--ink-soft);
+  font-size:14px;
+  margin:0;
+}
+.delegation table{ width:100%; border-collapse:collapse; }
+.delegation th{
+  text-align:left;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--ink-soft);
+  padding:10px 24px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.delegation td{
+  padding:14px 24px;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+  vertical-align:top;
+}
+.delegation tr:last-child td{ border-bottom:none; }
+.lead-chip{
+  display:inline-block;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  padding:3px 10px;
+  border-radius:100px;
+  color:#fff;
+  margin:2px 4px 2px 0;
+}
+
+/* ---------- ARCHETYPE DOSSIER ---------- */
+.dossier-head{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:8px;
+}
+.sigil{ width:56px; height:56px; flex:none; }
+.dossier-head h2{
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:34px;
+  margin:0;
+  color: var(--accent-c);
+}
+.essence{
+  font-size:15px;
+  color:var(--ink-soft);
+  margin:0 0 30px;
+  padding-left:74px;
+}
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-bottom:30px;
+}
+@media(max-width:640px){ .two-col{ grid-template-columns:1fr; } }
+.behavior-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:20px 22px;
+}
+.behavior-card h4{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin:0 0 12px;
+  color:var(--ink-soft);
+}
+.behavior-card.shadow h4::before{ content:"— "; }
+.behavior-card ul{ margin:0; padding-left:18px; font-size:14.5px; }
+.behavior-card li{ margin-bottom:7px; }
+
+.reflect{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent-c);
+  border-radius:0 4px 4px 0;
+  padding:22px 24px;
+  margin-bottom:20px;
+}
+.reflect h4{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin:0 0 14px;
+  color:var(--ink-soft);
+}
+.reflect label{
+  display:block;
+  font-size:14.5px;
+  margin:14px 0 6px;
+  color:var(--ink);
+}
+.reflect textarea{
+  width:100%;
+  min-height:64px;
+  font-family:'Source Sans 3', sans-serif;
+  font-size:14.5px;
+  color:var(--ink);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:3px;
+  padding:10px 12px;
+  resize:vertical;
+}
+.reflect textarea:focus{ outline:none; border-color:var(--accent-c); }
+
+.commitment{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:14.5px;
+  margin-top:10px;
+}
+.commitment input[type=text]{
+  flex:1;
+  font-family:'Source Sans 3', sans-serif;
+  font-size:14.5px;
+  padding:9px 12px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:#fff;
+}
+.commitment input:focus{ outline:none; border-color:var(--accent-c); }
+.save-note{ font-size:12px; color:var(--ink-soft); font-style:italic; margin-top:4px; height:14px; }
+
+/* ---------- CHECK-IN ---------- */
+.checkin-form{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:24px;
+  margin-bottom:28px;
+}
+.checkin-form .row-date{
+  display:flex; align-items:center; gap:10px; margin-bottom:18px;
+}
+.checkin-form input[type=date]{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:13px;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:#fff;
+}
+.grid-checkin{
+  display:grid;
+  grid-template-columns:140px 1fr 2fr;
+  gap:10px 14px;
+  align-items:center;
+}
+.grid-checkin .arch-label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  font-weight:500;
+}
+.grid-checkin select, .grid-checkin input[type=text]{
+  font-family:'Source Sans 3', sans-serif;
+  font-size:13.5px;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:#fff;
+  width:100%;
+}
+.grid-checkin select:focus, .grid-checkin input:focus{ outline:none; border-color:var(--ink); }
+.checkin-actions{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+button.primary, button.ghost{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  padding:10px 18px;
+  border-radius:3px;
+  cursor:pointer;
+  border:1px solid var(--ink);
+}
+button.primary{ background:var(--ink); color:#fff; }
+button.primary:hover{ background:#000; }
+button.ghost{ background:transparent; color:var(--ink); }
+button.ghost:hover{ background:var(--line); }
+
+.log-title{
+  font-family:'Playfair Display', serif;
+  font-size:20px;
+  font-weight:600;
+  margin:0 0 12px;
+}
+.log-entry{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:16px 20px;
+  margin-bottom:10px;
+}
+.log-entry .log-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px;
+}
+.log-entry .log-date{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:500; }
+.log-entry .log-del{ font-size:11px; color:var(--ink-soft); cursor:pointer; background:none; border:none; font-family:'IBM Plex Mono', monospace; }
+.log-entry .log-del:hover{ color:var(--warrior); }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  padding:3px 9px;
+  border-radius:100px;
+  color:#fff;
+}
+.chip .note{ color:rgba(255,255,255,.85); font-family:'Source Sans 3',sans-serif; margin-left:5px; font-style:italic; }
+.empty-log{ color:var(--ink-soft); font-size:14px; font-style:italic; padding:12px 0; }
+
+footer{
+  text-align:center;
+  padding:30px 20px 50px;
+  font-size:12px;
+  color:var(--ink-soft);
+  font-family:'IBM Plex Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">Trading Psychology · Working Session</div>
+  <h1>The <em>Committee of Self</em></h1>
+  <p class="sub">Six voices sit at every trade you take. When the Orphan runs the meeting, you trade not to lose. This workbook is where you get to know the other five — and put the Ruler back in the chair.</p>
+</div>
+
+<div class="table-wrap">
+  <svg id="roundtable" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="120" fill="none" stroke="#2A2420" stroke-opacity="0.15" stroke-width="1"/>
+    <circle cx="200" cy="200" r="72" fill="#FBF8F1" stroke="#2A2420" stroke-opacity="0.18" stroke-width="1"/>
+    <text x="200" y="196" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-size="15" fill="#2A2420">committee</text>
+    <text x="200" y="214" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-size="15" fill="#2A2420">of self</text>
+    <!-- seats generated by JS -->
+  </svg>
+  <p class="table-caption">Six seats, one table. Tap a seat to sit with that part of you.</p>
+</div>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main id="main"></main>
+
+<footer>drawn up for your own trading practice — saved locally in this browser, nowhere else</footer>
+
+<script>
+const ARCHETYPES = [
+  {
+    id:"ruler",
+    name:"The Ruler",
+    color:"#AD7C2E",
+    angle:-90,
+    sigil: `<path d="M8 40 L14 20 L24 32 L32 14 L40 32 L50 20 L56 40 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><rect x="8" y="40" width="48" height="6" fill="currentColor"/>`,
+    essence:"Calm authority, grounded in discipline. The executive function of the committee — it doesn't do every job, it decides who does.",
+    shadow:[
+      "No trading plan, or one that gets abandoned the moment it's tested",
+      "Over-trades because no one is in charge of saying 'no'",
+      "Swings to the other extreme: rigid, punitive control that leaves no room for the Magician's read of the market",
+      "Delegates nothing — tries to be Sage, Warrior and Caregiver at once, and burns out"
+    ],
+    gift:[
+      "Writes the plan before the session and enforces it without negotiating mid-trade",
+      "Knows which archetype is needed for which task, and hands it the floor",
+      "Sets the risk boundaries (position size, daily loss limit) and holds them under pressure",
+      "Ends the day by chairing the debrief rather than avoiding it"
+    ],
+    reflect:[
+      "What decision did I make today that wasn't actually the Ruler's — whose voice was it?",
+      "Where in today's session did no one seem to be in charge?",
+      "What does the Ruler need to delegate tomorrow, and to whom?"
+    ]
+  },
+  {
+    id:"sage",
+    name:"The Sage",
+    color:"#66765A",
+    angle:-30,
+    sigil: `<circle cx="32" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="18" y1="42" x2="46" y2="42" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="42" x2="32" y2="29" stroke="currentColor" stroke-width="2.5"/><line x1="24" y1="50" x2="40" y2="50" stroke="currentColor" stroke-width="2.5"/>`,
+    essence:"Impartial analysis. Not cold — its feeling is impartiality itself, the willingness to see what's actually on the chart instead of what you need to be there.",
+    shadow:[
+      "Analysis paralysis: one more indicator, one more timeframe, never a decision",
+      "Uses 'staying objective' to avoid pulling the trigger — impartiality as a hiding place",
+      "Rationalizes a bad trade after the fact instead of reading it plainly",
+      "Confuses complexity with rigor"
+    ],
+    gift:[
+      "Reads price action and structure without needing the trade to go a certain way",
+      "Can say 'this setup is not what I thought it was' mid-trade and mean it",
+      "Separates what happened from what it means about you",
+      "Feeds the Ruler a clean, unbiased read to decide from"
+    ],
+    reflect:[
+      "Where today did I already know the answer but kept 'analyzing' to avoid acting on it?",
+      "If a stranger looked at this trade with no stake in it, what would they say?",
+      "What did I rationalize today instead of reading plainly?"
+    ]
+  },
+  {
+    id:"magician",
+    name:"The Magician",
+    color:"#6C4E82",
+    angle:30,
+    sigil: `<path d="M32 8 L36 24 L52 24 L39 33 L44 49 L32 39 L20 49 L25 33 L12 24 L28 24 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>`,
+    essence:"Expansive possibility. The part you want active during charting and review — it sees the shape of what the market could become before it's obvious.",
+    shadow:[
+      "Grandiosity: sees a setup 'everywhere', chases every possible move",
+      "Magical thinking — 'this one will work because I need it to'",
+      "Ignores probability and base rates in favor of a good story",
+      "Only shows up chasing, never during the quiet, structured review it's actually built for"
+    ],
+    gift:[
+      "Spots emerging structure and new setups the Sage hasn't classified yet",
+      "Reframes a loss as information rather than a verdict on you",
+      "Brings genuine curiosity to the chart instead of dread or hunger",
+      "Does its best work in the pre-market and post-market review, not live in a position"
+    ],
+    reflect:[
+      "What possibility did I see on the chart today that I didn't act on — and should I have?",
+      "Where did I mistake 'wanting it to happen' for 'seeing it happen'?",
+      "What did today's loss make possible to see, once I stopped calling it a failure?"
+    ]
+  },
+  {
+    id:"warrior",
+    name:"The Warrior",
+    color:"#A8452E",
+    angle:90,
+    sigil: `<path d="M32 8 L32 38" stroke="currentColor" stroke-width="2.5"/><path d="M20 20 L44 20" stroke="currentColor" stroke-width="2.5"/><path d="M32 38 L24 50 L40 50 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>`,
+    essence:"The courage to face your own psychological demons — the self-limiting beliefs about your capacity to trade. Not aggression. Willingness.",
+    shadow:[
+      "Mistakes recklessness for courage — revenge trades, oversized positions, 'proving' something",
+      "Uses bravado to override the Ruler's risk limits",
+      "Avoids the real fight (facing the belief) by picking an easier one (forcing a trade)",
+      "Goes quiet entirely, letting the Orphan's fear pass for realism"
+    ],
+    gift:[
+      "Takes the A+ setup despite the fear, because it faced the fear rather than denied it",
+      "Cuts a losing trade cleanly, even when ego wants to be 'right'",
+      "Sits out a low-quality setup — courage includes the courage to do nothing",
+      "Names the limiting belief out loud instead of trading around it"
+    ],
+    reflect:[
+      "What did I avoid today because it was uncomfortable, not because it was wrong?",
+      "Where did I confuse recklessness with courage?",
+      "What belief about my capacity as a trader is the Warrior currently up against?"
+    ]
+  },
+  {
+    id:"caregiver",
+    name:"The Caregiver",
+    color:"#C17A63",
+    angle:150,
+    sigil: `<path d="M20 30 C20 20, 32 20, 32 30 C32 20, 44 20, 44 30 C44 42, 32 50, 32 50 C32 50, 20 42, 20 30 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>`,
+    essence:"Compassion for whatever can't yet care for itself. If your trading runs on fear, some part of your process is going untended — usually the Orphan.",
+    shadow:[
+      "Nurtures the losing trade instead of the trader — holds too long, hoping it recovers",
+      "Over-mentors others or over-manages the market, while its own process gets no attention",
+      "Confuses comfort with care — soothes the fear instead of addressing it",
+      "Neglects the boring caretaking: journaling, sleep, review, the checklist"
+    ],
+    gift:[
+      "Builds the systems that actually take care of the Orphan — stop-losses, checklists, a written plan",
+      "Notices when the Orphan is scared and responds with structure, not just reassurance",
+      "Tends to the trader's state between sessions, not just the account balance",
+      "Extends the same compassion to a losing day that it would to a struggling friend"
+    ],
+    reflect:[
+      "What part of my process gets no care right now?",
+      "Am I caretaking my open positions, or my process?",
+      "What would real care for the Orphan look like today — comfort, or structure?"
+    ]
+  },
+  {
+    id:"orphan",
+    name:"The Orphan",
+    color:"#6E7FA0",
+    angle:-150,
+    sigil: `<circle cx="32" cy="20" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 28 L32 44" stroke="currentColor" stroke-width="2.5"/><path d="M22 52 Q32 44 42 52" fill="none" stroke="currentColor" stroke-width="2.5"/>`,
+    essence:"Fear of losing, fear of pulling the trigger, fear of not being perfect, fear of missing out. When it chairs the committee, you trade NOT to lose.",
+    shadow:[
+      "Hesitates on the entry until the setup is gone",
+      "Cuts winners early to make the fear stop, not because the trade is done",
+      "Revenge trades to undo the feeling of loss rather than to take a good setup",
+      "Freezes, or chases, driven by FOMO rather than by the plan"
+    ],
+    gift:[
+      "Once heard rather than silenced, gives honest, early signal of real risk",
+      "Its fear of imperfection, redirected, becomes attention to process",
+      "Its need for safety is exactly what the Ruler's rules and the Caregiver's structure are for",
+      "Named out loud, it stops running the trade from the shadows"
+    ],
+    reflect:[
+      "What was I actually afraid of in today's trade — losing money, or being wrong?",
+      "Where did I trade NOT to lose instead of trading to win?",
+      "What would it sound like if I said the Orphan's fear out loud, before the trade, instead of after?"
+    ]
+  }
+];
+
+// ---------- build round table seats ----------
+const svgNS = "http://www.w3.org/2000/svg";
+const rt = document.getElementById('roundtable');
+ARCHETYPES.forEach(a=>{
+  const rad = a.angle * Math.PI/180;
+  const cx = 200 + 158*Math.cos(rad);
+  const cy = 200 + 158*Math.sin(rad);
+  const g = document.createElementNS(svgNS,'g');
+  g.setAttribute('class','seat');
+  g.setAttribute('data-id',a.id);
+  g.innerHTML = `<circle class="dot" cx="${cx}" cy="${cy}" r="16" fill="${a.color}" opacity="0.92"/>`;
+  const label = document.createElementNS(svgNS,'text');
+  const lx = 200 + 195*Math.cos(rad);
+  const ly = 200 + 195*Math.sin(rad) + 4;
+  label.setAttribute('x', lx);
+  label.setAttribute('y', ly);
+  label.setAttribute('text-anchor','middle');
+  label.textContent = a.name.replace('The ','');
+  g.appendChild(label);
+  g.addEventListener('click', ()=>selectTab(a.id));
+  rt.appendChild(g);
+});
+
+// ---------- build tabs ----------
+const tabsEl = document.getElementById('tabs');
+const tabDefs = [{id:'overview', name:'Council Overview', color:'#2A2420'}]
+  .concat(ARCHETYPES.map(a=>({id:a.id, name:a.name, color:a.color})))
+  .concat([{id:'checkin', name:'Daily Check-in', color:'#2A2420'}]);
+
+tabDefs.forEach(t=>{
+  const b = document.createElement('button');
+  b.className='tab-btn';
+  b.textContent=t.name;
+  b.dataset.id=t.id;
+  b.addEventListener('click', ()=>selectTab(t.id));
+  tabsEl.appendChild(b);
+});
+
+// ---------- build main panels ----------
+const main = document.getElementById('main');
+
+// Overview panel
+const overviewPanel = document.createElement('section');
+overviewPanel.className='panel';
+overviewPanel.id='panel-overview';
+overviewPanel.innerHTML = `
+  <p class="overview-lede">Every trade you place has already been through a meeting. <strong>The Orphan</strong> raises the fear, <strong>the Caregiver</strong> tends to what's unprotected, <strong>the Warrior</strong> supplies the courage to act, <strong>the Sage</strong> reads the chart without needing an outcome, <strong>the Magician</strong> sees what's possible, and <strong>the Ruler</strong> decides who speaks and when. Fear-based trading isn't a character flaw — it's an org chart problem. This workbook is where you rebuild it.</p>
+  <div class="delegation">
+    <h3>The Ruler's Delegation Board</h3>
+    <p class="hint">Who should be leading at each phase of a session — and who's most likely to hijack it if left unchecked.</p>
+    <table>
+      <thead><tr><th>Phase</th><th>Leads</th><th>Watch for</th></tr></thead>
+      <tbody>
+        <tr><td>Pre-market prep</td><td><span class="lead-chip" style="background:#AD7C2E">Ruler</span><span class="lead-chip" style="background:#66765A">Sage</span></td><td>Orphan pre-loading fear about the day ahead</td></tr>
+        <tr><td>Charting &amp; review</td><td><span class="lead-chip" style="background:#6C4E82">Magician</span><span class="lead-chip" style="background:#66765A">Sage</span></td><td>Magician chasing every possible setup unchecked by Sage</td></tr>
+        <tr><td>Entry decision</td><td><span class="lead-chip" style="background:#A8452E">Warrior</span></td><td>Orphan hesitation, or Warrior forcing a mediocre setup</td></tr>
+        <tr><td>Trade management</td><td><span class="lead-chip" style="background:#AD7C2E">Ruler</span><span class="lead-chip" style="background:#C17A63">Caregiver</span></td><td>Caregiver over-nurturing a losing position instead of the process</td></tr>
+        <tr><td>Exit</td><td><span class="lead-chip" style="background:#A8452E">Warrior</span><span class="lead-chip" style="background:#AD7C2E">Ruler</span></td><td>Orphan cutting a winner early just to make the fear stop</td></tr>
+        <tr><td>Post-market debrief</td><td><span class="lead-chip" style="background:#66765A">Sage</span><span class="lead-chip" style="background:#C17A63">Caregiver</span><span class="lead-chip" style="background:#6C4E82">Magician</span></td><td>No one shows up — the debrief gets skipped entirely</td></tr>
+      </tbody>
+    </table>
+  </div>
+`;
+main.appendChild(overviewPanel);
+
+// Archetype panels
+ARCHETYPES.forEach(a=>{
+  const p = document.createElement('section');
+  p.className='panel';
+  p.id='panel-'+a.id;
+  p.style.setProperty('--accent-c', a.color);
+  p.innerHTML = `
+    <div class="dossier-head">
+      <svg class="sigil" viewBox="0 0 64 64" style="color:${a.color}">${a.sigil}</svg>
+      <h2 style="color:${a.color}">${a.name}</h2>
+    </div>
+    <p class="essence">${a.essence}</p>
+    <div class="two-col">
+      <div class="behavior-card shadow">
+        <h4>When it runs the trade unchecked</h4>
+        <ul>${a.shadow.map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+      <div class="behavior-card gift">
+        <h4>When it's integrated</h4>
+        <ul>${a.gift.map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="reflect">
+      <h4>Sit with it</h4>
+      ${a.reflect.map((q,i)=>`
+        <label for="${a.id}-r${i}">${q}</label>
+        <textarea id="${a.id}-r${i}" data-key="${a.id}-reflect-${i}"></textarea>
+      `).join('')}
+      <label for="${a.id}-commit" style="margin-top:16px;">One thing I'll do differently because of this</label>
+      <div class="commitment">
+        <input type="text" id="${a.id}-commit" data-key="${a.id}-commit" placeholder="e.g. name the fear out loud before I click buy">
+      </div>
+      <div class="save-note" id="${a.id}-savenote"></div>
+    </div>
+  `;
+  main.appendChild(p);
+});
+
+// Check-in panel
+const checkinPanel = document.createElement('section');
+checkinPanel.className='panel';
+checkinPanel.id='panel-checkin';
+checkinPanel.innerHTML = `
+  <p class="overview-lede">A quick roll call before or after a session — who showed up, and how loud were they.</p>
+  <div class="checkin-form">
+    <div class="row-date">
+      <label class="mono" for="checkin-date" style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)">Date</label>
+      <input type="date" id="checkin-date">
+    </div>
+    <div class="grid-checkin" id="checkin-grid"></div>
+    <div class="checkin-actions">
+      <button class="primary" id="checkin-save">Save to log</button>
+      <button class="ghost" id="checkin-export">Export CSV</button>
+    </div>
+  </div>
+  <h3 class="log-title">Council Log</h3>
+  <div id="log-list"></div>
+`;
+main.appendChild(checkinPanel);
+
+const grid = document.getElementById('checkin-grid');
+ARCHETYPES.forEach(a=>{
+  const row = document.createElement('div');
+  row.style.display='contents';
+  row.innerHTML = `
+    <div class="arch-label" style="color:${a.color}">${a.name.replace('The ','')}</div>
+    <select id="ci-${a.id}-level">
+      <option value="">— level —</option>
+      <option value="Dominant">Dominant</option>
+      <option value="Present">Present</option>
+      <option value="Quiet">Quiet</option>
+    </select>
+    <input type="text" id="ci-${a.id}-note" placeholder="one-line note (optional)">
+  `;
+  grid.appendChild(row);
+});
+document.getElementById('checkin-date').valueAsDate = new Date();
+
+// ---------- tab switching ----------
+function selectTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.id===id);
+    if(b.dataset.id===id){
+      const t = tabDefs.find(t=>t.id===id);
+      b.style.background = t.color;
+      b.style.borderColor = 'transparent';
+    } else {
+      b.style.background='';
+      b.style.borderColor='';
+    }
+  });
+  document.querySelectorAll('.seat').forEach(s=>s.classList.toggle('active', s.dataset.id===id));
+}
+selectTab('overview');
+
+// ---------- persistence: reflections + commitments ----------
+function loadField(el){
+  const key = 'committee:'+el.dataset.key;
+  const v = localStorage.getItem(key);
+  if(v!==null) el.value = v;
+}
+function saveField(el){
+  const key = 'committee:'+el.dataset.key;
+  localStorage.setItem(key, el.value);
+  const archId = el.dataset.key.split('-')[0];
+  const note = document.getElementById(archId+'-savenote');
+  if(note){
+    note.textContent = 'saved';
+    setTimeout(()=>{ if(note.textContent==='saved') note.textContent=''; }, 1600);
+  }
+}
+document.querySelectorAll('[data-key]').forEach(el=>{
+  loadField(el);
+  el.addEventListener('blur', ()=>saveField(el));
+});
+
+// ---------- check-in log ----------
+function getLog(){
+  try{ return JSON.parse(localStorage.getItem('committee:checkin-log') || '[]'); }
+  catch(e){ return []; }
+}
+function setLog(log){ localStorage.setItem('committee:checkin-log', JSON.stringify(log)); }
+
+function renderLog(){
+  const log = getLog().slice().sort((a,b)=> b.date.localeCompare(a.date));
+  const el = document.getElementById('log-list');
+  if(log.length===0){
+    el.innerHTML = '<p class="empty-log">No entries yet — save today\'s check-in above to start the log.</p>';
+    return;
+  }
+  el.innerHTML = log.map(entry=>{
+    const chips = ARCHETYPES.filter(a=>entry.levels[a.id]).map(a=>{
+      const note = entry.notes[a.id] ? `<span class="note">${escapeHtml(entry.notes[a.id])}</span>` : '';
+      return `<span class="chip" style="background:${a.color}">${a.name.replace('The ','')} · ${entry.levels[a.id]}${note}</span>`;
+    }).join('');
+    return `
+      <div class="log-entry">
+        <div class="log-head">
+          <span class="log-date">${entry.date}</span>
+          <button class="log-del" data-date="${entry.date}">remove</button>
+        </div>
+        <div class="chips">${chips || '<span class="empty-log" style="padding:0;">no levels recorded</span>'}</div>
+      </div>
+    `;
+  }).join('');
+  el.querySelectorAll('.log-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const log2 = getLog().filter(e=>e.date!==btn.dataset.date);
+      setLog(log2);
+      renderLog();
+    });
+  });
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('checkin-save').addEventListener('click', ()=>{
+  const date = document.getElementById('checkin-date').value || new Date().toISOString().slice(0,10);
+  const levels = {}, notes = {};
+  ARCHETYPES.forEach(a=>{
+    const lvl = document.getElementById('ci-'+a.id+'-level').value;
+    const note = document.getElementById('ci-'+a.id+'-note').value;
+    if(lvl) levels[a.id]=lvl;
+    if(note) notes[a.id]=note;
+  });
+  let log = getLog().filter(e=>e.date!==date);
+  log.push({date, levels, notes});
+  setLog(log);
+  renderLog();
+  ARCHETYPES.forEach(a=>{
+    document.getElementById('ci-'+a.id+'-level').value='';
+    document.getElementById('ci-'+a.id+'-note').value='';
+  });
+});
+
+document.getElementById('checkin-export').addEventListener('click', ()=>{
+  const log = getLog().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  let rows = ['date,archetype,level,note'];
+  log.forEach(entry=>{
+    ARCHETYPES.forEach(a=>{
+      if(entry.levels[a.id]){
+        const note = (entry.notes[a.id]||'').replace(/"/g,'""');
+        rows.push(`${entry.date},${a.name},${entry.levels[a.id]},"${note}"`);
+      }
+    });
+  });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'committee-council-log.csv';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+renderLog();
+</script>
+</body>
+</html>

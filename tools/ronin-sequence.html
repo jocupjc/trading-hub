@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence Journal</title>
+<style>
+  :root{
+    --bg: #14161b;
+    --panel: #1b1e25;
+    --panel-2: #21242c;
+    --line: #2c303a;
+    --text: #e7e5e0;
+    --muted: #8b8f9a;
+    --muted-2: #5d6170;
+    --amber: #d2a44d;
+    --amber-dim: #9c7c3f;
+    --green: #6fae7e;
+    --red: #c1685f;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--sans); font-size:14px; line-height:1.5;
+  }
+  ::selection{background:var(--amber-dim); color:#fff;}
+  .app{display:grid; grid-template-columns:260px 1fr; min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{
+    background:var(--panel); border-right:1px solid var(--line);
+    padding:18px 16px; display:flex; flex-direction:column; gap:22px;
+  }
+  .brand{display:flex; flex-direction:column; gap:2px;}
+  .brand .mark{font-family:var(--serif); font-size:19px; letter-spacing:.2px;}
+  .brand .sub{font-family:var(--mono); font-size:10.5px; color:var(--muted-2); text-transform:uppercase; letter-spacing:1.2px;}
+
+  .navbtns{display:flex; gap:6px;}
+  .navbtns button{flex:1;}
+
+  .datepicker{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    padding:8px 10px; border-radius:6px; font-family:var(--mono); font-size:13px; width:100%;
+  }
+  button{
+    cursor:pointer; font-family:var(--sans); border-radius:6px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--text); padding:7px 11px; font-size:12.5px;
+    transition:border-color .15s, color .15s;
+  }
+  button:hover{border-color:var(--amber-dim); color:var(--amber);}
+  button.primary{background:var(--amber); border-color:var(--amber); color:#1a1306; font-weight:600;}
+  button.primary:hover{background:#e0b461; color:#1a1306;}
+  button.ghost{background:transparent;}
+  button.danger:hover{border-color:var(--red); color:var(--red);}
+  button.small{padding:4px 8px; font-size:11px;}
+
+  .navmode{display:flex; flex-direction:column; gap:4px;}
+  .navmode button{justify-content:flex-start; text-align:left;}
+  .navmode button.active{border-color:var(--amber); color:var(--amber); background:var(--panel-2);}
+
+  .taglist{display:flex; flex-direction:column; gap:5px; overflow-y:auto; max-height:320px;}
+  .taglist .label{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted-2); margin-bottom:2px;}
+  .tagchip{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:5px 9px; border-radius:5px; font-size:12px; cursor:pointer;
+    border:1px solid transparent; color:var(--muted);
+  }
+  .tagchip:hover{background:var(--panel-2); color:var(--text);}
+  .tagchip.active{background:rgba(210,164,77,.12); border-color:var(--amber-dim); color:var(--amber);}
+  .tagchip .cnt{font-family:var(--mono); color:var(--muted-2); font-size:10.5px;}
+
+  .entrylist{display:flex; flex-direction:column; gap:2px; overflow-y:auto; flex:1;}
+  .entrylist .label{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted-2); margin-bottom:4px;}
+  .entryitem{
+    padding:6px 9px; border-radius:5px; font-size:12.5px; cursor:pointer; color:var(--muted);
+    display:flex; justify-content:space-between;
+  }
+  .entryitem:hover{background:var(--panel-2); color:var(--text);}
+  .entryitem.active{background:rgba(210,164,77,.1); color:var(--amber);}
+  .entry-r-group{display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:8px;}
+  .entry-r{font-family:var(--mono); font-size:13px;}
+  .entry-r.r-pos{color:var(--green);}
+  .entry-r.r-neg{color:var(--red);}
+  .entry-r-running{font-family:var(--mono); font-size:11.5px; opacity:0.7;}
+  .entry-r-running.r-pos{color:var(--green);}
+  .entry-r-running.r-neg{color:var(--red);}
+
+  .savestate{font-family:var(--mono); font-size:10.5px; color:var(--muted-2); text-align:center; padding-top:4px; border-top:1px solid var(--line);}
+  .savestate.saved{color:var(--green);}
+  .savestate.error{color:var(--red);}
+
+  /* MAIN */
+  .main{padding:30px 40px 80px; max-width:920px; margin:0 auto; width:100%;}
+  .daytitle{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px;}
+  .daytitle h1{font-family:var(--serif); font-weight:500; font-size:28px; margin:0;}
+  .daytitle .dow{font-family:var(--mono); color:var(--muted); font-size:13px;}
+  .daysub{color:var(--muted); font-size:13px; margin-bottom:28px;}
+  .daysub input{
+    background:transparent; border:none; border-bottom:1px dashed var(--line); color:var(--muted);
+    font-family:var(--sans); font-size:13px; padding:2px 0; width:100%; max-width:500px;
+  }
+  .daysub input:focus{outline:none; border-bottom-color:var(--amber-dim); color:var(--text);}
+
+  .section{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    margin-bottom:16px; overflow:hidden;
+  }
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; cursor:pointer; user-select:none;
+  }
+  .section-head h2{font-family:var(--serif); font-size:17px; font-weight:500; margin:0; display:flex; align-items:center; gap:10px;}
+  .section-head .chev{color:var(--muted-2); font-size:11px; transition:transform .15s;}
+  .section.collapsed .chev{transform:rotate(-90deg);}
+  .section.collapsed .section-body{display:none;}
+  .section-head .meta{display:flex; gap:6px; align-items:center;}
+  .pillcount{font-family:var(--mono); font-size:10.5px; color:var(--muted-2); background:var(--panel-2); padding:2px 7px; border-radius:20px;}
+
+  .section-body{padding:0 18px 18px;}
+  .field-label{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.1px; color:var(--muted-2); margin:14px 0 6px;}
+  textarea{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:7px;
+    color:var(--text); font-family:var(--sans); font-size:13.5px; line-height:1.55; padding:11px 13px;
+    resize:none; min-height:64px; overflow:hidden;
+  }
+  textarea:focus{outline:none; border-color:var(--amber-dim);}
+  textarea.review{border-left:3px solid var(--green);}
+
+  .reviewtoggle{font-family:var(--mono); font-size:11px; color:var(--muted-2); background:none; border:none; cursor:pointer; padding:0; margin-top:10px;}
+  .reviewtoggle:hover{color:var(--green);}
+  .reviewblock{margin-top:8px;}
+
+  .tagrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px;}
+  .tag{
+    font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:20px;
+    background:rgba(210,164,77,.1); border:1px solid var(--amber-dim); color:var(--amber);
+    display:flex; align-items:center; gap:6px;
+  }
+  .tag .x{cursor:pointer; color:var(--muted); font-weight:bold;}
+  .tag .x:hover{color:var(--red);}
+  .tagadd{position:relative;}
+  .tagadd input{
+    background:var(--panel-2); border:1px dashed var(--line); border-radius:20px;
+    color:var(--text); font-family:var(--mono); font-size:11px; padding:3px 10px; width:130px;
+  }
+  .tagadd input:focus{outline:none; border-color:var(--amber-dim); border-style:solid;}
+  .tagsuggest{
+    position:absolute; top:26px; left:0; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:7px; z-index:20; min-width:160px; max-height:180px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .tagsuggest div{padding:6px 10px; font-family:var(--mono); font-size:11.5px; cursor:pointer; color:var(--muted);}
+  .tagsuggest div:hover{background:var(--panel); color:var(--amber);}
+
+
+  .linkgrid{display:flex; flex-direction:column; gap:6px; margin-top:10px;}
+  .linkcard{
+    display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px;
+    background:var(--panel-2); border:1px solid var(--line); font-size:12px;
+  }
+  .linkcard .tv-icon{font-size:14px; flex-shrink:0;}
+  .linkcard-body{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+  .linkcard-tag{
+    background:none; border:none; color:var(--amber); font-family:var(--sans); font-size:12px;
+    font-weight:600; padding:0; width:100%;
+  }
+  .linkcard-tag:focus{outline:none;}
+  .linkcard-tag::placeholder{color:var(--muted-2); font-weight:400; font-style:italic;}
+  .linkcard a{color:var(--muted); text-decoration:none; font-family:var(--mono); font-size:10.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;}
+  .linkcard a:hover{text-decoration:underline; color:var(--amber);}
+  .linkcard .rm{background:none; border:none; color:var(--muted-2); cursor:pointer; padding:0; font-size:14px; line-height:1; flex-shrink:0;}
+  .linkcard .rm:hover{color:var(--red);}
+  .linkinput-row{display:flex; gap:6px; margin-top:10px; align-items:center;}
+  .linkinput-row input{
+    flex:1; background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--text); font-family:var(--mono); font-size:11.5px; padding:7px 10px;
+  }
+  .linkinput-row input:focus{outline:none; border-color:var(--amber-dim);}
+  .linkinput-row input::placeholder{color:var(--muted-2);}
+  .linkinput-row button{padding:7px 10px; font-size:12px;}
+  .scoreinput{
+    width:64px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--text); font-family:var(--mono); font-size:14px; padding:7px 10px; text-align:center;
+  }
+  .scoreinput:focus{outline:none; border-color:var(--amber-dim);}
+
+  .tradecard{border:1px solid var(--line); border-radius:8px; padding:14px; margin-top:12px; background:var(--panel-2);}
+  .tradecard-top{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .tradecard-top input, .tradecard-top select{
+    background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:6px;
+    padding:6px 9px; font-family:var(--mono); font-size:12px;
+  }
+  .tradecard-top .w-time{width:90px;} .tradecard-top .w-dir{width:90px;} .tradecard-top .w-r{width:90px;} .tradecard-top .w-model{width:160px;}
+  .trade-remove{margin-left:auto;}
+
+  .addbtn{margin-top:8px;}
+
+  .m7retrace-row{display:flex; gap:8px; margin-bottom:4px;}
+  .m7retrace-btn{padding:6px 18px; font-family:var(--mono); font-size:12px; border-radius:20px; border:1px solid var(--line); background:var(--panel-2); color:var(--muted); cursor:pointer; transition:all .15s;}
+  .m7retrace-btn:hover{border-color:var(--amber-dim); color:var(--amber);}
+  .m7retrace-btn.active{background:rgba(210,164,77,.15); border-color:var(--amber); color:var(--amber); font-weight:600;}
+
+  /* RED FLAGS */
+  .redflag-block{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; margin-bottom:16px;
+  }
+  .redflag-title{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1.2px;
+    color:var(--red); display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; row-gap:6px;
+  }
+  .rf-icon{font-size:13px;}
+  .rf-count{
+    background:rgba(139,143,154,.14); border:1px solid var(--muted-2); color:var(--muted);
+    border-radius:20px; padding:1px 8px; font-size:10px;
+  }
+  .rf-count-yellow{
+    background:rgba(230,196,60,.15); border:1px solid #e6c43c; color:#e6c43c;
+  }
+  .rf-count-gray{
+    background:rgba(139,143,154,.14); border:1px solid var(--muted-2); color:var(--muted);
+  }
+  .redflag-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:6px 12px;
+  }
+  .rf-item{
+    display:flex; align-items:center; gap:8px; cursor:pointer; padding:5px 8px;
+    border-radius:6px; border:1px solid transparent; user-select:none;
+    transition:background .12s, border-color .12s;
+  }
+  .rf-item:hover{background:var(--panel-2);}
+  .rf-item input[type=checkbox]{display:none;}
+  .rf-box{
+    width:16px; height:16px; border-radius:4px; border:1.5px solid var(--muted-2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; color:transparent; flex-shrink:0;
+    transition:all .12s;
+  }
+  .rf-item.checked .rf-box{background:var(--red); border-color:var(--red); color:#fff;}
+  .rf-item.checked{border-color:rgba(193,104,95,.25); background:rgba(193,104,95,.07);}
+  .rf-item.checked-yellow .rf-box{background:#e6c43c; border-color:#e6c43c; color:#1a1608;}
+  .rf-item.checked-yellow{border-color:rgba(230,196,60,.3); background:rgba(230,196,60,.09);}
+  .rf-item.checked-green .rf-box{background:var(--green); border-color:var(--green); color:#fff;}
+  .rf-item.checked-green{border-color:rgba(111,174,126,.3); background:rgba(111,174,126,.09);}
+  .rf-item.checked-info .rf-box{background:#6ea8e0; border-color:#6ea8e0; color:#0d1520;}
+  .rf-item.checked-info{border-color:rgba(110,168,224,.3); background:rgba(110,168,224,.09);}
+  .rf-item.checked-orange .rf-box{background:#e07b39; border-color:#e07b39; color:#1a0f08;}
+  .rf-item.checked-orange{border-color:rgba(224,123,57,.3); background:rgba(224,123,57,.09);}
+  .rf-item.checked-gray .rf-box{background:var(--muted-2); border-color:var(--muted-2); color:#fff;}
+  .rf-item.checked-gray{border-color:rgba(139,143,154,.3); background:rgba(139,143,154,.09);}
+  .rf-label{font-size:13px; color:var(--muted);}
+  .rf-item.checked .rf-label, .rf-item.checked-yellow .rf-label,
+  .rf-item.checked-green .rf-label, .rf-item.checked-info .rf-label,
+  .rf-item.checked-orange .rf-label, .rf-item.checked-gray .rf-label{color:var(--text);}
+  .rf-signal-group{
+    margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .rf-signal-label{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px;
+    color:var(--muted-2); margin-bottom:8px;
+  }
+  .rf-signal-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .rf-badge{
+    font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.5px;
+    padding:3px 10px; border-radius:20px; display:inline-block;
+  }
+  .rf-badge-green{color:#0f1a14; background:var(--green);}
+  .rf-badge-red{color:#1a0f0f; background:var(--red);}
+  .rf-badge-yellow{color:#1a1608; background:#e6c43c;}
+  .rf-badge-info{color:#0d1520; background:#6ea8e0;}
+  .rf-badge-orange{color:#1a0f08; background:#e07b39;}
+  .rf-subgroup-label{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px;
+    color:var(--muted-2); margin:14px 0 8px; padding-top:12px; border-top:1px solid var(--line);
+  }
+  .redflag-title + .rf-subgroup-label:first-of-type{margin-top:0;}
+
+  /* CHECKLISTS */
+  .cl-block{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:16px;}
+  .cl-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
+  .cl-title{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:var(--amber); margin-bottom:2px;}
+  .cl-sub{font-size:11px; color:var(--muted-2);}
+  .cl-summary{display:flex; gap:6px; align-items:center; font-family:var(--mono); font-size:12px;}
+  .cl-u-count{color:var(--green); background:rgba(111,174,126,.12); border:1px solid rgba(111,174,126,.3); padding:2px 8px; border-radius:20px;}
+  .cl-d-count{color:var(--red); background:rgba(193,104,95,.12); border:1px solid rgba(193,104,95,.3); padding:2px 8px; border-radius:20px;}
+  .cl-n-count{color:var(--muted); background:rgba(139,143,154,.1); border:1px solid rgba(139,143,154,.3); padding:2px 8px; border-radius:20px;}
+  .cl-chk-count{color:var(--muted); background:rgba(139,143,154,.14); border:1px solid var(--muted-2); padding:2px 8px; border-radius:20px;}
+  .cl-bias{
+    font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.5px;
+    padding:3px 10px; border-radius:20px; margin-right:2px;
+  }
+  .cl-bias-U{color:#0f1a14; background:var(--green); box-shadow:0 0 0 1px var(--green), 0 0 10px rgba(111,174,126,.5);}
+  .cl-bias-D{color:#1a0f0f; background:var(--red); box-shadow:0 0 0 1px var(--red), 0 0 10px rgba(193,104,95,.5);}
+  .cl-u-count.cl-winning{color:#fff; background:var(--green); border-color:var(--green); font-weight:700;}
+  .cl-d-count.cl-winning{color:#fff; background:var(--red); border-color:var(--red); font-weight:700;}
+  .cl-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:5px;}
+  .cl-grid + .cl-subgroup-label{margin-top:16px;}
+  .cl-subgroup-label{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted-2); margin-bottom:6px; border-top:1px solid var(--line); padding-top:12px;}
+  .cl-head + .cl-subgroup-label{border-top:none; padding-top:0;}
+  .cl-item{
+    display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:6px;
+    border:1px solid var(--line); background:var(--panel-2); cursor:pointer;
+    user-select:none; transition:all .12s;
+  }
+  .cl-item:hover{border-color:var(--muted-2);}
+  .cl-item.U{background:rgba(111,174,126,.1); border-color:rgba(111,174,126,.4);}
+  .cl-item.D{background:rgba(193,104,95,.1); border-color:rgba(193,104,95,.4);}
+  .cl-item.N{background:rgba(139,143,154,.08); border-color:rgba(139,143,154,.3);}
+  .cl-item.E{background:rgba(111,174,126,.1); border-color:rgba(111,174,126,.4);}
+  .cl-item.C{background:rgba(193,104,95,.1); border-color:rgba(193,104,95,.4);}
+  .cl-item.CHK{background:rgba(139,143,154,.14); border-color:var(--muted-2);}
+  .cl-item.CHKY{background:rgba(230,196,60,.16); border-color:#e6c43c;}
+  .cl-badge{
+    font-family:var(--mono); font-size:11px; font-weight:700; width:18px; height:18px;
+    border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:var(--panel); border:1px solid var(--line); color:var(--muted-2);
+  }
+  .cl-item.U .cl-badge{background:var(--green); border-color:var(--green); color:#fff;}
+  .cl-item.D .cl-badge{background:var(--red); border-color:var(--red); color:#fff;}
+  .cl-item.N .cl-badge{background:var(--muted-2); border-color:var(--muted-2); color:#fff;}
+  .cl-item.E .cl-badge{background:var(--green); border-color:var(--green); color:#fff;}
+  .cl-item.C .cl-badge{background:var(--red); border-color:var(--red); color:#fff;}
+  .cl-item.CHK .cl-badge{background:var(--muted-2); border-color:var(--muted-2); color:#fff;}
+  .cl-item.CHKY .cl-badge{background:#e6c43c; border-color:#e6c43c; color:#1a1608;}
+  .cl-item-label{font-size:12.5px; color:var(--muted);}
+  .cl-item.U .cl-item-label, .cl-item.D .cl-item-label,
+  .cl-item.N .cl-item-label, .cl-item.E .cl-item-label, .cl-item.C .cl-item-label,
+  .cl-item.CHK .cl-item-label, .cl-item.CHKY .cl-item-label{color:var(--text);}
+  .cl-item-wrap{display:flex; flex-direction:column; gap:4px;}
+  .rf-item-wrap{display:flex; flex-direction:column; gap:2px;}
+  .cl-model-input{
+    font-family:var(--mono); font-size:11px; padding:4px 8px; border-radius:5px;
+    background:var(--panel); border:1px dashed var(--line); color:var(--amber);
+    width:100%;
+  }
+  .cl-model-input:focus{outline:none; border-style:solid; border-color:var(--amber-dim);}
+  .cl-model-input::placeholder{color:var(--muted-2);}
+
+  /* KEY CANDLES */
+  .candle-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; margin-top:4px;}
+  .candlecard{background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px;}
+  .candlecard-label{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--amber); margin-bottom:10px;}
+  .candlecard-fields{display:flex; gap:8px; margin-bottom:10px; align-items:center;}
+  .candlecard-fields input[type=text]{
+    background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:6px;
+    padding:6px 9px; font-family:var(--mono); font-size:12px; flex:1;
+  }
+  .candlecard-fields input[type=text]:focus{outline:none; border-color:var(--amber-dim);}
+
+  /* SEARCH VIEW */
+  .searchbar{display:flex; gap:8px; margin-bottom:20px;}
+  .searchbar input{
+    flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    border-radius:7px; padding:10px 13px; font-family:var(--sans); font-size:13.5px;
+  }
+  .searchresult{background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:14px 16px; margin-bottom:12px; cursor:pointer;}
+  .searchresult:hover{border-color:var(--amber-dim);}
+  .searchresult .sr-top{display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color:var(--muted-2); margin-bottom:6px;}
+  .searchresult .sr-section{color:var(--amber);}
+  .searchresult .sr-snip{font-size:13px; color:var(--text); margin-bottom:6px;}
+  .searchresult .sr-snip.live{color:var(--muted);}
+  .searchresult .sr-tags{display:flex; gap:5px; flex-wrap:wrap;}
+  .empty{color:var(--muted-2); font-size:13px; padding:30px 0; text-align:center; font-family:var(--mono);}
+
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--panel-2); border:1px solid var(--amber-dim); color:var(--amber); padding:9px 18px;
+    border-radius:20px; font-family:var(--mono); font-size:12px; opacity:0; transition:all .25s; pointer-events:none; z-index:200;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+
+  /* MOBILE — stack sidebar above main content instead of a fixed-width side column */
+  @media (max-width: 760px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{
+      max-height:48vh; overflow-y:auto;
+      border-right:none; border-bottom:1px solid var(--line);
+    }
+    .main{padding:20px 16px 60px;}
+    .daytitle h1{font-size:23px;}
+    .redflag-grid, .cl-grid, .candle-grid{grid-template-columns:repeat(auto-fill, minmax(130px,1fr));}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="mark">Sequence Journal</div>
+      <div class="sub">Live → Review</div>
+    </div>
+
+    <div class="navmode">
+      <button id="modeEntry" class="active">📓 Today's Entry</button>
+      <button id="modeSearch">🔎 Search by Tag</button>
+    </div>
+
+    <div id="entryNavBlock">
+      <div class="navbtns">
+        <button id="prevDay">← Prev</button>
+        <button id="nextDay">Next →</button>
+      </div>
+      <input type="date" id="datePicker" class="datepicker">
+    </div>
+
+    <div class="taglist" id="tagListBlock">
+      <div class="label">Tags</div>
+      <div id="tagListItems"></div>
+    </div>
+
+    <div class="entrylist" id="entryListBlock">
+      <div class="label">Recent Entries</div>
+      <div id="entryListItems"></div>
+    </div>
+
+    <div style="display:flex; gap:6px;">
+      <button id="backupBtn" class="ghost small" style="font-family:var(--mono);font-size:10.5px;color:var(--muted-2);border-color:transparent;flex:1;">⇩ Backup</button>
+      <label id="restoreLabel" class="ghost small" style="font-family:var(--mono);font-size:10.5px;color:var(--muted-2);cursor:pointer;flex:1;text-align:center;padding:7px 11px;border-radius:6px;border:1px solid transparent;">⇪ Restore<input type="file" id="restoreInput" accept=".json" style="display:none;"></label>
+    </div>
+    <button id="cleanStorageBtn" class="ghost small" style="font-family:var(--mono);font-size:10.5px;color:var(--muted-2);border-color:transparent;">🗑 Clean Storage</button>
+    <div class="savestate" id="saveState">—</div>
+  </div>
+
+  <div class="main" id="mainEntry"></div>
+  <div class="main" id="mainSearch" style="display:none;"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- localStorage shim for window.storage (Trading Hub) ---------------- */
+if(!window.storage){
+  window.storage = {
+    async get(key){ try{ const v = localStorage.getItem('ronin:'+key); return v!==null ? {value:v} : null; }catch(e){ return null; } },
+    async set(key, value){ try{ localStorage.setItem('ronin:'+key, value); return true; }catch(e){ return false; } },
+    async delete(key){ try{ localStorage.removeItem('ronin:'+key); }catch(e){} },
+    async list(prefix){ const keys=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.startsWith('ronin:'+ (prefix||''))) keys.push(k.slice(6)); } }catch(e){} return {keys}; },
+  };
+}
+/* ---------------- storage helpers ---------------- */
+async function sGet(key, shared=false){ try{ const r = await window.storage.get(key, shared); return r ? r.value : null; }catch(e){ return null; } }
+async function sSet(key, value, shared=false){ try{ await window.storage.set(key, value, shared); return true; }catch(e){ console.error('storage set failed', e); return false; } }
+async function sDel(key, shared=false){ try{ await window.storage.delete(key, shared); }catch(e){} }
+async function sList(prefix, shared=false){ try{ const r = await window.storage.list(prefix, shared); return r ? r.keys : []; }catch(e){ return []; } }
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+/* ---------------- section schema ---------------- */
+const SECTION_DEFS = [
+  {key:'preMarket', label:'Pre-Market Thoughts'},
+  {key:'open', label:'Box Formation Thoughts'},
+  {key:'boxReversal', label:'Box Reversal Thoughts'},
+  {key:'rbc', label:'RBC Thoughts'},
+  {key:'m7x', label:'M7X Thoughts'},
+  {key:'eod', label:'End of Day Analysis'}
+];
+
+// checkboxes shown at the bottom of End of Day Analysis in place of the generic tag row
+const EOD_DB_UPDATE_DEFS = [
+  {key:'redFlag',    label:'Update Red Flag Database'},
+  {key:'ltf',        label:'Update LTF Database'},
+  {key:'confluence', label:'Update Confluence Database'},
+  {key:'model',      label:'Update Model Database'},
+  {key:'ote',        label:'Update OTE Data'},
+];
+
+const CANDLE_DEFS = [
+  {key:'drLow',         label:'DR Low'},
+  {key:'drHigh',        label:'DR High'},
+  {key:'m7Retracement', label:'M7 Retracement'},
+  {key:'maxRetracement',label:'Max Retracement'},
+  {key:'maxExtension',  label:'Max Extension'},
+];
+
+const RED_FLAG_DEFS = [
+  {key:'news',              label:'News'},
+  {key:'insideWdr',         label:'Inside WDR'},
+  {key:'weeklyRcModel',     label:'Weekly Rc Model'},
+  {key:'noWdrrbBreakout',   label:'No WDRRB Breakout'},
+  {key:'yesterdayInsideDay',label:'Yesterday was Inside Day'},
+  {key:'wdrrbFalseDay',     label:'WDRRB False Day'},
+  {key:'brokenAdr',         label:'Broken ADR'},
+  {key:'adrCombDdrMin',     label:'ODR in Comb. Min/Min'},
+  {key:'adrSpanningWdrrbMid',label:'ADR spanning WDRRB mid'},
+  {key:'adrHalfDisagree',   label:'ADR & 0.5 Disagree'},
+  {key:'tripleFalseOdr',    label:'Triple False ODR'},
+  {key:'rcModel',           label:'Rc Model'},
+  {key:'rxModel',           label:'Rx Model'},
+  {key:'wdrrbQ37',          label:'WDRRB Q-3/7+'},
+  {key:'multiFalseDay',     label:'Multi-False Day'},
+  {key:'turnaroundThursday',label:'Turnaround Thursday'},
+];
+// red flags that are cautionary (yellow) rather than a hard red flag — grouped
+// together visually within the same Red Flags block, under "Amplifiers".
+const YELLOW_FLAG_FIELDS = new Set(['tripleFalseOdr','insideWdr','weeklyRcModel','news','wdrrbFalseDay','adrHalfDisagree']);
+// red flags that get a tag-chip input underneath them (same shared tag list/autocomplete as sections)
+const RED_FLAG_TAG_FIELDS = new Set(['news']);
+// Rc/Rx Model — the primary day-model signal. Rc = green light, Rx = red light,
+// both checked = caution. Rendered as its own group at the top of Red Flags.
+const MODEL_SIGNAL_FIELDS = ['rcModel','rxModel'];
+// Yesterday was Inside Day — checked predicts a likely outside/trend day. Its own group.
+const OUTSIDE_DAY_FIELDS = ['yesterdayInsideDay'];
+// WDRRB Q-3/7+ and Turnaround Thursday — checked predicts a likely reversal. Its own group.
+const REVERSAL_FIELDS = ['wdrrbQ37','turnaroundThursday'];
+// every key belonging to one of the three special groups above, so the generic
+// "Amplifiers" bucket can exclude them.
+const SPECIAL_FLAG_FIELDS = new Set([...MODEL_SIGNAL_FIELDS, ...OUTSIDE_DAY_FIELDS, ...REVERSAL_FIELDS]);
+
+const BOX_CHECKLIST_DEFS = [
+  {key:'monthly',       label:'Monthly Seq'},
+  {key:'weekly',        label:'Weekly Seq'},
+  {key:'daily',         label:'Daily Seq'},
+  {key:'rdr',           label:'RDR Seq'},
+  {key:'dailyModel',    label:'Daily Model'},
+  {key:'partials',      label:'Partials'},
+  {key:'ddrComSym',     label:'DDR Com. Sym'},
+  {key:'ddrSepMinMin',  label:'DDR Sep. min/min'},
+  {key:'gaps',          label:'GAPs'},
+  {key:'ass',           label:'Market Structure'},
+  {key:'vwap',          label:'VWAP'},
+  {key:'svpHtf',        label:'SVP HTF'},
+  // check-only fields, grouped together at the end
+  {key:'markTime',      label:'Mark Time'},
+  {key:'svpLtf',        label:'SVP LTF'},
+  {key:'vibsH1m30',     label:'Magnetic VIBs'},
+  {key:'confluencesCheck',   label:'Confluences'},
+  {key:'rdrModel',           label:'RDR Model'},
+  {key:'markMakeOrBreak',    label:'Mark Make or Break'},
+  {key:'checkDdr',           label:'Check DDR'},
+  {key:'markTargets',   label:'Mark Targets'},
+  {key:'transitionHL',  label:'Transition H/L'},
+  {key:'wdrrbOpen',     label:'WDRRB Open'},
+  {key:'chaining',      label:'Chaining'},
+];
+
+const POST1030_CHECKLIST_DEFS = [
+  {key:'rdrSeq',          label:'RDR SEQ'},
+  {key:'adrcs',           label:'ADRCs'},
+  {key:'ddrSepWModel',    label:'DDR Sep. w/model'},
+  {key:'rdrM7b',          label:'RDR M7B'},
+];
+
+// checklist items that also get a model-tag text input
+const MODEL_TAG_FIELDS = new Set(['weekly','dailyModel','rdrModel']);
+// checklist items that get a link input — none, per revised design
+const CHECKLIST_LINK_FIELDS = new Set();
+// checklist items that get a tag-chip input underneath them (uses the same shared tag list/autocomplete as sections)
+const CHECKLIST_TAG_FIELDS = new Set();
+// checklist items that are simple checkboxes (checked/unchecked) instead of U/D/N cycling
+const CHECK_ONLY_FIELDS = new Set(['adrcs','wdrrbOpen','vibsH1m30','svpLtf','chaining','markTime','transitionHL','ddrSepWModel','confluencesCheck','rdrM7b','rdrModel','markMakeOrBreak','checkDdr','markTargets']);
+// check-only items that get a yellow highlight instead of the standard grey when checked
+const HIGHLIGHT_YELLOW_FIELDS = new Set(['adrcs','rdrM7b','transitionHL']);
+// checklist items excluded from the U/D summary count at the top of the block
+// (ODRS Endpoint cycles E/C/N — Expansion/Contraction — which isn't a directional up/down call)
+const EXCLUDE_FROM_UD_COUNT = new Set([]);
+
+function blankSection(){ return {live:'', review:'', reviewOpen:false, tags:[], links:[], collapsed:true, m7BoxRetrace:'', confluenceLink:'', selfScore:'', reEngineeringScore:'', dbUpdates:{redFlag:false, ltf:false, confluence:false, model:false}}; }
+function blankCandle(){ return {time:'', tag:'', links:[]}; }
+function blankTrade(){ return {id:uid(), time:'', dir:'LONG', model:'', r:'', live:'', review:'', reviewOpen:false, tags:[], links:[]}; }
+function blankEntry(date){
+  const sections = {};
+  SECTION_DEFS.forEach(s => sections[s.key] = blankSection());
+  const candles = {};
+  CANDLE_DEFS.forEach(c => candles[c.key] = blankCandle());
+  const redFlags = {};
+  RED_FLAG_DEFS.forEach(f => redFlags[f.key] = false);
+  const redFlagTags = {};
+  RED_FLAG_TAG_FIELDS.forEach(k => redFlagTags[k] = []);
+  const boxChecklist = {};
+  BOX_CHECKLIST_DEFS.forEach(f => boxChecklist[f.key] = '');
+  const boxChecklistModels = {};
+  MODEL_TAG_FIELDS.forEach(k => boxChecklistModels[k] = '');
+  const boxChecklistLinks = {};
+  CHECKLIST_LINK_FIELDS.forEach(k => boxChecklistLinks[k] = []);
+  const boxChecklistTags = {};
+  CHECKLIST_TAG_FIELDS.forEach(k => boxChecklistTags[k] = []);
+  const post1030Checklist = {};
+  POST1030_CHECKLIST_DEFS.forEach(f => post1030Checklist[f.key] = '');
+  return {date, dayNote:'', sections, trades:[], candles, redFlags, redFlagTags, boxChecklist, boxChecklistModels, boxChecklistLinks, boxChecklistTags, post1030Checklist, tradesCollapsed:true, candlesCollapsed:true};
+}
+
+/* ---------------- app state ---------------- */
+let currentDate = new Date().toISOString().slice(0,10);
+let currentEntry = null;
+let allTags = [];
+let entryDateIndex = []; // dates known to have entries
+let entryRCache = {}; // date -> total R for that day (undefined = not fetched yet, null = no data)
+let runningRCache = {}; // date -> cumulative R through that date, in chronological order
+
+function computeTotalR(trades){
+  return (trades||[]).reduce((sum,t)=>{ const v = parseFloat(t.r); return sum + (isNaN(v)?0:v); }, 0);
+}
+
+function rebuildRunningRCache(){
+  const chronological = [...entryDateIndex].sort(); // ascending
+  let running = 0;
+  runningRCache = {};
+  for(const d of chronological){
+    const r = entryRCache[d];
+    running += (typeof r === 'number' ? r : 0);
+    runningRCache[d] = running;
+  }
+}
+
+async function ensureAllRCached(){
+  const uncached = entryDateIndex.filter(d => entryRCache[d] === undefined);
+  if(uncached.length) await loadRCacheForDates(uncached);
+  rebuildRunningRCache();
+}
+
+let saveTimer = null;
+
+// Grows a textarea to fit its content instead of scrolling internally.
+function autoGrow(ta){
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+function fmtDow(dateStr){
+  const d = new Date(dateStr+'T12:00:00');
+  return d.toLocaleDateString('en-US', {weekday:'long'});
+}
+function fmtPretty(dateStr){
+  const d = new Date(dateStr+'T12:00:00');
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+/* ---------------- load / save ---------------- */
+async function loadEntry(date){
+  const raw = await sGet('entry:'+date);
+  if(raw){
+    try{
+      const parsed = JSON.parse(raw);
+      SECTION_DEFS.forEach(s=>{
+        if(!parsed.sections[s.key]) parsed.sections[s.key] = blankSection();
+        const sec = parsed.sections[s.key];
+        if(sec.m7BoxRetrace===undefined) sec.m7BoxRetrace='';
+        if(!sec.links) sec.links=[];
+        if(sec.confluenceLink===undefined) sec.confluenceLink='';
+        if(sec.selfScore===undefined) sec.selfScore='';
+        if(sec.reEngineeringScore===undefined) sec.reEngineeringScore='';
+        if(!sec.dbUpdates) sec.dbUpdates={};
+        EOD_DB_UPDATE_DEFS.forEach(f=>{ if(sec.dbUpdates[f.key]===undefined) sec.dbUpdates[f.key]=false; });
+      });
+      if(!parsed.trades) parsed.trades = [];
+      parsed.trades.forEach(t=>{ if(t.reviewOpen===undefined) t.reviewOpen=false; if(!t.links) t.links=[]; if(!t.tags) t.tags=[]; });
+      if(!parsed.candles) parsed.candles = {};
+      CANDLE_DEFS.forEach(c=>{ if(!parsed.candles[c.key]) parsed.candles[c.key] = blankCandle(); else if(!parsed.candles[c.key].links) parsed.candles[c.key].links=[]; });
+      if(!parsed.redFlags) parsed.redFlags = {};
+      // one-time migration: Turnaround Thursday moved from Red Flags to the
+      // pre-market Checks group — carry over any previously-flagged value.
+      if(!parsed.boxChecklist) parsed.boxChecklist = {};
+      if(!parsed.post1030Checklist) parsed.post1030Checklist = {};
+      if(parsed.redFlags.turnaroundThursday === true && !parsed.boxChecklist.turnaroundThursday){
+        parsed.boxChecklist.turnaroundThursday = 'X';
+      }
+      delete parsed.redFlags.turnaroundThursday;
+      // one-time migration: Turnaround Thursday moved BACK from the pre-market checklist
+      // into Red Flags, this time under the Reversal Signal group.
+      if(parsed.boxChecklist.turnaroundThursday === 'X'){
+        parsed.redFlags.turnaroundThursday = true;
+      }
+      delete parsed.boxChecklist.turnaroundThursday;
+      // one-time migration: Days Chained removed from the pre-market checklist entirely
+      delete parsed.boxChecklist.daysChained;
+      // one-time migration: ODRS Endpoint removed from the pre-market checklist entirely
+      delete parsed.boxChecklist.odrsEndpoint;
+      if(parsed.boxChecklistTags) delete parsed.boxChecklistTags.daysChained;
+      // one-time migration: ADRCs moved from the pre-market checklist to After 1030
+      if(parsed.boxChecklist.adrcs === 'X' && !parsed.post1030Checklist.adrcs){
+        parsed.post1030Checklist.adrcs = 'X';
+      }
+      delete parsed.boxChecklist.adrcs;
+      // one-time migration: SVP split into SVP LTF / SVP HTF — seed both from the old single value
+      if(parsed.boxChecklist.svp === 'X'){
+        if(!parsed.boxChecklist.svpLtf) parsed.boxChecklist.svpLtf = 'X';
+        if(!parsed.boxChecklist.svpHtf) parsed.boxChecklist.svpHtf = 'X';
+      }
+      delete parsed.boxChecklist.svp;
+      // one-time migration: SVP HTF moved from Checks (checkbox) to Directional (U/D/N) —
+      // an old checked value doesn't map to a direction, so just clear it and let it be reset live.
+      if(parsed.boxChecklist.svpHtf === 'X'){ parsed.boxChecklist.svpHtf = ''; }
+      RED_FLAG_DEFS.forEach(f=>{ if(parsed.redFlags[f.key]===undefined) parsed.redFlags[f.key]=false; });
+      if(!parsed.redFlagTags) parsed.redFlagTags = {};
+      RED_FLAG_TAG_FIELDS.forEach(k=>{ if(!parsed.redFlagTags[k]) parsed.redFlagTags[k]=[]; });
+      BOX_CHECKLIST_DEFS.forEach(f=>{ if(!parsed.boxChecklist[f.key]) parsed.boxChecklist[f.key]=''; });
+      if(!parsed.boxChecklistModels) parsed.boxChecklistModels = {};
+      // one-time migration: the model-tag input moved from RDR Seq to the RDR Model checkbox
+      if(parsed.boxChecklistModels.rdr && !parsed.boxChecklistModels.rdrModel){
+        parsed.boxChecklistModels.rdrModel = parsed.boxChecklistModels.rdr;
+      }
+      delete parsed.boxChecklistModels.rdr;
+      MODEL_TAG_FIELDS.forEach(k=>{ if(!parsed.boxChecklistModels[k]) parsed.boxChecklistModels[k]=''; });
+      if(!parsed.boxChecklistLinks) parsed.boxChecklistLinks = {};
+      CHECKLIST_LINK_FIELDS.forEach(k=>{ if(!parsed.boxChecklistLinks[k]) parsed.boxChecklistLinks[k]=[]; });
+      if(!parsed.boxChecklistTags) parsed.boxChecklistTags = {};
+      CHECKLIST_TAG_FIELDS.forEach(k=>{ if(!parsed.boxChecklistTags[k]) parsed.boxChecklistTags[k]=[]; });
+      POST1030_CHECKLIST_DEFS.forEach(f=>{ if(!parsed.post1030Checklist[f.key]) parsed.post1030Checklist[f.key]=''; });
+      // Always start every day fully collapsed — cleaner to open just what you want to look at
+      // rather than re-showing whatever happened to be open/closed last time.
+      SECTION_DEFS.forEach(s=>{ parsed.sections[s.key].collapsed = true; });
+      parsed.tradesCollapsed = true;
+      parsed.candlesCollapsed = true;
+      return parsed;
+    }catch(e){ return blankEntry(date); }
+  }
+  return blankEntry(date);
+}
+
+function setSaveState(state){
+  const el = document.getElementById('saveState');
+  el.classList.remove('saved','error');
+  if(state==='saving'){ el.textContent='saving…'; }
+  else if(state==='saved'){ el.textContent='saved ✓'; el.classList.add('saved'); }
+  else if(state==='error'){ el.textContent='save failed — retrying…'; el.classList.add('error'); }
+  else { el.textContent = '—'; }
+}
+
+let retryTimer = null;
+
+function scheduleSave(){
+  setSaveState('saving');
+  clearTimeout(saveTimer);
+  clearTimeout(retryTimer);
+  saveTimer = setTimeout(()=> performSave(), 450);
+}
+
+async function performSave(){
+  const dateAtSaveTime = currentEntry.date;
+  const snapshot = JSON.stringify(currentEntry);
+  const ok = await sSetSafe('entry:'+dateAtSaveTime, snapshot);
+  // If the user has since navigated to a different day, that day's own save
+  // cycle owns the UI state now — don't stomp on it.
+  if(dateAtSaveTime !== currentEntry.date) return;
+  if(ok){
+    if(!entryDateIndex.includes(dateAtSaveTime)){ entryDateIndex.push(dateAtSaveTime); entryDateIndex.sort().reverse(); }
+    const newR = computeTotalR(currentEntry.trades);
+    if(entryRCache[dateAtSaveTime] !== newR){ entryRCache[dateAtSaveTime] = newR; rebuildRunningRCache(); renderEntryList(); }
+    setSaveState('saved');
+  } else {
+    // sSetSafe already retried several times with backoff and failed — the storage
+    // backend is having a rough moment. Nothing is lost (currentEntry still holds
+    // everything in memory), so quietly keep trying in the background rather than
+    // just dumping an error and giving up.
+    setSaveState('error');
+    retryTimer = setTimeout(()=> performSave(), 4000);
+  }
+}
+
+/* ---------------- tags master list ---------------- */
+async function loadTags(){
+  const raw = await sGet('tags:master');
+  allTags = raw ? JSON.parse(raw) : [];
+}
+async function saveTags(){ await sSet('tags:master', JSON.stringify(allTags)); }
+async function ensureTag(t){
+  t = t.trim();
+  if(!t) return null;
+  if(!allTags.includes(t)){ allTags.push(t); allTags.sort(); await saveTags(); renderTagList(); }
+  return t;
+}
+
+/* ---------------- link handling ---------------- */
+function tvShortUrl(url){
+  try{ return decodeURIComponent(url).replace('https://www.tradingview.com/x/','TV/').replace('https://www.tradingview.com/','TV/'); }
+  catch(e){ return url; }
+}
+function normLink(item){
+  if(typeof item === 'string') return {url:item, tag:''};
+  return {url:item.url||'', tag:item.tag||''};
+}
+function linkGridHTML(links, kind, key){
+  if(!links||!links.length) return '';
+  return `<div class="linkgrid">${links.map((raw,idx)=>{
+    const link = normLink(raw);
+    return `<div class="linkcard">
+      <span class="tv-icon">📈</span>
+      <div class="linkcard-body">
+        <input class="linkcard-tag" type="text" placeholder="+ label this link" data-linktagkind="${kind}" data-linktagkey="${escapeAttr(key)}" data-linktagidx="${idx}" value="${escapeAttr(link.tag)}">
+        <a href="${escapeAttr(link.url)}" target="_blank" rel="noopener">${escapeHtml(tvShortUrl(link.url))}</a>
+      </div>
+      <button class="rm" data-rmlinkkind="${kind}" data-rmlinkkey="${escapeAttr(key)}" data-rmlinkidx="${idx}">×</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+function linkInputHTML(placeholder, kind, key){
+  return `<div class="linkinput-row"><input type="text" placeholder="${placeholder}" data-linkkind="${kind}" data-linkkey="${escapeAttr(key)}"><button class="small">+ Add</button></div>`;
+}
+
+/* ---------------- entry index for sidebar ---------------- */
+async function loadEntryIndex(){
+  const keys = await sList('entry:');
+  entryDateIndex = keys.map(k=>k.replace('entry:','')).sort().reverse();
+}
+
+async function loadRCacheForDates(dates){
+  for(const d of dates){
+    if(entryRCache[d] !== undefined) continue;
+    const raw = await sGet('entry:'+d);
+    if(!raw){ entryRCache[d] = null; continue; }
+    try{
+      const parsed = JSON.parse(raw);
+      entryRCache[d] = computeTotalR(parsed.trades);
+    }catch(e){ entryRCache[d] = null; }
+  }
+}
+
+function renderEntryList(){
+  const el = document.getElementById('entryListItems');
+  if(entryDateIndex.length===0){ el.innerHTML = '<div class="empty" style="padding:8px 0;">no entries yet</div>'; return; }
+  const visible = entryDateIndex.slice(0,30);
+  el.innerHTML = visible.map(d=>{
+    const active = d===currentDate ? 'active' : '';
+    const r = entryRCache[d];
+    const running = runningRCache[d];
+    let dailyHtml = '';
+    if(typeof r === 'number' && r !== 0){
+      const cls = r > 0 ? 'r-pos' : 'r-neg';
+      const sign = r > 0 ? '+' : '';
+      dailyHtml = `<span class="entry-r ${cls}">${sign}${r.toFixed(1)}R</span>`;
+    }
+    let runningHtml = '';
+    if(typeof running === 'number' && running !== 0){
+      const cls = running > 0 ? 'r-pos' : 'r-neg';
+      const sign = running > 0 ? '+' : '';
+      runningHtml = `<span class="entry-r-running ${cls}">Σ${sign}${running.toFixed(1)}</span>`;
+    }
+    return `<div class="entryitem ${active}" data-date="${d}"><span>${fmtPretty(d)}</span><span class="entry-r-group">${runningHtml}${dailyHtml}</span></div>`;
+  }).join('');
+  el.querySelectorAll('.entryitem').forEach(it=>{
+    it.addEventListener('click', ()=> gotoDate(it.dataset.date));
+  });
+  // Running totals need every prior day's R, not just what's visible — kick off a
+  // full background fetch (cheap once cached) rather than only the visible slice.
+  const uncached = entryDateIndex.filter(d=>entryRCache[d]===undefined);
+  if(uncached.length){
+    ensureAllRCached().then(()=> renderEntryList());
+  } else if(Object.keys(runningRCache).length === 0){
+    rebuildRunningRCache();
+    renderEntryList();
+  }
+}
+
+function renderTagList(){
+  const el = document.getElementById('tagListItems');
+  if(allTags.length===0){ el.innerHTML = '<div class="empty" style="padding:8px 0;">no tags yet</div>'; return; }
+  el.innerHTML = allTags.map(t=>`<div class="tagchip" data-tag="${t}">${t}</div>`).join('');
+  el.querySelectorAll('.tagchip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      switchMode('search');
+      document.getElementById('searchInput').value = c.dataset.tag;
+      runSearch(c.dataset.tag);
+    });
+  });
+}
+
+/* ---------------- rendering the entry form ---------------- */
+function snippet(text, n=160){ if(!text) return ''; return text.length>n ? text.slice(0,n)+'…' : text; }
+
+function sectionHTML(secKey, secLabel, data){
+  const tagsHtml = data.tags.map(t=>`<span class="tag" data-sec="${secKey}" data-tag="${t}">${t}<span class="x" data-remove-tag="${t}">×</span></span>`).join('');
+  return `
+  <div class="section ${data.collapsed?'collapsed':''}" data-section="${secKey}">
+    <div class="section-head" data-toggle="${secKey}">
+      <h2><span class="chev">▾</span> ${secLabel}</h2>
+      <div class="meta">${data.tags.length?`<span class="pillcount">${data.tags.length} tag${data.tags.length>1?'s':''}</span>`:''}${(data.links||[]).length?`<span class="pillcount">${data.links.length} link${data.links.length>1?'s':''}</span>`:''}</div>
+    </div>
+    <div class="section-body">
+      <div class="field-label">What I was thinking, live</div>
+      <textarea data-field="live" data-sec="${secKey}" placeholder="What did you see? What was the thesis at this moment?">${escapeHtml(data.live)}</textarea>
+
+      ${secKey === 'open' ? `
+        <div class="field-label">ODR or ADR M7Box retrace?</div>
+        <div class="m7retrace-row" data-sec="${secKey}">
+          ${['ODR','ADR','Neither'].map(opt=>`
+            <button class="m7retrace-btn ${data.m7BoxRetrace===opt?'active':''}" data-retrace="${opt}" data-retracekey="${secKey}">${opt}</button>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${secKey === 'eod' ? `
+        <div class="field-label">Confluences</div>
+        <div class="linkinput-row" style="margin-top:0;">
+          <input type="text" placeholder="paste TradingView link…" data-confluencesec="${secKey}" value="${escapeAttr(data.confluenceLink||'')}">
+        </div>
+        ${data.confluenceLink ? `
+          <div class="linkgrid">
+            <div class="linkcard">
+              <span class="tv-icon">📈</span>
+              <a href="${escapeAttr(data.confluenceLink)}" target="_blank" rel="noopener">${escapeHtml(tvShortUrl(data.confluenceLink))}</a>
+              <button class="rm" data-rmconfluencesec="${secKey}">×</button>
+            </div>
+          </div>
+        ` : ''}
+
+        <div style="display:flex; gap:24px; margin-top:14px; flex-wrap:wrap;">
+          <div>
+            <div class="field-label" style="margin-top:0;">Self Score <span style="color:var(--muted-2);">/ 10</span></div>
+            <input type="number" class="scoreinput" min="0" max="10" step="1" placeholder="—" data-eodscore="selfScore" value="${escapeAttr(data.selfScore||'')}">
+          </div>
+          <div>
+            <div class="field-label" style="margin-top:0;">Re-Engineering Score <span style="color:var(--muted-2);">/ 10</span></div>
+            <input type="number" class="scoreinput" min="0" max="10" step="1" placeholder="—" data-eodscore="reEngineeringScore" value="${escapeAttr(data.reEngineeringScore||'')}">
+          </div>
+        </div>
+      ` : ''}
+
+      ${data.reviewOpen ? `
+        <div class="reviewblock">
+          <div class="field-label" style="color:var(--green);">Review — looking back, cold</div>
+          <textarea class="review" data-field="review" data-sec="${secKey}" placeholder="What actually happened? Where did the live read diverge?">${escapeHtml(data.review)}</textarea>
+        </div>
+      ` : `<button class="reviewtoggle" data-addreview="${secKey}">+ add review pass</button>`}
+
+      ${secKey === 'eod' ? `
+        <div class="field-label">End of Day Checklist</div>
+        <div class="cl-grid">
+          ${EOD_DB_UPDATE_DEFS.map(f=>{
+            const checked = !!(data.dbUpdates && data.dbUpdates[f.key]);
+            return `
+            <label class="rf-item ${checked?'checked-gray':''}">
+              <input type="checkbox" data-dbupdate="${f.key}" data-dbupdatesec="${secKey}" ${checked?'checked':''}>
+              <span class="rf-box">${checked?'✓':''}</span>
+              <span class="rf-label">${f.label}</span>
+            </label>`;
+          }).join('')}
+        </div>
+      ` : `
+        <div class="tagrow">
+          ${tagsHtml}
+          <div class="tagadd"><input type="text" placeholder="+ tag" data-tagsec="${secKey}"></div>
+        </div>
+      `}
+      ${linkInputHTML('paste TradingView link…','section',secKey)}
+      ${linkGridHTML(data.links||[], 'section', secKey)}
+    </div>
+  </div>`;
+}
+
+function tradeHTML(t, idx){
+  const tagsHtml = t.tags.map(tg=>`<span class="tag" data-trade="${t.id}" data-tag="${tg}">${tg}<span class="x" data-removetradetag="${t.id}|${tg}">×</span></span>`).join('');
+  return `
+  <div class="tradecard" data-trade="${t.id}">
+    <div class="tradecard-top">
+      <input class="w-time" type="text" placeholder="time e.g. 09:53" data-tfield="time" data-tid="${t.id}" value="${escapeAttr(t.time)}">
+      <select class="w-dir" data-tfield="dir" data-tid="${t.id}">
+        <option ${t.dir==='LONG'?'selected':''}>LONG</option>
+        <option ${t.dir==='SHORT'?'selected':''}>SHORT</option>
+      </select>
+      <input class="w-model" type="text" placeholder="setup / model" data-tfield="model" data-tid="${t.id}" value="${escapeAttr(t.model)}">
+      <input class="w-r" type="text" placeholder="R result" data-tfield="r" data-tid="${t.id}" value="${escapeAttr(t.r)}">
+      <button class="small danger trade-remove" data-removetrade="${t.id}">remove</button>
+    </div>
+    <div class="field-label">What I was thinking, live</div>
+    <textarea data-tfield="live" data-tid="${t.id}" placeholder="Reasoning for entry...">${escapeHtml(t.live)}</textarea>
+    ${t.reviewOpen ? `
+      <div class="reviewblock">
+        <div class="field-label" style="color:var(--green);">Review — looking back, cold</div>
+        <textarea class="review" data-tfield="review" data-tid="${t.id}" placeholder="What actually happened on this trade?">${escapeHtml(t.review)}</textarea>
+      </div>
+    ` : `<button class="reviewtoggle" data-addtradereview="${t.id}">+ add review pass</button>`}
+    <div class="tagrow">
+      ${tagsHtml}
+      <div class="tagadd"><input type="text" placeholder="+ tag" data-tradetagid="${t.id}"></div>
+    </div>
+    ${linkInputHTML('paste TradingView link…','trade',t.id)}
+    ${linkGridHTML(t.links||[], 'trade', t.id)}
+  </div>`;
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escapeAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+
+function candleHTML(cKey, cLabel, data){
+  return `
+  <div class="candlecard" data-candle="${cKey}">
+    <div class="candlecard-label">${cLabel}</div>
+    <div class="candlecard-fields">
+      <input type="text" placeholder="time e.g. 09:31" data-cfield="time" data-ckey="${cKey}" value="${escapeAttr(data.time)}">
+      <input type="text" placeholder="tag" data-cfield="tag" data-ckey="${cKey}" value="${escapeAttr(data.tag)}">
+    </div>
+    ${linkInputHTML('paste TradingView link…','candle',cKey)}
+    ${linkGridHTML(data.links||[], 'candle', cKey)}
+  </div>`;
+}
+
+function checklistBlockHTML(title, subtitle, defs, data, dataKey, models, clLinks, clTags){
+  const cycleDefs = defs.filter(f=>!CHECK_ONLY_FIELDS.has(f.key));
+  const checkDefs = defs.filter(f=>CHECK_ONLY_FIELDS.has(f.key));
+  const udCountable = cycleDefs.filter(f=>!EXCLUDE_FROM_UD_COUNT.has(f.key));
+  const uCount = udCountable.filter(f=>data[f.key]==='U'||data[f.key]==='E').length;
+  const dCount = udCountable.filter(f=>data[f.key]==='D'||data[f.key]==='C').length;
+  const nCount = udCountable.filter(f=>data[f.key]==='N').length;
+  const checkedCount = checkDefs.filter(f=>data[f.key]==='X').length;
+  // Whichever directional side (Up vs Down) has more votes among the cycling fields "wins" —
+  // emphasize it so the overall lean is visible at a glance instead of doing the math yourself.
+  const biasWinner = (uCount>0 || dCount>0) && uCount!==dCount ? (uCount>dCount ? 'U' : 'D') : null;
+  const summary = (uCount||dCount||nCount||checkedCount)
+    ? `${uCount?`<span class="cl-u-count${biasWinner==='U'?' cl-winning':''}">${uCount}U</span>`:''} ${dCount?`<span class="cl-d-count${biasWinner==='D'?' cl-winning':''}">${dCount}D</span>`:''} ${nCount?`<span class="cl-n-count">${nCount}N</span>`:''} ${checkedCount?`<span class="cl-chk-count">${checkedCount}✓</span>`:''}`
+    : '';
+  const biasBadge = biasWinner
+    ? `<span class="cl-bias cl-bias-${biasWinner}">${biasWinner==='U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>`
+    : '';
+
+  function renderGrid(defsSubset){
+    return `<div class="cl-grid">
+      ${defsSubset.map(f=>{
+        const v = data[f.key]||'';
+        const isCheckOnly = CHECK_ONLY_FIELDS.has(f.key);
+        const hasModel = models && MODEL_TAG_FIELDS.has(f.key);
+        const hasTags = clTags && CHECKLIST_TAG_FIELDS.has(f.key);
+        const modelVal = hasModel ? (models[f.key]||'') : '';
+        const tagList = hasTags ? (clTags[f.key]||[]) : [];
+        const itemClass = isCheckOnly ? (v==='X' ? (HIGHLIGHT_YELLOW_FIELDS.has(f.key) ? 'CHKY' : 'CHK') : '') : v;
+        const badgeTxt = isCheckOnly ? (v==='X' ? '✓' : '·') : (v||'·');
+        return `
+        <div class="cl-item-wrap ${hasModel?'has-model':''} ${hasTags?'has-cltags':''}">
+          <div class="cl-item ${itemClass}" data-clitemkey="${dataKey}" data-clfield="${f.key}" data-clcheckonly="${isCheckOnly?'1':'0'}">
+            <span class="cl-badge">${badgeTxt}</span>
+            <span class="cl-item-label">${f.label}</span>
+          </div>
+          ${hasModel ? `<input class="cl-model-input" type="text" placeholder="model tag" data-clmodelkey="${f.key}" value="${escapeAttr(modelVal)}">` : ''}
+          ${hasTags ? `
+            <div class="tagrow" style="margin-top:6px;">
+              ${tagList.map(t=>`<span class="tag" data-cltagfield="${f.key}" data-tag="${escapeAttr(t)}">${escapeHtml(t)}<span class="x" data-rmcltag="${f.key}|${escapeAttr(t)}">×</span></span>`).join('')}
+              <div class="tagadd"><input type="text" placeholder="+ tag" data-cltagfieldkey="${f.key}"></div>
+            </div>
+          ` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const gridsHtml = checkDefs.length
+    ? `
+      <div class="cl-subgroup-label">Directional</div>
+      ${renderGrid(cycleDefs)}
+      <div class="cl-subgroup-label">Checks</div>
+      ${renderGrid(checkDefs)}
+    `
+    : renderGrid(cycleDefs);
+
+  return `
+  <div class="cl-block" data-clkey="${dataKey}">
+    <div class="cl-head">
+      <div>
+        <div class="cl-title">${title}</div>
+        <div class="cl-sub">${subtitle}</div>
+      </div>
+      <div class="cl-summary">${biasBadge}${summary}</div>
+    </div>
+    ${gridsHtml}
+  </div>`;
+}
+
+function renderEntry(){
+  const e = currentEntry;
+  const main = document.getElementById('mainEntry');
+  main.innerHTML = `
+    <div class="daytitle">
+      <h1>${fmtPretty(e.date)}</h1>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span class="dow">${fmtDow(e.date)}</span>
+        <button id="exportBtn" class="small">⇩ Export Day</button>
+      </div>
+    </div>
+    <div class="daysub"><input type="text" id="dayNoteInput" placeholder="One-line context for the day (market state, RC weekly model, etc.)" value="${escapeAttr(e.dayNote)}"></div>
+    <div class="redflag-block">
+      <div class="redflag-title">
+        <span class="rf-icon">⚑</span> Red Flags
+        ${(()=>{
+          const rc = !!e.redFlags.rcModel, rx = !!e.redFlags.rxModel;
+          let modelBadge = '';
+          if(rc && rx) modelBadge = `<span class="rf-badge rf-badge-yellow">CAUTION</span>`;
+          else if(rc) modelBadge = `<span class="rf-badge rf-badge-green">🟢 GREEN LIGHT</span>`;
+          else if(rx) modelBadge = `<span class="rf-badge rf-badge-red">🔴 RED LIGHT</span>`;
+
+          const outsideDayChecked = OUTSIDE_DAY_FIELDS.some(k=>e.redFlags[k]);
+          const reversalChecked = REVERSAL_FIELDS.some(k=>e.redFlags[k]);
+
+          const genericDefs = RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key));
+          const amplifierCount = genericDefs.filter(f=>!YELLOW_FLAG_FIELDS.has(f.key) && e.redFlags[f.key]).length;
+          const cautionCount = genericDefs.filter(f=>YELLOW_FLAG_FIELDS.has(f.key) && e.redFlags[f.key]).length;
+
+          return `
+            ${modelBadge}
+            ${outsideDayChecked ? `<span class="rf-badge rf-badge-info">↔ OUTSIDE DAY PROBABLE</span>` : ''}
+            ${reversalChecked ? `<span class="rf-badge rf-badge-orange">↻ REVERSAL LIKELY</span>` : ''}
+            ${cautionCount?`<span class="rf-count rf-count-yellow">${cautionCount} caution</span>`:''}
+            ${amplifierCount?`<span class="rf-count rf-count-gray">${amplifierCount} amplifier${amplifierCount>1?'s':''}</span>`:''}
+          `;
+        })()}
+      </div>
+
+      <div class="rf-signal-group">
+        <div class="rf-signal-label">Model Signal</div>
+        <div class="rf-signal-row">
+          <label class="rf-item ${e.redFlags.rcModel?'checked-green':''}">
+            <input type="checkbox" data-rfkey="rcModel" ${e.redFlags.rcModel?'checked':''}>
+            <span class="rf-box">${e.redFlags.rcModel?'✓':''}</span>
+            <span class="rf-label">${RED_FLAG_DEFS.find(f=>f.key==='rcModel').label}</span>
+          </label>
+          <label class="rf-item ${e.redFlags.rxModel?'checked':''}">
+            <input type="checkbox" data-rfkey="rxModel" ${e.redFlags.rxModel?'checked':''}>
+            <span class="rf-box">${e.redFlags.rxModel?'✓':''}</span>
+            <span class="rf-label">${RED_FLAG_DEFS.find(f=>f.key==='rxModel').label}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="rf-signal-label">Caution</div>
+      <div class="redflag-grid" style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line);">
+        ${RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && YELLOW_FLAG_FIELDS.has(f.key)).map(f=>{
+          const hasTags = RED_FLAG_TAG_FIELDS.has(f.key);
+          const tagList = hasTags ? ((e.redFlagTags||{})[f.key]||[]) : [];
+          return `
+          <div class="rf-item-wrap">
+            <label class="rf-item ${e.redFlags[f.key]?'checked-yellow':''}">
+              <input type="checkbox" data-rfkey="${f.key}" ${e.redFlags[f.key]?'checked':''}>
+              <span class="rf-box">${e.redFlags[f.key]?'✓':''}</span>
+              <span class="rf-label">${f.label}</span>
+            </label>
+            ${hasTags ? `
+              <div class="tagrow" style="margin-top:4px; margin-left:8px;">
+                ${tagList.map(t=>`<span class="tag" data-rftagfield="${f.key}" data-tag="${escapeAttr(t)}">${escapeHtml(t)}<span class="x" data-rmrftag="${f.key}|${escapeAttr(t)}">×</span></span>`).join('')}
+                <div class="tagadd"><input type="text" placeholder="+ tag" data-rftagfieldkey="${f.key}"></div>
+              </div>
+            ` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+
+      ${(()=>{
+        const outsideDefs = OUTSIDE_DAY_FIELDS.map(k=>RED_FLAG_DEFS.find(f=>f.key===k));
+        const anyChecked = OUTSIDE_DAY_FIELDS.some(k=>e.redFlags[k]);
+        return `
+        <div class="rf-signal-group">
+          <div class="rf-signal-label">Outside Day Signal</div>
+          <div class="rf-signal-row">
+            ${outsideDefs.map(f=>`
+              <label class="rf-item ${e.redFlags[f.key]?'checked-info':''}">
+                <input type="checkbox" data-rfkey="${f.key}" ${e.redFlags[f.key]?'checked':''}>
+                <span class="rf-box">${e.redFlags[f.key]?'✓':''}</span>
+                <span class="rf-label">${f.label}</span>
+              </label>
+            `).join('')}
+          </div>
+          ${anyChecked ? `<span class="rf-badge rf-badge-info">↔ OUTSIDE DAY PROBABLE</span>` : ''}
+        </div>`;
+      })()}
+
+      ${(()=>{
+        const revDefs = REVERSAL_FIELDS.map(k=>RED_FLAG_DEFS.find(f=>f.key===k));
+        const anyChecked = REVERSAL_FIELDS.some(k=>e.redFlags[k]);
+        return `
+        <div class="rf-signal-group" style="border-bottom:none; margin-bottom:8px; padding-bottom:0;">
+          <div class="rf-signal-label">Reversal Signal</div>
+          <div class="rf-signal-row">
+            ${revDefs.map(f=>`
+              <label class="rf-item ${e.redFlags[f.key]?'checked-orange':''}">
+                <input type="checkbox" data-rfkey="${f.key}" ${e.redFlags[f.key]?'checked':''}>
+                <span class="rf-box">${e.redFlags[f.key]?'✓':''}</span>
+                <span class="rf-label">${f.label}</span>
+              </label>
+            `).join('')}
+          </div>
+          ${anyChecked ? `<span class="rf-badge rf-badge-orange">↻ REVERSAL LIKELY</span>` : ''}
+        </div>`;
+      })()}
+
+      <div class="rf-subgroup-label" style="border-top:1px solid var(--line); padding-top:14px;">Amplifiers</div>
+      <div class="redflag-grid">
+        ${RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && !YELLOW_FLAG_FIELDS.has(f.key)).map(f=>`
+          <label class="rf-item ${e.redFlags[f.key]?'checked-gray':''}">
+            <input type="checkbox" data-rfkey="${f.key}" ${e.redFlags[f.key]?'checked':''}>
+            <span class="rf-box">${e.redFlags[f.key]?'✓':''}</span>
+            <span class="rf-label">${f.label}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    ${checklistBlockHTML('0930–1030 Box Formation', 'Pre-market · Box Reversal', BOX_CHECKLIST_DEFS, e.boxChecklist, 'boxChecklist', e.boxChecklistModels, e.boxChecklistLinks, e.boxChecklistTags)}
+    ${checklistBlockHTML('After 1030', 'RBC · M7X', POST1030_CHECKLIST_DEFS, e.post1030Checklist, 'post1030Checklist', null, null, null)}
+    ${SECTION_DEFS.map(s=>sectionHTML(s.key, s.label, e.sections[s.key])).join('')}
+    <div class="section ${e.tradesCollapsed?'collapsed':''}" data-section="trades">
+      <div class="section-head" data-toggle="trades">
+        <h2><span class="chev">▾</span> Trade Thoughts</h2>
+        <div class="meta">
+          ${e.trades.length?`<span class="pillcount">${e.trades.length} trade${e.trades.length>1?'s':''}</span>`:''}
+          ${(()=>{
+            const total = e.trades.reduce((sum,t)=>{ const v=parseFloat(t.r); return sum+(isNaN(v)?0:v); },0);
+            if(!e.trades.length || total===0) return '';
+            const color = total>0?'var(--green)':'var(--red)';
+            const sign  = total>0?'+':'';
+            return `<span class="pillcount" style="color:${color};border-color:${color};">${sign}${total.toFixed(2)}R</span>`;
+          })()}
+        </div>
+      </div>
+      <div class="section-body" id="tradesBody">
+        ${e.trades.map((t,i)=>tradeHTML(t,i)).join('')}
+        <button class="addbtn" id="addTradeBtn">+ add trade</button>
+      </div>
+    </div>
+    <div class="section ${e.candlesCollapsed?'collapsed':''}" data-section="candles">
+      <div class="section-head" data-toggle="candles">
+        <h2><span class="chev">▾</span> Key Candles</h2>
+      </div>
+      <div class="section-body">
+        <div class="candle-grid">
+          ${CANDLE_DEFS.map(c=>candleHTML(c.key, c.label, e.candles[c.key])).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  wireEntryEvents();
+}
+
+function findSection(key){ return currentEntry.sections[key]; }
+function findTrade(id){ return currentEntry.trades.find(t=>t.id===id); }
+
+function wireEntryEvents(){
+  document.getElementById('dayNoteInput').addEventListener('input', e=>{
+    currentEntry.dayNote = e.target.value; scheduleSave();
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', exportDay);
+
+  document.querySelectorAll('input[data-rfkey]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      currentEntry.redFlags[cb.dataset.rfkey] = cb.checked;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-dbupdate]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const sec = findSection(cb.dataset.dbupdatesec);
+      if(!sec.dbUpdates) sec.dbUpdates = {};
+      sec.dbUpdates[cb.dataset.dbupdate] = cb.checked;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-clitemkey]').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const listKey  = item.dataset.clitemkey;
+      const fieldKey = item.dataset.clfield;
+      const cur      = currentEntry[listKey][fieldKey] || '';
+      let next;
+      if(item.dataset.clcheckonly === '1'){
+        next = cur==='X' ? '' : 'X';
+      } else if(fieldKey === 'odrsEndpoint'){
+        next = cur==='' ? 'E' : cur==='E' ? 'C' : cur==='C' ? 'N' : '';
+      } else {
+        next = cur==='' ? 'U' : cur==='U' ? 'D' : cur==='D' ? 'N' : '';
+      }
+      currentEntry[listKey][fieldKey] = next;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-clmodelkey]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      if(!currentEntry.boxChecklistModels) currentEntry.boxChecklistModels = {};
+      currentEntry.boxChecklistModels[inp.dataset.clmodelkey] = inp.value;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-cltagfieldkey]').forEach(inp=>{
+    wireTagInput(inp, async (val)=>{
+      if(!currentEntry.boxChecklistTags) currentEntry.boxChecklistTags = {};
+      const fieldKey = inp.dataset.cltagfieldkey;
+      if(!currentEntry.boxChecklistTags[fieldKey]) currentEntry.boxChecklistTags[fieldKey] = [];
+      const t = await ensureTag(val);
+      if(t && !currentEntry.boxChecklistTags[fieldKey].includes(t)){
+        currentEntry.boxChecklistTags[fieldKey].push(t);
+        renderEntry(); scheduleSave();
+      }
+    }, null);
+  });
+
+  document.querySelectorAll('[data-rmcltag]').forEach(x=>{
+    x.addEventListener('click', ()=>{
+      const [fieldKey, tag] = x.dataset.rmcltag.split('|');
+      if(currentEntry.boxChecklistTags && currentEntry.boxChecklistTags[fieldKey]){
+        currentEntry.boxChecklistTags[fieldKey] = currentEntry.boxChecklistTags[fieldKey].filter(t=>t!==tag);
+        renderEntry(); scheduleSave();
+      }
+    });
+  });
+
+  document.querySelectorAll('input[data-rftagfieldkey]').forEach(inp=>{
+    wireTagInput(inp, async (val)=>{
+      if(!currentEntry.redFlagTags) currentEntry.redFlagTags = {};
+      const fieldKey = inp.dataset.rftagfieldkey;
+      if(!currentEntry.redFlagTags[fieldKey]) currentEntry.redFlagTags[fieldKey] = [];
+      const t = await ensureTag(val);
+      if(t && !currentEntry.redFlagTags[fieldKey].includes(t)){
+        currentEntry.redFlagTags[fieldKey].push(t);
+        renderEntry(); scheduleSave();
+      }
+    }, null);
+  });
+
+  document.querySelectorAll('[data-rmrftag]').forEach(x=>{
+    x.addEventListener('click', ()=>{
+      const [fieldKey, tag] = x.dataset.rmrftag.split('|');
+      if(currentEntry.redFlagTags && currentEntry.redFlagTags[fieldKey]){
+        currentEntry.redFlagTags[fieldKey] = currentEntry.redFlagTags[fieldKey].filter(t=>t!==tag);
+        renderEntry(); scheduleSave();
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-retracekey]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sec = findSection(btn.dataset.retracekey);
+      sec.m7BoxRetrace = sec.m7BoxRetrace === btn.dataset.retrace ? '' : btn.dataset.retrace;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-confluencesec]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const sec = findSection(inp.dataset.confluencesec);
+      sec.confluenceLink = inp.value.trim();
+      scheduleSave();
+    });
+    inp.addEventListener('blur', ()=>{ renderEntry(); }); // re-render once done typing, to show the preview card
+  });
+
+  document.querySelectorAll('[data-rmconfluencesec]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sec = findSection(btn.dataset.rmconfluencesec);
+      sec.confluenceLink = '';
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-eodscore]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      let v = inp.value;
+      if(v !== ''){
+        let n = parseInt(v, 10);
+        if(isNaN(n)) n = '';
+        else n = Math.max(0, Math.min(10, n));
+        v = n === '' ? '' : String(n);
+      }
+      currentEntry.sections.eod[inp.dataset.eodscore] = v;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const key = h.dataset.toggle;
+      const card = h.closest('.section');
+      card.classList.toggle('collapsed');
+      const isCollapsed = card.classList.contains('collapsed');
+      if(key === 'trades'){ currentEntry.tradesCollapsed = isCollapsed; }
+      else if(key === 'candles'){ currentEntry.candlesCollapsed = isCollapsed; }
+      else { currentEntry.sections[key].collapsed = isCollapsed; }
+      // Textareas inside a collapsed (display:none) section can't be measured for
+      // auto-grow height — scrollHeight comes back 0/unreliable while hidden. Now
+      // that this section is visible again, recalculate every textarea inside it.
+      if(!isCollapsed){
+        card.querySelectorAll('textarea').forEach(ta => autoGrow(ta));
+      }
+    });
+  });
+
+  document.querySelectorAll('textarea[data-field]').forEach(ta=>{
+    autoGrow(ta);
+    ta.addEventListener('input', ()=>{
+      const sec = findSection(ta.dataset.sec);
+      sec[ta.dataset.field] = ta.value;
+      autoGrow(ta);
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-addreview]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      findSection(b.dataset.addreview).reviewOpen = true;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-tagsec]').forEach(inp=>{
+    wireTagInput(inp, async (val)=>{
+      const sec = findSection(inp.dataset.tagsec);
+      const t = await ensureTag(val);
+      if(t && !sec.tags.includes(t)){ sec.tags.push(t); renderEntry(); scheduleSave(); }
+    }, inp.dataset.tagsec);
+  });
+
+  document.querySelectorAll('[data-remove-tag]').forEach(x=>{
+    x.addEventListener('click', ()=>{
+      const secKey = x.closest('.tag').dataset.sec;
+      const sec = findSection(secKey);
+      sec.tags = sec.tags.filter(t=>t!==x.dataset.removeTag);
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('.linkcard .rm').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const kind = btn.dataset.rmlinkkind;
+      const key  = btn.dataset.rmlinkkey;
+      const idx  = parseInt(btn.dataset.rmlinkidx, 10);
+      let arr = null;
+      if(kind === 'section'){ const sec = findSection(key); if(sec) arr = sec.links; }
+      else if(kind === 'trade'){ const t = findTrade(key); if(t) arr = t.links; }
+      else if(kind === 'candle'){ if(currentEntry.candles[key]) arr = currentEntry.candles[key].links; }
+      if(arr && !isNaN(idx)){ arr.splice(idx, 1); renderEntry(); scheduleSave(); }
+    });
+  });
+
+  document.querySelectorAll('.linkcard-tag').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const kind = inp.dataset.linktagkind;
+      const key  = inp.dataset.linktagkey;
+      const idx  = parseInt(inp.dataset.linktagidx, 10);
+      let arr = null;
+      if(kind === 'section'){ const sec = findSection(key); if(sec) arr = sec.links; }
+      else if(kind === 'trade'){ const t = findTrade(key); if(t) arr = t.links; }
+      else if(kind === 'candle'){ if(currentEntry.candles[key]) arr = currentEntry.candles[key].links; }
+      if(arr && arr[idx] !== undefined){
+        arr[idx] = normLink(arr[idx]);
+        arr[idx].tag = inp.value;
+        scheduleSave();
+      }
+    });
+  });
+
+  document.querySelectorAll('.linkinput-row input[type=text]').forEach(inp=>{
+    inp.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); inp.closest('.linkinput-row').querySelector('button').click(); }
+    });
+  });
+
+  const addTradeBtn = document.getElementById('addTradeBtn');
+  if(addTradeBtn) addTradeBtn.addEventListener('click', ()=>{
+    currentEntry.trades.push(blankTrade());
+    renderEntry(); scheduleSave();
+  });
+
+  document.querySelectorAll('[data-removetrade]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      currentEntry.trades = currentEntry.trades.filter(t=>t.id!==b.dataset.removetrade);
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-tfield], select[data-tfield]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const t = findTrade(inp.dataset.tid);
+      t[inp.dataset.tfield] = inp.value; scheduleSave();
+    });
+    inp.addEventListener('change', ()=>{
+      const t = findTrade(inp.dataset.tid);
+      t[inp.dataset.tfield] = inp.value; scheduleSave();
+    });
+  });
+  document.querySelectorAll('textarea[data-tfield]').forEach(ta=>{
+    autoGrow(ta);
+    ta.addEventListener('input', ()=>{
+      const t = findTrade(ta.dataset.tid);
+      t[ta.dataset.tfield] = ta.value; autoGrow(ta); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-addtradereview]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      findTrade(b.dataset.addtradereview).reviewOpen = true;
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-tradetagid]').forEach(inp=>{
+    wireTagInput(inp, async (val)=>{
+      const t = findTrade(inp.dataset.tradetagid);
+      const tg = await ensureTag(val);
+      if(tg && !t.tags.includes(tg)){ t.tags.push(tg); renderEntry(); scheduleSave(); }
+    }, null);
+  });
+
+  document.querySelectorAll('[data-removetradetag]').forEach(x=>{
+    x.addEventListener('click', ()=>{
+      const [tid, tag] = x.dataset.removetradetag.split('|');
+      const t = findTrade(tid);
+      t.tags = t.tags.filter(g=>g!==tag);
+      renderEntry(); scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('input[data-cfield]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      currentEntry.candles[inp.dataset.ckey][inp.dataset.cfield] = inp.value;
+      scheduleSave();
+    });
+  });
+}
+
+function wireTagInput(inp, onCommit, scopeKey){
+  inp.addEventListener('keydown', async e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const v = inp.value.trim();
+      if(v){ await onCommit(v); inp.value=''; closeSuggest(); }
+    }
+  });
+  inp.addEventListener('input', ()=>{
+    const v = inp.value.trim().toLowerCase();
+    closeSuggest();
+    if(!v) return;
+    const matches = allTags.filter(t=>t.toLowerCase().includes(v)).slice(0,8);
+    if(matches.length===0) return;
+    const box = document.createElement('div');
+    box.className = 'tagsuggest';
+    box.innerHTML = matches.map(m=>`<div data-pick="${m}">${m}</div>`).join('');
+    inp.parentElement.appendChild(box);
+    box.querySelectorAll('div').forEach(d=>{
+      d.addEventListener('mousedown', async ev=>{
+        ev.preventDefault();
+        await onCommit(d.dataset.pick);
+        inp.value=''; closeSuggest();
+      });
+    });
+  });
+  inp.addEventListener('blur', ()=> setTimeout(closeSuggest, 150));
+}
+function closeSuggest(){ document.querySelectorAll('.tagsuggest').forEach(b=>b.remove()); }
+
+/* ---------------- export day as standalone shareable file ---------------- */
+function linkToTag(item){
+  const link = normLink(item);
+  const label = link.tag ? `<span style="color:#e7e5e0;font-weight:600;">${escapeHtml(link.tag)}</span> — ` : '';
+  return `<a href="${escapeAttr(link.url)}" target="_blank" style="color:#d2a44d;font-family:ui-monospace,Menlo,monospace;font-size:12px;display:block;padding:4px 0;">${label}${link.url.replace('https://www.tradingview.com/x/','TV/')}</a>`;
+}
+
+function hasContent(sec){
+  const dbChecked = sec.dbUpdates && Object.values(sec.dbUpdates).some(v=>v);
+  return (sec.live && sec.live.trim()) || (sec.review && sec.review.trim()) || sec.tags.length || (sec.links&&sec.links.length) || (sec.confluenceLink && sec.confluenceLink.trim()) || sec.selfScore || sec.reEngineeringScore || dbChecked;
+}
+
+function sectionExportBlock(label, sec, secKey){
+  if(!hasContent(sec) && !sec.m7BoxRetrace) return '';
+  let imgsHtml = (sec.links||[]).map(linkToTag).join('');
+  const checkedDbUpdates = secKey==='eod' ? EOD_DB_UPDATE_DEFS.filter(f=>sec.dbUpdates && sec.dbUpdates[f.key]) : [];
+  return `
+  <div class="xsection">
+    <h2>${label}</h2>
+    ${secKey==='open' && sec.m7BoxRetrace ? `<div class="xm7retrace">ODR or ADR M7Box retrace? <strong>${escapeHtml(sec.m7BoxRetrace)}</strong></div>` : ''}
+    ${secKey==='eod' && (sec.selfScore || sec.reEngineeringScore) ? `
+      <div style="display:flex; gap:20px; margin-bottom:14px;">
+        ${sec.selfScore ? `<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b8f9a;">Self Score <span style="color:#e7e5e0;font-weight:700;font-size:14px;">${escapeHtml(String(sec.selfScore))}</span>/10</div>` : ''}
+        ${sec.reEngineeringScore ? `<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b8f9a;">Re-Engineering Score <span style="color:#e7e5e0;font-weight:700;font-size:14px;">${escapeHtml(String(sec.reEngineeringScore))}</span>/10</div>` : ''}
+      </div>
+    ` : ''}
+    ${sec.live ? `<div class="xlive">${escapeHtml(sec.live).replace(/\n/g,'<br>')}</div>` : ''}
+    ${sec.review ? `<div class="xreview"><div class="xreview-label">Review</div>${escapeHtml(sec.review).replace(/\n/g,'<br>')}</div>` : ''}
+    ${secKey==='eod' ? (checkedDbUpdates.length ? `<div class="xtags">${checkedDbUpdates.map(f=>`<span>✓ ${f.label}</span>`).join('')}</div>` : '') : (sec.tags.length ? `<div class="xtags">${sec.tags.map(t=>`<span>${t}</span>`).join('')}</div>` : '')}
+    ${secKey==='eod' && sec.confluenceLink ? `<div style="margin-top:12px;"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#d2a44d;margin-bottom:4px;">Confluences</div>${linkToTag(sec.confluenceLink)}</div>` : ''}
+    ${imgsHtml ? `<div style="margin-top:8px;">${imgsHtml}</div>` : ''}
+  </div>`;
+}
+
+function tradeExportBlock(t, idx){
+  let imgsHtml = (t.links||[]).map(linkToTag).join('');
+  const rColor = (parseFloat(t.r)>=0) ? '#6fae7e' : '#c1685f';
+  return `
+  <div class="xsection">
+    <h2>Trade ${idx+1} ${t.time?('· '+t.time):''} ${t.dir?('· '+t.dir):''} ${t.model?('· '+t.model):''} ${t.r? `<span style="color:${rColor}">· ${t.r}R</span>`:''}</h2>
+    ${t.live ? `<div class="xlive">${escapeHtml(t.live).replace(/\n/g,'<br>')}</div>` : ''}
+    ${t.review ? `<div class="xreview"><div class="xreview-label">Review</div>${escapeHtml(t.review).replace(/\n/g,'<br>')}</div>` : ''}
+    ${(t.tags||[]).length ? `<div class="xtags">${t.tags.map(g=>`<span>${g}</span>`).join('')}</div>` : ''}
+    ${imgsHtml ? `<div style="margin-top:8px;">${imgsHtml}</div>` : ''}
+  </div>`;
+}
+
+async function buildExportHTML(entry){
+  let body = '';
+
+  function exportChecklistBlock(title, subtitle, defs, data, models, clImages, clTags){
+    const udCountable = defs.filter(f=>!EXCLUDE_FROM_UD_COUNT.has(f.key));
+    const uCount = udCountable.filter(f=>['U','E'].includes(data[f.key]||'')).length;
+    const dCount = udCountable.filter(f=>['D','C'].includes(data[f.key]||'')).length;
+    const nCount = udCountable.filter(f=>(data[f.key]||'')==='N').length;
+    const checkedCount = defs.filter(f=>(data[f.key]||'')==='X').length;
+    const hasAny = defs.some(f=>(data[f.key]||'')!=='') || (models && Object.values(models).some(v=>v)) || (clImages && Object.values(clImages).some(a=>a&&a.length>0)) || (clTags && Object.values(clTags).some(a=>a&&a.length>0));
+    if(!hasAny) return '';
+    const badgeColor = v => v==='U'||v==='E' ? '#6fae7e' : v==='D'||v==='C' ? '#c1685f' : v==='N'||v==='X' ? '#5d6170' : '#2c303a';
+    const badgeTxt  = v => v==='X' ? '✓' : (v || '·');
+    const biasWinner = (uCount>0 || dCount>0) && uCount!==dCount ? (uCount>dCount ? 'U' : 'D') : null;
+    const biasBadge = biasWinner
+      ? `<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:20px;margin-right:6px;color:${biasWinner==='U'?'#0f1a14':'#1a0f0f'};background:${biasWinner==='U'?'#6fae7e':'#c1685f'};">${biasWinner==='U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>`
+      : '';
+    return `
+    <div class="xcl-block">
+      <div class="xcl-head">
+        <div><div class="xcl-title">${title}</div><div class="xcl-sub">${subtitle}</div></div>
+        <div class="xcl-summary">
+          ${biasBadge}
+          ${uCount?`<span class="xcl-u" style="${biasWinner==='U'?'color:#fff;background:#6fae7e;font-weight:700;':''}">${uCount}U</span>`:''}
+          ${dCount?`<span class="xcl-d" style="${biasWinner==='D'?'color:#fff;background:#c1685f;font-weight:700;':''}">${dCount}D</span>`:''}
+          ${nCount?`<span style="color:#8b8f9a;">${nCount}N</span>`:''}
+          ${checkedCount?`<span style="color:#8b8f9a;">${checkedCount}✓</span>`:''}
+        </div>
+      </div>
+      <div class="xcl-grid">
+        ${defs.map(f=>{
+          const v = (data[f.key]||'');
+          const modelVal = models && MODEL_TAG_FIELDS.has(f.key) ? (models[f.key]||'') : '';
+          const tagList = clTags && CHECKLIST_TAG_FIELDS.has(f.key) ? (clTags[f.key]||[]) : [];
+          const isYellow = v==='X' && HIGHLIGHT_YELLOW_FIELDS.has(f.key);
+          const bColor = isYellow ? '#e6c43c' : badgeColor(v);
+          const bText  = isYellow ? '#1a1608' : (v?'#fff':'#5d6170');
+          return `<div class="xcl-item ${v}"><span class="xcl-badge" style="background:${bColor};border-color:${bColor};color:${bText};">${badgeTxt(v)}</span><span class="xcl-label">${f.label}${modelVal?` <span style="color:#d2a44d;font-size:10px;">${escapeHtml(modelVal)}</span>`:''}${tagList.length?`<br>${tagList.map(t=>`<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:10px;padding:2px 7px;margin:3px 3px 0 0;border-radius:20px;background:rgba(210,164,77,.1);border:1px solid #9c7c3f;color:#d2a44d;">${escapeHtml(t)}</span>`).join('')}`:''}</span></div>`;
+        }).join('')}
+      </div>
+      ${clImages?`<div id="xcl-img-placeholder"></div>`:''}
+    </div>`;
+  }
+
+  const rf = entry.redFlags || {};
+  const amplifierCount = RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && !YELLOW_FLAG_FIELDS.has(f.key) && rf[f.key]).length;
+  const cautionCount = RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && YELLOW_FLAG_FIELDS.has(f.key) && rf[f.key]).length;
+
+  const rfLabel = k => (RED_FLAG_DEFS.find(f=>f.key===k)||{}).label || k;
+  const xBadge = (text, bg, fg) => `<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:20px;display:inline-block;color:${fg};background:${bg};">${text}</span>`;
+  const xCount = (text, color) => `<span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;padding:1px 8px;border-radius:20px;background:${color}22;border:1px solid ${color};color:${color};">${text}</span>`;
+  const xChip = (label, checked, color) => `<span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;padding:4px 11px;border-radius:20px;background:${checked?`${color}22`:'transparent'};border:1px solid ${checked?color:'#2c303a'};color:${checked?color:'#3d4149'};">${label}</span>`;
+
+  let modelBadge = '';
+  if(rf.rcModel && rf.rxModel) modelBadge = xBadge('CAUTION', '#e6c43c', '#1a1608');
+  else if(rf.rcModel) modelBadge = xBadge('🟢 GREEN LIGHT', '#6fae7e', '#0f1a14');
+  else if(rf.rxModel) modelBadge = xBadge('🔴 RED LIGHT', '#c1685f', '#1a0f0f');
+
+  const outsideDayChecked = OUTSIDE_DAY_FIELDS.some(k=>rf[k]);
+  const reversalChecked = REVERSAL_FIELDS.some(k=>rf[k]);
+
+  body += `
+    <div class="xredflag-block">
+      <div class="xredflag-title" style="flex-wrap:wrap;row-gap:6px;">
+        ⚑ Red Flags
+        ${modelBadge}
+        ${outsideDayChecked ? xBadge('↔ OUTSIDE DAY PROBABLE', '#6ea8e0', '#0d1520') : ''}
+        ${reversalChecked ? xBadge('↻ REVERSAL LIKELY', '#e07b39', '#1a0f08') : ''}
+        ${cautionCount?xCount(`${cautionCount} caution`, '#e6c43c'):''}
+        ${amplifierCount?xCount(`${amplifierCount} amplifier${amplifierCount>1?'s':''}`, '#8b8f9a'):''}
+      </div>
+
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #2c303a;">
+        <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5d6170;margin-bottom:8px;">Model Signal</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${xChip(rfLabel('rcModel'), rf.rcModel, '#6fae7e')}
+          ${xChip(rfLabel('rxModel'), rf.rxModel, '#c1685f')}
+        </div>
+      </div>
+
+      <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5d6170;margin-bottom:8px;">Caution</div>
+      <div class="xredflag-grid" style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #2c303a;">
+        ${RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && YELLOW_FLAG_FIELDS.has(f.key)).map(f=>{
+          const checked = !!rf[f.key];
+          const tagList = RED_FLAG_TAG_FIELDS.has(f.key) ? ((entry.redFlagTags||{})[f.key]||[]) : [];
+          const tagsHtml = tagList.length ? `<br>${tagList.map(t=>`<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:10px;padding:2px 7px;margin:3px 3px 0 0;border-radius:20px;background:rgba(210,164,77,.1);border:1px solid #9c7c3f;color:#d2a44d;">${escapeHtml(t)}</span>`).join('')}` : '';
+          return `<span class="xrf-chip${checked?' xrf-chip-yellow':' xrf-chip-off'}">${f.label}${tagsHtml}</span>`;
+        }).join('')}
+      </div>
+
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #2c303a;">
+        <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5d6170;margin-bottom:8px;">Outside Day Signal</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          ${OUTSIDE_DAY_FIELDS.map(k=>xChip(rfLabel(k), rf[k], '#6ea8e0')).join('')}
+        </div>
+        ${outsideDayChecked ? xBadge('↔ OUTSIDE DAY PROBABLE', '#6ea8e0', '#0d1520') : ''}
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5d6170;margin-bottom:8px;">Reversal Signal</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          ${REVERSAL_FIELDS.map(k=>xChip(rfLabel(k), rf[k], '#e07b39')).join('')}
+        </div>
+        ${reversalChecked ? xBadge('↻ REVERSAL LIKELY', '#e07b39', '#1a0f08') : ''}
+      </div>
+
+      <div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5d6170;margin:12px 0 8px;padding-top:12px;border-top:1px solid #2c303a;">Amplifiers</div>
+      <div class="xredflag-grid">
+        ${RED_FLAG_DEFS.filter(f=>!SPECIAL_FLAG_FIELDS.has(f.key) && !YELLOW_FLAG_FIELDS.has(f.key)).map(f=>{
+          const checked = !!rf[f.key];
+          return `<span class="xrf-chip${checked?' xrf-chip-gray':' xrf-chip-off'}">${f.label}</span>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  let clImgHtml = '';
+  const clImgs = entry.boxChecklistLinks || {};
+  for(const [fKey, urls] of Object.entries(clImgs)){
+    if(!urls || !urls.length) continue;
+    const linksHtml = urls.map(url=>linkToTag(url)).join('');
+    if(linksHtml) clImgHtml += `<div style="margin-top:8px;"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#d2a44d;margin-bottom:4px;">${fKey}</div>${linksHtml}</div>`;
+  }
+
+  body += exportChecklistBlock('0930–1030 Box Formation','Pre-market · Box Reversal', BOX_CHECKLIST_DEFS, entry.boxChecklist||{}, entry.boxChecklistModels||{}, clImgs, entry.boxChecklistTags||{});
+  if(clImgHtml) body = body.replace('<div id="xcl-img-placeholder"></div>', clImgHtml);
+  body += exportChecklistBlock('After 1030','RBC · M7X', POST1030_CHECKLIST_DEFS, entry.post1030Checklist||{}, null, null);
+  for(const s of SECTION_DEFS){
+    body += sectionExportBlock(s.label, entry.sections[s.key], s.key);
+  }
+  for(let i=0;i<entry.trades.length;i++){
+    body += tradeExportBlock(entry.trades[i], i);
+  }
+
+  const candles = entry.candles || {};
+  const activeCandleDefs = CANDLE_DEFS.filter(c=>{
+    const d = candles[c.key];
+    return d && (d.time || d.tag || (d.links && d.links.length));
+  });
+  if(activeCandleDefs.length){
+    let candleCards = '';
+    for(const c of activeCandleDefs){
+      const d = candles[c.key];
+      const imgHtml = (d.links||[]).map(linkToTag).join('');
+      candleCards += `
+      <div class="xcandlecard">
+        <div class="xcandlecard-label">${c.label}</div>
+        <div class="xcandlecard-meta">${d.time?`<span>${d.time}</span>`:''} ${d.tag?`<span style="color:#d2a44d">· ${escapeHtml(d.tag)}</span>`:''}</div>
+        ${imgHtml}
+      </div>`;
+    }
+    body += `
+    <div class="xsection">
+      <h2>Key Candles</h2>
+      <div class="xcandles-grid">${candleCards}</div>
+    </div>`;
+  }
+
+  if(!body){ body = '<div class="xempty">No content logged for this day.</div>'; }
+
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>${fmtPretty(entry.date)} — Trade Journal</title>
+<style>
+  body{background:#14161b; color:#e7e5e0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; margin:0; padding:0 0 40px;}
+  .xwrap{max-width:760px; margin:0 auto; padding:28px 24px 40px;}
+  .xhead h1{font-family:Georgia,serif; font-weight:500; font-size:30px; margin:0 0 4px;}
+  .xhead .xdow{font-family:ui-monospace,Menlo,monospace; color:#8b8f9a; font-size:13px;}
+  .xnote{color:#8b8f9a; font-size:14px; margin:10px 0 32px; padding-bottom:18px; border-bottom:1px solid #2c303a;}
+  .xsection{background:#1b1e25; border:1px solid #2c303a; border-radius:10px; padding:18px 22px; margin-bottom:16px;}
+  .xsection h2{font-family:Georgia,serif; font-weight:500; font-size:17px; margin:0 0 12px;}
+  .xlive{font-size:14px; line-height:1.6; color:#e7e5e0;}
+  .xreview{margin-top:14px; border-left:3px solid #6fae7e; padding-left:14px;}
+  .xreview-label{font-family:ui-monospace,Menlo,monospace; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#6fae7e; margin-bottom:5px;}
+  .xm7retrace{font-family:ui-monospace,Menlo,monospace; font-size:12px; color:#8b8f9a; margin-bottom:10px; padding:6px 10px; background:#21242c; border-radius:6px; border:1px solid #2c303a; display:inline-block;}
+  .xm7retrace strong{color:#d2a44d;}
+  .xredflag-block{background:#1b1e25; border:1px solid #c1685f44; border-radius:10px; padding:16px 18px; margin-bottom:20px;}
+  .xredflag-title{font-family:ui-monospace,Menlo,monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:#c1685f; margin-bottom:12px;}
+  .xredflag-grid{display:flex; flex-wrap:wrap; gap:6px;}
+  .xrf-chip{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; padding:4px 11px; border-radius:20px; background:rgba(193,104,95,.12); border:1px solid #c1685f; color:#e07a73;}
+  .xrf-chip-yellow{background:rgba(230,196,60,.14); border:1px solid #e6c43c; color:#e6c43c;}
+  .xrf-chip-gray{background:rgba(139,143,154,.14); border:1px solid #8b8f9a; color:#c3c7cf;}
+  .xrf-chip-off{background:transparent; border:1px solid #2c303a; color:#3d4149;}
+  .xcl-block{background:#1b1e25; border:1px solid #2c303a; border-radius:10px; padding:16px 18px; margin-bottom:16px;}
+  .xcl-head{display:flex; justify-content:space-between; margin-bottom:12px;}
+  .xcl-title{font-family:ui-monospace,Menlo,monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:#d2a44d; margin-bottom:2px;}
+  .xcl-sub{font-size:11px; color:#5d6170;}
+  .xcl-summary{font-family:ui-monospace,Menlo,monospace; font-size:12px; display:flex; gap:6px;}
+  .xcl-u{color:#6fae7e;} .xcl-d{color:#c1685f;}
+  .xcl-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:5px;}
+  .xcl-item{display:flex; align-items:center; gap:7px; padding:5px 9px; border-radius:6px; border:1px solid #2c303a; background:#21242c; font-size:12px;}
+  .xcl-item.U{background:rgba(111,174,126,.1); border-color:rgba(111,174,126,.4);}
+  .xcl-item.D{background:rgba(193,104,95,.1); border-color:rgba(193,104,95,.4);}
+  .xcl-item.X{background:rgba(139,143,154,.14); border-color:#5d6170;}
+  .xcl-badge{font-family:ui-monospace,Menlo,monospace; font-size:10px; font-weight:700; width:17px; height:17px; border-radius:3px; display:flex; align-items:center; justify-content:center; background:#14161b; border:1px solid #2c303a; color:#5d6170; flex-shrink:0;}
+  .xcl-item.U .xcl-badge{background:#6fae7e; border-color:#6fae7e; color:#fff;}
+  .xcl-item.D .xcl-badge{background:#c1685f; border-color:#c1685f; color:#fff;}
+  .xcl-label{color:#8b8f9a;}
+  .xcl-item.U .xcl-label, .xcl-item.D .xcl-label, .xcl-item.X .xcl-label{color:#e7e5e0;}
+  .xtags{display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;}
+  .xtags span{font-family:ui-monospace,Menlo,monospace; font-size:11px; padding:3px 9px; border-radius:20px; background:rgba(210,164,77,.1); border:1px solid #9c7c3f; color:#d2a44d;}
+  .ximgs{display:flex; flex-direction:column; gap:12px; margin-top:16px;}
+  .ximgs img{width:100%; height:auto; border-radius:8px; border:1px solid #2c303a; display:block;}
+  .xempty{color:#5d6170; font-family:ui-monospace,Menlo,monospace; padding:30px 0; text-align:center;}
+  .xcandles-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:12px; margin-top:4px;}
+  .xcandlecard{background:#21242c; border:1px solid #2c303a; border-radius:8px; padding:14px;}
+  .xcandlecard-label{font-family:ui-monospace,Menlo,monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:#d2a44d; margin-bottom:8px;}
+  .xcandlecard-meta{font-family:ui-monospace,Menlo,monospace; font-size:12px; color:#e7e5e0; margin-bottom:8px;}
+  .xcandlecard img{width:100%; border-radius:6px; border:1px solid #2c303a; margin-top:8px; display:block;}
+  .xfooter{text-align:center; color:#5d6170; font-family:ui-monospace,Menlo,monospace; font-size:11px; margin-top:30px;}
+  @media print{ body{background:#fff; color:#111;} .xsection{background:#fafafa; border-color:#ddd;} }
+</style></head>
+<body>
+  <div class="xwrap">
+    <div class="xhead">
+      <h1>${fmtPretty(entry.date)}</h1>
+      <div class="xdow">${fmtDow(entry.date)}</div>
+    </div>
+    ${entry.dayNote ? `<div class="xnote">${escapeHtml(entry.dayNote)}</div>` : '<div style="height:20px;"></div>'}
+    ${body}
+    <div class="xfooter">Sequence Journal — exported ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+  </div>
+</body></html>`;
+}
+
+async function exportDay(){
+  const btn = document.getElementById('exportBtn');
+  btn.textContent = 'Building…'; btn.disabled = true;
+  try{
+    const html = await buildExportHTML(currentEntry);
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `journal-${currentEntry.date}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('exported — check downloads');
+  }catch(e){
+    toast('export failed');
+  }
+  btn.textContent = '⇩ Export Day'; btn.disabled = false;
+}
+
+/* ---------------- navigation ---------------- */
+async function gotoDate(date){
+  currentDate = date;
+  document.getElementById('datePicker').value = date;
+  currentEntry = await loadEntry(date);
+  renderEntry();
+  renderEntryList();
+  setSaveState('idle');
+}
+
+function shiftDate(days){
+  const d = new Date(currentDate+'T12:00:00');
+  d.setDate(d.getDate()+days);
+  gotoDate(d.toISOString().slice(0,10));
+}
+
+document.getElementById('prevDay').addEventListener('click', ()=>shiftDate(-1));
+document.getElementById('nextDay').addEventListener('click', ()=>shiftDate(1));
+document.getElementById('datePicker').addEventListener('change', e=> gotoDate(e.target.value));
+
+// Delegated "+ Add" click handler for all TradingView link inputs across the whole
+// entry view. This is attached exactly ONCE here (not inside wireEntryEvents/renderEntry)
+// so it doesn't pile up duplicate handlers on every re-render.
+document.getElementById('mainEntry').addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const row = btn.closest('.linkinput-row');
+  if(!row) return;
+  const inp = row.querySelector('input[type=text]');
+  if(!inp) return;
+  const url = inp.value.trim();
+  if(!url) return;
+  const kind = inp.dataset.linkkind;
+  const key  = inp.dataset.linkkey;
+  function addTo(arrOwner){
+    if(!arrOwner.links) arrOwner.links = [];
+    const already = arrOwner.links.some(l => normLink(l).url === url);
+    if(!already){ arrOwner.links.push({url, tag:''}); renderEntry(); scheduleSave(); }
+  }
+  if(kind === 'section'){
+    const sec = findSection(key);
+    if(sec) addTo(sec);
+  } else if(kind === 'trade'){
+    const t = findTrade(key);
+    if(t) addTo(t);
+  } else if(kind === 'candle'){
+    if(currentEntry.candles[key]) addTo(currentEntry.candles[key]);
+  }
+});
+
+/* ---------------- search mode ---------------- */
+function switchMode(mode){
+  const entryBtn = document.getElementById('modeEntry');
+  const searchBtn = document.getElementById('modeSearch');
+  const mainEntry = document.getElementById('mainEntry');
+  const mainSearch = document.getElementById('mainSearch');
+  const entryNav = document.getElementById('entryNavBlock');
+  if(mode==='entry'){
+    entryBtn.classList.add('active'); searchBtn.classList.remove('active');
+    mainEntry.style.display='block'; mainSearch.style.display='none';
+    entryNav.style.display='block';
+  } else {
+    entryBtn.classList.remove('active'); searchBtn.classList.add('active');
+    mainEntry.style.display='none'; mainSearch.style.display='block';
+    entryNav.style.display='none';
+    renderSearchShell();
+  }
+}
+document.getElementById('modeEntry').addEventListener('click', ()=>switchMode('entry'));
+document.getElementById('modeSearch').addEventListener('click', ()=>switchMode('search'));
+
+function renderSearchShell(){
+  const main = document.getElementById('mainSearch');
+  main.innerHTML = `
+    <div class="daytitle"><h1>Search by Tag</h1></div>
+    <div class="daysub">Pull every moment you reasoned about a setup, across every day.</div>
+    <div class="searchbar">
+      <input type="text" id="searchInput" placeholder="type a tag, e.g. Break_Rule_1030, DDR_partial_broken...">
+    </div>
+    <div id="searchResults"><div class="empty">start typing or click a tag on the left</div></div>
+  `;
+  document.getElementById('searchInput').addEventListener('input', e=> runSearch(e.target.value));
+}
+
+async function runSearch(query){
+  const q = query.trim().toLowerCase();
+  const resultsEl = document.getElementById('searchResults');
+  if(!q){ resultsEl.innerHTML = '<div class="empty">start typing or click a tag on the left</div>'; return; }
+  resultsEl.innerHTML = '<div class="empty">searching…</div>';
+
+  const keys = await sList('entry:');
+  const results = [];
+  const dates = keys.map(k=> k.startsWith('entry:') ? k.slice(6) : k);
+  for(const date of dates){
+    const raw = await sGet('entry:'+date);
+    if(!raw) continue;
+    let entry;
+    try{ entry = JSON.parse(raw); }catch(e){ continue; }
+
+    SECTION_DEFS.forEach(s=>{
+      const sec = entry.sections[s.key];
+      if(!sec) return;
+      const tagMatch = sec.tags.some(t=>t.toLowerCase().includes(q));
+      const textMatch = (sec.live||'').toLowerCase().includes(q) || (sec.review||'').toLowerCase().includes(q);
+      if(tagMatch || textMatch){
+        results.push({date, section:s.label, sectionKey:s.key, live:sec.live, review:sec.review, tags:sec.tags, tradeId:null});
+      }
+    });
+    (entry.trades||[]).forEach(t=>{
+      const tagMatch = (t.tags||[]).some(tg=>tg.toLowerCase().includes(q));
+      const textMatch = (t.live||'').toLowerCase().includes(q) || (t.review||'').toLowerCase().includes(q) || (t.model||'').toLowerCase().includes(q);
+      if(tagMatch || textMatch){
+        results.push({date, section:`Trade · ${t.model||'untitled'} ${t.dir||''} ${t.r?('· '+t.r+'R'):''}`, sectionKey:'trades', live:t.live, review:t.review, tags:t.tags, tradeId:t.id});
+      }
+    });
+  }
+
+  results.sort((a,b)=> b.date.localeCompare(a.date));
+
+  if(results.length===0){ resultsEl.innerHTML = '<div class="empty">no matches</div>'; return; }
+
+  resultsEl.innerHTML = results.map(r=>`
+    <div class="searchresult" data-jump="${r.date}">
+      <div class="sr-top"><span class="sr-section">${r.section}</span><span>${fmtPretty(r.date)}</span></div>
+      ${r.live ? `<div class="sr-snip live">${escapeHtml(snippet(r.live))}</div>` : ''}
+      ${r.review ? `<div class="sr-snip">↳ review: ${escapeHtml(snippet(r.review))}</div>` : ''}
+      <div class="sr-tags">${(r.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+
+  resultsEl.querySelectorAll('.searchresult').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      switchMode('entry');
+      gotoDate(card.dataset.jump);
+    });
+  });
+}
+
+async function backupData(){
+  const btn = document.getElementById('backupBtn');
+  btn.textContent = 'Scanning…'; btn.disabled = true;
+  try{
+    const backup = { version:1, created: new Date().toISOString(), entries:{}, images:{} };
+    const entryKeys = await sList('entry:');
+    for(const key of entryKeys){
+      const val = await sGet(key.startsWith('entry:') ? key : 'entry:'+key);
+      if(val) backup.entries[key] = val;
+    }
+    const imgKeys = await sList('img:');
+    for(const key of imgKeys){
+      const val = await sGet(key);
+      if(val) backup.images[key] = val;
+    }
+    const tags = await sGet('tags:master');
+    if(tags) backup.tags = tags;
+
+    const blob = new Blob([JSON.stringify(backup)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const date = new Date().toISOString().slice(0,10);
+    a.href = url; a.download = `sequence-journal-backup-${date}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    const entryCount = Object.keys(backup.entries).length;
+    const imgCount   = Object.keys(backup.images).length;
+    toast(`backed up ${entryCount} entries + ${imgCount} images`);
+  }catch(e){
+    console.error(e); toast('backup failed');
+  }
+  btn.textContent = '⇩ Backup'; btn.disabled = false;
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+// Retry-aware set: tries up to 4 times with backoff before giving up on a key
+async function sSetSafe(key, value, shared=false){
+  let lastErr = null;
+  for(let attempt=0; attempt<4; attempt++){
+    try{
+      const r = await window.storage.set(key, value, shared);
+      if(r) return true;
+      lastErr = new Error('empty response');
+    }catch(e){ lastErr = e; }
+    await sleep(300 * (attempt+1)); // 300ms, 600ms, 900ms, 1200ms backoff
+  }
+  console.error(`storage set failed for ${key} after retries:`, lastErr);
+  return false;
+}
+
+async function restoreData(file){
+  if(!file) return;
+  if(!confirm(`Restore from ${file.name}? This will merge with existing data — nothing will be deleted.`)) return;
+
+  const btn = document.getElementById('restoreLabel');
+  const originalLabel = btn.innerHTML;
+
+  let text, backup;
+  try{
+    text = await file.text();
+    backup = JSON.parse(text);
+  }catch(e){
+    console.error(e); toast('restore failed — invalid backup file'); return;
+  }
+
+  const entryPairs = Object.entries(backup.entries||{});
+  const imagePairs = Object.entries(backup.images||{});
+  const total = entryPairs.length + imagePairs.length + (backup.tags ? 1 : 0);
+  let done = 0, okCount = 0, failedKeys = [];
+
+  function setProgress(){
+    btn.textContent = `⇪ Restoring ${done}/${total}…`;
+  }
+  setProgress();
+
+  // Write entries first (small, fast), then images (larger), each throttled
+  // so we don't fire dozens of requests in the same instant.
+  for(const [key, val] of entryPairs){
+    const ok = await sSetSafe(key, val);
+    if(ok) okCount++; else failedKeys.push(key);
+    done++; setProgress();
+    await sleep(80);
+  }
+  for(const [key, val] of imagePairs){
+    const ok = await sSetSafe(key, val);
+    if(ok) okCount++; else failedKeys.push(key);
+    done++; setProgress();
+    await sleep(80);
+  }
+  if(backup.tags){
+    const ok = await sSetSafe('tags:master', backup.tags);
+    if(ok) okCount++; else failedKeys.push('tags:master');
+    done++; setProgress();
+  }
+
+  btn.innerHTML = originalLabel;
+
+  entryRCache = {};
+  runningRCache = {};
+  await loadTags(); renderTagList();
+  await loadEntryIndex(); renderEntryList();
+  await gotoDate(currentDate);
+
+  if(failedKeys.length === 0){
+    toast(`restored ${entryPairs.length} entries + ${imagePairs.length} images`);
+  } else if(okCount > 0){
+    toast(`restored ${okCount}/${total} — ${failedKeys.length} failed, retry restore to fill gaps`);
+    console.warn('Keys that failed to restore:', failedKeys);
+  } else {
+    toast('restore failed — storage service unavailable, try again shortly');
+  }
+}
+
+async function cleanStorage(){
+  const btn = document.getElementById('cleanStorageBtn');
+  btn.textContent = 'Scanning…'; btn.disabled = true;
+  try{
+    const entryKeys = await sList('entry:');
+    const referencedImgs = new Set();
+    for(const key of entryKeys){
+      const raw = await sGet(key.startsWith('entry:') ? key : 'entry:'+key);
+      if(!raw) continue;
+      try{
+        const entry = JSON.parse(raw);
+        Object.values(entry.sections||{}).forEach(s=>(s.images||[]).forEach(k=>referencedImgs.add(k)));
+        (entry.trades||[]).forEach(t=>(t.images||[]).forEach(k=>referencedImgs.add(k)));
+        Object.values(entry.candles||{}).forEach(c=>(c.images||[]).forEach(k=>referencedImgs.add(k)));
+        Object.values(entry.chartLevels||{}).forEach(c=>(c.images||[]).forEach(k=>referencedImgs.add(k))); // legacy, harmless if absent
+        Object.values(entry.boxChecklistImages||{}).forEach(arr=>(arr||[]).forEach(k=>referencedImgs.add(k)));
+      }catch(e){}
+    }
+    const allImgKeys = await sList('img:');
+    const orphans = allImgKeys.filter(k=> !referencedImgs.has(k));
+    if(orphans.length === 0){
+      toast('storage is clean — no orphans found');
+      btn.textContent = '🗑 Clean Storage'; btn.disabled = false;
+      return;
+    }
+    let deleted = 0;
+    for(const k of orphans){ await sDel(k); deleted++; }
+    toast(`freed ${deleted} orphaned image${deleted>1?'s':''}`);
+  }catch(e){
+    console.error('clean storage error:', e);
+    toast('clean storage failed');
+  }
+  btn.textContent = '🗑 Clean Storage'; btn.disabled = false;
+}
+
+/* ---------------- init ---------------- */
+async function init(){
+  await loadTags();
+  renderTagList();
+  await loadEntryIndex();
+  if(entryDateIndex.length){ currentDate = entryDateIndex[0]; }
+  await gotoDate(currentDate);
+  document.getElementById('cleanStorageBtn').addEventListener('click', cleanStorage);
+  document.getElementById('backupBtn').addEventListener('click', backupData);
+  document.getElementById('restoreInput').addEventListener('change', e=> restoreData(e.target.files[0]));
+}
+init();
+</script>
+</body>
+</html>

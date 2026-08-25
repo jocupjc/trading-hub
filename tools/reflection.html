@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Trading Reflection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --bg-card: #13161e;
+    --bg-card2: #181c26;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f8ef7;
+    --accent-glow: rgba(79,142,247,0.18);
+    --green: #34d399;
+    --green-glow: rgba(52,211,153,0.16);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245,158,11,0.15);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.15);
+    --coral: #f87171;
+    --coral-glow: rgba(248,113,113,0.15);
+    --teal: #2dd4bf;
+    --teal-glow: rgba(45,212,191,0.14);
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; }
+
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .page-header h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -.3px;
+    color: var(--text);
+  }
+  .page-header .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 4px;
+  }
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 0.5px solid rgba(79,142,247,0.3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .4px;
+  }
+
+  /* Step indicator */
+  .step-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .step-pip {
+    height: 3px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--border-hover);
+    transition: background .3s;
+  }
+  .step-pip.done { background: var(--green); }
+  .step-pip.active { background: var(--accent); }
+  .step-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .4px;
+    white-space: nowrap;
+    margin-left: 6px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--border-hover); }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .85rem;
+  }
+
+  /* Toggle Buttons */
+  .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .tog {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+    letter-spacing: .2px;
+  }
+  .tog:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+  .tog:active { transform: scale(.97); }
+
+  [data-theme="blue"] .tog.active   { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  [data-theme="green"] .tog.active  { background: var(--green-glow); border-color: var(--green); color: var(--green); box-shadow: 0 0 12px var(--green-glow); }
+  [data-theme="amber"] .tog.active  { background: var(--amber-glow); border-color: var(--amber); color: var(--amber); box-shadow: 0 0 12px var(--amber-glow); }
+  [data-theme="purple"] .tog.active { background: var(--purple-glow); border-color: var(--purple); color: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+  [data-theme="coral"] .tog.active  { background: var(--coral-glow); border-color: var(--coral); color: var(--coral); box-shadow: 0 0 12px var(--coral-glow); }
+  [data-theme="teal"] .tog.active   { background: var(--teal-glow); border-color: var(--teal); color: var(--teal); box-shadow: 0 0 12px var(--teal-glow); }
+
+  /* Textareas */
+  textarea {
+    width: 100%;
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 64px;
+    outline: none;
+    transition: border-color .2s;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+
+  /* Question label */
+  .q-label {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .q-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: .2px;
+  }
+  .q-block { margin-bottom: 1rem; }
+  .q-block:last-child { margin-bottom: 0; }
+
+  /* Metrics row */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .75rem;
+    margin-bottom: .75rem;
+  }
+  .metric-card {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: .85rem 1rem;
+  }
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .6px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .metric-value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .metric-value.green { color: var(--green); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-value.coral { color: var(--coral); }
+
+  /* Insights */
+  .insight {
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-family: var(--mono);
+    line-height: 1.5;
+    letter-spacing: .1px;
+    border: 0.5px solid;
+  }
+  .insight:last-child { margin-bottom: 0; }
+  .insight.warn  { background: var(--amber-glow); border-color: rgba(245,158,11,0.3); color: var(--amber); }
+  .insight.ok    { background: var(--green-glow); border-color: rgba(52,211,153,0.3); color: var(--green); }
+  .insight.info  { background: var(--accent-glow); border-color: rgba(79,142,247,0.3); color: var(--accent); }
+  .insight.coral { background: var(--coral-glow); border-color: rgba(248,113,113,0.3); color: var(--coral); }
+
+  /* Summary table */
+  .sum-table { width: 100%; border-collapse: collapse; }
+  .sum-table tr { border-bottom: 0.5px solid var(--border); }
+  .sum-table tr:last-child { border-bottom: none; }
+  .sum-table td { padding: 7px 4px; font-size: 12px; vertical-align: top; }
+  .sum-table td:first-child {
+    font-family: var(--mono);
+    color: var(--muted);
+    width: 140px;
+    font-size: 10px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding-top: 9px;
+  }
+  .sum-table td:last-child { color: var(--text); font-family: var(--mono); font-size: 12px; }
+
+  /* 2-col */
+  .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .btn-action {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .4px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .btn-action:hover { border-color: rgba(255,255,255,0.2); color: var(--text); background: rgba(255,255,255,0.04); }
+  .btn-action:active { transform: scale(.97); }
+  .btn-save {
+    background: var(--accent-glow);
+    border-color: rgba(79,142,247,0.4);
+    color: var(--accent);
+  }
+  .btn-save:hover { background: rgba(79,142,247,0.28); border-color: var(--accent); color: #74aaff; }
+  .btn-next {
+    background: var(--green-glow);
+    border-color: rgba(52,211,153,0.4);
+    color: var(--green);
+  }
+  .btn-next:hover { background: rgba(52,211,153,0.26); border-color: var(--green); }
+
+  /* Archive panel */
+  .archive-panel {
+    display: none;
+    margin-top: 1rem;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+  }
+  .archive-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+  }
+  .archive-entry:last-child { border-bottom: none; }
+  .entry-date { font-family: var(--mono); color: var(--text); }
+  .entry-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+  .etag {
+    font-size: 10px; font-family: var(--mono);
+    padding: 2px 7px; border-radius: 3px;
+    background: var(--accent-glow); color: var(--accent);
+    border: 0.5px solid rgba(79,142,247,0.25);
+  }
+  .entry-actions { display: flex; gap: 5px; }
+  .entry-btn {
+    font-size: 10px; font-family: var(--mono);
+    padding: 3px 9px; border-radius: 4px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .15s;
+  }
+  .entry-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .entry-btn.del:hover { color: var(--coral); border-color: var(--coral); }
+
+  /* Lockout */
+  .lockout-card {
+    background: var(--coral-glow);
+    border: 0.5px solid rgba(248,113,113,0.3);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    text-align: center;
+    margin-bottom: .75rem;
+  }
+  .lockout-title {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--coral);
+    margin-bottom: 6px;
+    letter-spacing: .3px;
+  }
+  .lockout-body {
+    font-size: 12px;
+    color: rgba(248,113,113,0.8);
+    line-height: 1.6;
+    font-family: var(--mono);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-card2); border: 0.5px solid var(--border-hover);
+    color: var(--text); font-family: var(--mono); font-size: 12px;
+    padding: 9px 20px; border-radius: var(--radius);
+    opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 999;
+    white-space: nowrap;
+  }
+
+  .empty-msg { font-size: 12px; color: var(--muted); font-family: var(--mono); text-align: center; padding: 1rem 0; }
+
+  /* Separator */
+  .divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+
+  input[type="date"] {
+    background: var(--bg-card2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 7px 12px;
+    outline: none;
+    transition: border-color .2s;
+    color-scheme: dark;
+    width: 100%;
+  }
+  input[type="date"]:focus { border-color: var(--accent); }
+
+  @media (max-width: 540px) {
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .row-2col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page" id="main">
+
+  <div class="page-header">
+    <div>
+      <h1>Daily Trading Reflection</h1>
+      <div class="subtitle">Post-Session Review · Discipline & Psychology</div>
+    </div>
+    <div class="header-tag" id="header-date-display">—</div>
+  </div>
+
+  <!-- STEP INDICATOR -->
+  <div class="step-bar" id="step-bar">
+    <div class="step-pip active" id="pip-0"></div>
+    <div class="step-pip" id="pip-1"></div>
+    <div class="step-pip" id="pip-2"></div>
+    <div class="step-pip" id="pip-3"></div>
+    <span class="step-label" id="step-label-text">01 / 04 — Daily Result</span>
+  </div>
+
+  <!-- ── STEP 0: HEADER + RESULT ──────────────────────────────────── -->
+  <div id="step-0">
+
+    <!-- Date -->
+    <div class="card">
+      <div class="card-label">Trading Day</div>
+      <input type="date" id="trade-date">
+    </div>
+
+    <!-- Trade counters -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Loss Trades</div>
+        <div class="metric-value" id="loss-metric">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Daily P&L (€)</div>
+        <div class="metric-value" id="pnl-metric">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Win Rate</div>
+        <div class="metric-value" id="wr-metric">—</div>
+      </div>
+    </div>
+
+    <!-- Loss Limit -->
+    <div class="card">
+      <div class="card-label">Loss Limit Reached?</div>
+      <div class="q-block">
+        <div class="q-label">How many loss trades did you have today?</div>
+        <div class="btn-group" id="grp-losses" data-theme="coral">
+          <button class="tog" data-val="0">0</button>
+          <button class="tog" data-val="1">1</button>
+          <button class="tog" data-val="2">2</button>
+          <button class="tog" data-val="3">3 — Limit</button>
+          <button class="tog" data-val="4+">4+ — Exceeded</button>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-label">Did you stop immediately after reaching the limit?</div>
+        <div class="btn-group" id="grp-stopp" data-theme="green">
+          <button class="tog" data-val="yes-immediately">Yes, immediately</button>
+          <button class="tog" data-val="hesitant">Hesitantly</button>
+          <button class="tog" data-val="no">No, kept trading</button>
+          <button class="tog" data-val="n/a">Limit not reached</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall feeling -->
+    <div class="card">
+      <div class="card-label">Overall Feeling</div>
+      <div class="q-block">
+        <div class="q-label">How do you feel about today's result?</div>
+        <div class="btn-group" id="grp-gefuehl" data-theme="blue">
+          <button class="tog" data-val="very-satisfied">Very satisfied</button>
+          <button class="tog" data-val="okay">Okay</button>
+          <button class="tog" data-val="unsatisfied">Unsatisfied</button>
+          <button class="tog" data-val="frustrated">Frustrated</button>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-label">Was today a rule-compliant trading day?</div>
+        <div class="btn-group" id="grp-regelkonform" data-theme="green">
+          <button class="tog" data-val="yes">Yes, fully</button>
+          <button class="tog" data-val="mostly">Mostly</button>
+          <button class="tog" data-val="no">No</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn-action btn-next" onclick="goStep(1)">Next → Emotions</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: EMOTIONS ──────────────────────────────────────────── -->
+  <div id="step-1" style="display:none;">
+
+    <div class="card">
+      <div class="card-label">Dominant Emotions</div>
+      <div class="q-block">
+        <div class="q-label">Which emotions influenced your trading today? <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.3px;">(multiple selection)</span></div>
+        <div class="btn-group" id="grp-emotion" data-theme="purple">
+          <button class="tog" data-val="patience">Patience</button>
+          <button class="tog" data-val="fomo">FOMO</button>
+          <button class="tog" data-val="greed">Greed</button>
+          <button class="tog" data-val="fear">Fear</button>
+          <button class="tog" data-val="revenge">Revenge</button>
+          <button class="tog" data-val="overconfidence">Overconfidence</button>
+          <button class="tog" data-val="boredom">Boredom</button>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-label">Was there a revenge trade impulse?</div>
+        <div class="btn-group" id="grp-rache" data-theme="coral">
+          <button class="tog" data-val="no">No</button>
+          <button class="tog" data-val="impulse-resisted">Impulse, resisted</button>
+          <button class="tog" data-val="yes">Yes, executed</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Most Emotional Moment</div>
+      <div class="q-block">
+        <div class="q-label">Describe the most emotional moment of the day.</div>
+        <div class="q-hint">What triggered you? What were you thinking in that moment?</div>
+        <textarea id="txt-emotion-moment" placeholder="e.g. After the second loss trade I immediately wanted to re-enter because..."></textarea>
+      </div>
+      <div class="q-block">
+        <div class="q-label">What was your mental state before the first trade?</div>
+        <div class="btn-group" id="grp-mental" data-theme="teal">
+          <button class="tog" data-val="focused">Focused</button>
+          <button class="tog" data-val="calm">Calm</button>
+          <button class="tog" data-val="restless">Restless</button>
+          <button class="tog" data-val="stressed">Stressed</button>
+          <button class="tog" data-val="tired">Tired</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn-action" onclick="goStep(0)">← Back</button>
+      <button class="btn-action btn-next" onclick="goStep(2)">Next → Setups</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: SETUPS & EXECUTION ───────────────────────────────── -->
+  <div id="step-2" style="display:none;">
+
+    <div class="card">
+      <div class="card-label">Setup Quality</div>
+      <div class="q-block">
+        <div class="q-label">What was the average quality of your setups today?</div>
+        <div class="btn-group" id="grp-setup-qual" data-theme="blue">
+          <button class="tog" data-val="a-class">A-Class</button>
+          <button class="tog" data-val="b-class">B-Class</button>
+          <button class="tog" data-val="unclear">Unclear</button>
+          <button class="tog" data-val="impulsive">Impulsive / no setup</button>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-label">Stop-loss: Always set before entry and respected?</div>
+        <div class="btn-group" id="grp-sl" data-theme="green">
+          <button class="tog" data-val="always">Always</button>
+          <button class="tog" data-val="mostly">Mostly</button>
+          <button class="tog" data-val="moved-once">Moved once</button>
+          <button class="tog" data-val="ignored">Ignored / not set</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2col">
+      <div class="card">
+        <div class="card-label">Best Trade</div>
+        <div class="q-hint">Setup · Entry · Patience · Execution</div>
+        <textarea id="txt-best-trade" placeholder="What went well and why?"></textarea>
+      </div>
+      <div class="card">
+        <div class="card-label">Worst Trade</div>
+        <div class="q-hint">What went wrong — be honest</div>
+        <textarea id="txt-worst-trade" placeholder="What should I have done differently?"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Patience & Waiting</div>
+      <div class="q-block">
+        <div class="q-label">Did you wait for your setup or force entries?</div>
+        <div class="btn-group" id="grp-geduld" data-theme="amber">
+          <button class="tog" data-val="waited">Waited</button>
+          <button class="tog" data-val="partially">Partially</button>
+          <button class="tog" data-val="forced">Forced</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn-action" onclick="goStep(1)">← Back</button>
+      <button class="btn-action btn-next" onclick="goStep(3)">Next → Intentions</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: INTENTIONS FOR TOMORROW ─────────────────────────── -->
+  <div id="step-3" style="display:none;">
+
+    <div class="card">
+      <div class="card-label">One Thing</div>
+      <div class="q-block">
+        <div class="q-label">What is the one concrete thing you will do differently tomorrow?</div>
+        <div class="q-hint">Specific and actionable — not 'I will be better'</div>
+        <textarea id="txt-eine-sache" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup..."></textarea>
+      </div>
+    </div>
+
+    <div class="row-2col">
+      <div class="card">
+        <div class="card-label">Max. daily loss tomorrow (€)</div>
+        <div class="q-hint">Realistic — and stick to it</div>
+        <textarea id="txt-max-loss" placeholder="e.g. −300€" style="min-height:48px;"></textarea>
+      </div>
+      <div class="card">
+        <div class="card-label">Daily target tomorrow (€)</div>
+        <div class="q-hint">Stop when reached</div>
+        <textarea id="txt-tagesziel" placeholder="e.g. +200€" style="min-height:48px;"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Mental Preparation</div>
+      <div class="q-block">
+        <div class="q-label">How will you prepare mentally before market open tomorrow?</div>
+        <div class="btn-group" id="grp-vorbereitung" data-theme="teal">
+          <button class="tog" data-val="meditation">Meditation</button>
+          <button class="tog" data-val="journaling">Journaling</button>
+          <button class="tog" data-val="chart-analysis">Chart analysis</button>
+          <button class="tog" data-val="exercise">Exercise</button>
+          <button class="tog" data-val="prayer">Prayer</button>
+          <button class="tog" data-val="nothing">Nothing planned</button>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-label">How committed are you to following the rules tomorrow?</div>
+        <div class="btn-group" id="grp-commitment" data-theme="green">
+          <button class="tog" data-val="100">100%</button>
+          <button class="tog" data-val="strong">Strong</button>
+          <button class="tog" data-val="unsure">Unsure</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="card" id="insights-card" style="display:none;">
+      <div class="card-label">Insights & Patterns</div>
+      <div id="insights-list"></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="card" id="summary-card" style="display:none;">
+      <div class="card-label">Day Summary</div>
+      <table class="sum-table" id="sum-table"></table>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn-action" onclick="goStep(2)">← Back</button>
+      <button class="btn-action btn-save" onclick="finalizeReflection()">Review & Save</button>
+      <button class="btn-action" onclick="exportCSV()">Export CSV</button>
+      <button class="btn-action" onclick="toggleArchive()">Archive</button>
+      <button class="btn-action" onclick="resetForm()" style="margin-left:auto;">New</button>
+    </div>
+  </div>
+
+  <!-- ARCHIVE PANEL -->
+  <div class="archive-panel" id="archive-panel">
+    <div class="card-label" style="margin-bottom:.85rem">Archive</div>
+    <div id="archive-list"></div>
+    <div style="margin-top:.85rem;padding-top:.85rem;border-top:0.5px solid var(--border);display:flex;gap:8px">
+      <button class="btn-action" onclick="exportAllCSV()">Export all as CSV</button>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const todayStr = new Date().toISOString().slice(0,10);
+document.getElementById('trade-date').value = todayStr;
+updateHeaderDate();
+document.getElementById('trade-date').addEventListener('change', updateHeaderDate);
+
+function updateHeaderDate(){
+  const v = document.getElementById('trade-date').value;
+  const el = document.getElementById('header-date-display');
+  if(v){ const [y,m,d]=v.split('-'); el.textContent=d+'.'+m+'.'+y; }
+  else el.textContent='—';
+}
+
+const STEP_TITLES = ['01 / 04 — Daily Result','02 / 04 — Emotions','03 / 04 — Setups & Execution','04 / 04 — Intentions for Tomorrow'];
+let currentStep = 0;
+
+function goStep(n){
+  document.getElementById('step-'+currentStep).style.display = 'none';
+  currentStep = n;
+  document.getElementById('step-'+n).style.display = 'block';
+  for(let i=0;i<4;i++){
+    const p = document.getElementById('pip-'+i);
+    p.className = 'step-pip' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+  document.getElementById('step-label-text').textContent = STEP_TITLES[n];
+  window.scrollTo(0,0);
+}
+
+// Single-select toggle groups
+const SINGLE_SELECT = ['grp-losses','grp-stopp','grp-gefuehl','grp-regelkonform','grp-rache','grp-mental','grp-setup-qual','grp-sl','grp-geduld','grp-commitment','grp-emotion'];
+
+document.querySelectorAll('.btn-group .tog').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const grp = btn.closest('.btn-group');
+    const isSingle = SINGLE_SELECT.includes(grp.id);
+    if(isSingle){
+      grp.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    } else {
+      btn.classList.toggle('active');
+    }
+    btn.animate([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:200,easing:'cubic-bezier(.4,0,.2,1)'});
+    updateMetrics();
+  });
+});
+
+function getGroupVal(id){
+  const g = document.getElementById(id);
+  if(!g) return '';
+  return [...g.querySelectorAll('.tog.active')].map(b => b.dataset.val).join(', ');
+}
+
+function updateMetrics(){
+  const losses = getGroupVal('grp-losses');
+  const lossEl = document.getElementById('loss-metric');
+  lossEl.textContent = losses || '—';
+  lossEl.className = 'metric-value' + (losses === '3 — Limit' || losses === '4+ — Übertreten' ? ' coral' : losses === '2' ? ' amber' : losses === '0' || losses === '1' ? ' green' : '');
+}
+
+function getInsights(){
+  const insights = [];
+  const losses = getGroupVal('grp-losses');
+  const stopp = getGroupVal('grp-stopp');
+  const rache = getGroupVal('grp-rache');
+  const emotion = getGroupVal('grp-emotion');
+  const sl = getGroupVal('grp-sl');
+  const setupQual = getGroupVal('grp-setup-qual');
+  const commitment = getGroupVal('grp-commitment');
+  const eineSache = document.getElementById('txt-eine-sache').value;
+
+  if(losses === '4+ — Übertreten'){
+    insights.push({type:'coral', text:'Du hast das 3-Trade-Limit übertreten. Das ist das kritischste Signal des Tages — analysiere genau, was dich dazu gebracht hat.'});
+  } else if(losses === '3 — Limit' && stopp === 'ja-sofort'){
+    insights.push({type:'ok', text:'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.'});
+  } else if(losses === '3 — Limit' && stopp === 'nein'){
+    insights.push({type:'coral', text:'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.'});
+  }
+  if(rache === 'ja'){
+    insights.push({type:'coral', text:'Rache-Trade ausgeführt: häufigstes Muster hinter großen Verlusttagen. Was hat den Impuls ausgelöst?'});
+  } else if(rache === 'impuls-widerstanden'){
+    insights.push({type:'ok', text:'Rache-Impuls erkannt und widerstanden — das ist mentale Stärke. Diese Fähigkeit schützt dein Konto.'});
+  }
+  if(emotion === 'fomo' || emotion === 'gier'){
+    insights.push({type:'warn', text:'FOMO / Gier ist ein Signal, kein Handelsgrund. Morgen: Warte auf das Setup, nicht auf das Gefühl.'});
+  }
+  if(sl === 'ignoriert'){
+    insights.push({type:'coral', text:'Stop-Loss nicht gesetzt oder ignoriert. Das ist die teuerste Gewohnheit im Trading — keine Ausnahmen, nie.'});
+  } else if(sl === 'einmal-bewegt'){
+    insights.push({type:'warn', text:'Stop-Loss nachgezogen oder bewegt. Jede Ausnahme trainiert das Gehirn, Regeln als optional zu sehen.'});
+  }
+  if(setupQual === 'impulsiv'){
+    insights.push({type:'warn', text:'Impulsive Entries entstehen aus Langeweile oder dem Druck, dabei sein zu müssen. Kein Setup = kein Trade.'});
+  }
+  if(commitment === '100'){
+    insights.push({type:'ok', text:'Starkes Commitment für morgen. Schreibe deine eine Verbesserung sichtbar auf — Post-it am Monitor.'});
+  }
+  if(eineSache && eineSache.trim().length > 10){
+    insights.push({type:'info', text:'Vorsatz: "' + eineSache.trim().substring(0,90) + (eineSache.length > 90 ? '...' : '') + '"'});
+  }
+  if(insights.length === 0){
+    insights.push({type:'info', text:'Reflexion abgeschlossen. Regelmäßiges Journaling ist einer der stärksten Hebel für Trading-Disziplin.'});
+  }
+  return insights;
+}
+
+function finalizeReflection(){
+  const insights = getInsights();
+  const ic = document.getElementById('insights-card');
+  const il = document.getElementById('insights-list');
+  ic.style.display = 'block';
+  il.innerHTML = insights.map(i => `<div class="insight ${i.type}">${i.text}</div>`).join('');
+
+  const rows = [
+    ['Datum', document.getElementById('trade-date').value || '—'],
+    ['Verlusttrades', getGroupVal('grp-losses') || '—'],
+    ['Handelsstopp', getGroupVal('grp-stopp') || '—'],
+    ['Gefühl', getGroupVal('grp-gefuehl') || '—'],
+    ['Regelkonform', getGroupVal('grp-regelkonform') || '—'],
+    ['Emotion', getGroupVal('grp-emotion') || '—'],
+    ['Rache-Impuls', getGroupVal('grp-rache') || '—'],
+    ['Mental. Zustand', getGroupVal('grp-mental') || '—'],
+    ['Setup-Qualität', getGroupVal('grp-setup-qual') || '—'],
+    ['Stop-Loss', getGroupVal('grp-sl') || '—'],
+    ['Geduld', getGroupVal('grp-geduld') || '—'],
+    ['Max. Verlust', document.getElementById('txt-max-loss').value || '—'],
+    ['Tagesziel', document.getElementById('txt-tagesziel').value || '—'],
+    ['Vorbereitung', getGroupVal('grp-vorbereitung') || '—'],
+    ['Commitment', getGroupVal('grp-commitment') || '—'],
+  ];
+  document.getElementById('sum-table').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  document.getElementById('summary-card').style.display = 'block';
+  saveEntry();
+  document.getElementById('sum-table').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── Archive ──────────────────────────────────────────────────────────
+function getState(){
+  return {
+    date: document.getElementById('trade-date').value,
+    losses: getGroupVal('grp-losses'),
+    stopp: getGroupVal('grp-stopp'),
+    gefuehl: getGroupVal('grp-gefuehl'),
+    regelkonform: getGroupVal('grp-regelkonform'),
+    emotion: getGroupVal('grp-emotion'),
+    rache: getGroupVal('grp-rache'),
+    mental: getGroupVal('grp-mental'),
+    setupQual: getGroupVal('grp-setup-qual'),
+    sl: getGroupVal('grp-sl'),
+    geduld: getGroupVal('grp-geduld'),
+    emotionMoment: document.getElementById('txt-emotion-moment').value,
+    bestTrade: document.getElementById('txt-best-trade').value,
+    worstTrade: document.getElementById('txt-worst-trade').value,
+    eineSache: document.getElementById('txt-eine-sache').value,
+    maxLoss: document.getElementById('txt-max-loss').value,
+    tagesziel: document.getElementById('txt-tagesziel').value,
+    vorbereitung: getGroupVal('grp-vorbereitung'),
+    commitment: getGroupVal('grp-commitment'),
+  };
+}
+
+function getArchive(){ try{ return JSON.parse(localStorage.getItem('trf-archive')||'[]'); }catch{ return []; } }
+function setArchive(a){ try{ localStorage.setItem('trf-archive', JSON.stringify(a)); }catch{} }
+
+function saveEntry(){
+  const s = getState();
+  if(!s.date){ showToast('Bitte Datum auswählen.'); return; }
+  const a = getArchive();
+  const i = a.findIndex(e => e.date === s.date);
+  if(i >= 0) a[i] = s; else a.unshift(s);
+  setArchive(a);
+  renderArchive();
+  showToast('Gespeichert: ' + s.date);
+}
+
+function resetForm(){
+  document.getElementById('trade-date').value = todayStr;
+  updateHeaderDate();
+  document.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
+  ['txt-emotion-moment','txt-best-trade','txt-worst-trade','txt-eine-sache','txt-max-loss','txt-tagesziel'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('insights-card').style.display = 'none';
+  document.getElementById('summary-card').style.display = 'none';
+  goStep(0);
+  showToast('Neue Reflexion gestartet.');
+}
+
+function toggleArchive(){
+  const p = document.getElementById('archive-panel');
+  const open = p.style.display === 'block';
+  p.style.display = open ? 'none' : 'block';
+  if(!open) renderArchive();
+}
+
+function renderArchive(){
+  const a = getArchive();
+  const el = document.getElementById('archive-list');
+  if(!a.length){ el.innerHTML = '<div class="empty-msg">Noch keine Einträge gespeichert.</div>'; return; }
+  el.innerHTML = a.map((e,i) => {
+    const tags = [e.losses, e.emotion, e.commitment].filter(Boolean).slice(0,3).map(t => `<span class="etag">${t}</span>`).join('');
+    return `<div class="archive-entry">
+      <div><div class="entry-date">${e.date}</div><div class="entry-tags">${tags}</div></div>
+      <div class="entry-actions">
+        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Laden</button>
+        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Löschen</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadArchiveEntry(i){
+  const a = getArchive();
+  if(!a[i]) return;
+  const s = a[i];
+  document.getElementById('trade-date').value = s.date || '';
+  updateHeaderDate();
+  const groupMap = {
+    'grp-losses': s.losses, 'grp-stopp': s.stopp, 'grp-gefuehl': s.gefuehl,
+    'grp-regelkonform': s.regelkonform, 'grp-emotion': s.emotion, 'grp-rache': s.rache,
+    'grp-mental': s.mental, 'grp-setup-qual': s.setupQual, 'grp-sl': s.sl,
+    'grp-geduld': s.geduld, 'grp-vorbereitung': s.vorbereitung, 'grp-commitment': s.commitment,
+  };
+  Object.entries(groupMap).forEach(([grpId, val]) => {
+    const g = document.getElementById(grpId);
+    if(!g || !val) return;
+    const vals = val.split(', ');
+    g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', vals.includes(b.dataset.val)));
+  });
+  ['emotionMoment','bestTrade','worstTrade','eineSache','maxLoss','tagesziel'].forEach(k => {
+    const idMap = {emotionMoment:'txt-emotion-moment',bestTrade:'txt-best-trade',worstTrade:'txt-worst-trade',eineSache:'txt-eine-sache',maxLoss:'txt-max-loss',tagesziel:'txt-tagesziel'};
+    document.getElementById(idMap[k]).value = s[k] || '';
+  });
+  goStep(0);
+  showToast('Geladen: ' + s.date);
+}
+
+function deleteArchiveEntry(i){
+  const a = getArchive();
+  const date = a[i]?.date;
+  a.splice(i,1);
+  setArchive(a);
+  renderArchive();
+  showToast('Gelöscht: ' + date);
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────
+const CSV_HEAD = '"Datum","Verlusttrades","Handelsstopp","Gefühl","Regelkonform","Emotion","Rache","Mental","Setup-Qualität","Stop-Loss","Geduld","Emotion-Moment","Bester Trade","Schlechtester Trade","Eine Sache","Max. Verlust","Tagesziel","Vorbereitung","Commitment"';
+
+function toRow(s){
+  return [s.date,s.losses,s.stopp,s.gefuehl,s.regelkonform,s.emotion,s.rache,s.mental,s.setupQual,s.sl,s.geduld,
+    (s.emotionMoment||'').replace(/"/g,'""'),(s.bestTrade||'').replace(/"/g,'""'),(s.worstTrade||'').replace(/"/g,'""'),
+    (s.eineSache||'').replace(/"/g,'""'),s.maxLoss,s.tagesziel,s.vorbereitung,s.commitment
+  ].map(c => '"'+(c||'')+'"').join(',');
+}
+
+function dlFile(content, name, mime){
+  const blob = new Blob(['\uFEFF'+content], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportCSV(){
+  const s = getState();
+  dlFile(CSV_HEAD+'\n'+toRow(s), 'reflection-'+s.date+'.csv', 'text/csv;charset=utf-8;');
+  showToast('CSV exportiert.');
+}
+
+function exportAllCSV(){
+  const a = getArchive();
+  if(!a.length){ showToast('Archiv ist leer.'); return; }
+  dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'reflection-all.csv', 'text/csv;charset=utf-8;');
+  showToast('Alle Einträge exportiert.');
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.opacity='0', 2400);
+}
+</script>
+</body>
+</html>
