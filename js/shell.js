@@ -6,7 +6,6 @@ const NAV = [
   { group: 'Overview' },
   { href: 'index.html', icon: '◧', label: 'Dashboard' },
   { href: 'pages/trades.html', icon: '⤢', label: 'Trades & PnL' },
-  { href: 'pages/gallery.html', icon: '▤', label: 'Charts & Screens' },
   { group: 'Daily journal' },
   { href: 'pages/journal.html', icon: '✎', label: 'Pre / Post Market' },
   { href: 'pages/ooda.html', icon: '◈', label: 'OODA Live Journal' },
