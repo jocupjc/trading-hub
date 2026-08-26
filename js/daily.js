@@ -127,5 +127,7 @@ async function renderArchive() {
 $('btnSave').onclick = saveDay;
 $('j-date').addEventListener('change', () => load($('j-date').value));
 $('o-window').addEventListener('change', () => renderTable(collectOoda()));
+document.querySelectorAll('.sec-head').forEach(h =>
+  h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
