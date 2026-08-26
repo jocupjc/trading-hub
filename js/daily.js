@@ -151,27 +151,59 @@ function highlightNow() {
   });
 }
 
+// ── Auto-save: instant local drafts + debounced cloud push ───────────────────
+let loadedDate = null;
+let autoTimer = null;
+const draftKey = (type, date) => `th:draft:${type}:${date}`;
+function setStatus(t) { const el = $('save-status'); if (el) el.textContent = t; }
+function writeDrafts(date) {
+  if (!date) return;
+  try {
+    localStorage.setItem(draftKey('daily', date), JSON.stringify(readJournal()));
+    localStorage.setItem(draftKey('ooda', date), JSON.stringify(collectOoda()));
+  } catch (e) {}
+}
+function clearDrafts(date) {
+  try { localStorage.removeItem(draftKey('daily', date)); localStorage.removeItem(draftKey('ooda', date)); } catch (e) {}
+}
+
 // ── Load / save the whole day (pre+post as 'daily', OODA as 'ooda') ──────────
 async function load(date) {
   let dj = null, oj = null;
   try { dj = await DB.getJournal(date, 'daily'); } catch (e) { console.error(e); }
   try { oj = await DB.getJournal(date, 'ooda'); } catch (e) { console.error(e); }
+  // Overlay any local unsaved draft so edits survive reloads / navigation
+  try {
+    const dd = JSON.parse(localStorage.getItem(draftKey('daily', date)) || 'null'); if (dd) dj = dd;
+    const od = JSON.parse(localStorage.getItem(draftKey('ooda', date)) || 'null'); if (od) oj = od;
+  } catch (e) {}
   fillJournal(dj || {});
   oj = oj || {};
   $('o-inst').value = oj.inst || ''; $('o-ctx').value = oj.ctx || ''; $('o-lvl').value = oj.lvl || '';
   $('o-bias').value = oj.bias || ''; if (oj.window) $('o-window').value = oj.window;
   renderTable(oj);
+  loadedDate = date;
+  setStatus('');
 }
 
-async function saveDay() {
-  const date = $('j-date').value;
-  if (!date) return Shell.toast('Pick a date');
+async function persistDate(date, silent) {
+  if (!date) { if (!silent) Shell.toast('Pick a date'); return; }
+  writeDrafts(date);
   try {
     await DB.saveJournal(date, 'daily', readJournal());
     await DB.saveJournal(date, 'ooda', collectOoda());
-    Shell.toast('Saved ' + date);
-    await renderArchive();
-  } catch (e) { console.error(e); Shell.toast('Save failed'); }
+    clearDrafts(date);
+    if (silent) setStatus('saved ✓'); else { Shell.toast('Saved ' + date); await renderArchive(); }
+  } catch (e) { console.error(e); if (silent) setStatus('draft saved'); else Shell.toast('Save failed'); }
+}
+function saveDay() { return persistDate($('j-date').value, false); }
+
+function scheduleAutosave() {
+  const date = $('j-date').value;
+  if (date) writeDrafts(date);      // instant, synchronous safety net
+  setStatus('saving…');
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => persistDate($('j-date').value, true), 500);
 }
 
 async function renderArchive() {
@@ -184,14 +216,27 @@ async function renderArchive() {
         <td class="mono" style="color:var(--mu)">${(e.updated_at || '').slice(0, 16).replace('T', ' ')}</td>
         <td><button class="btn sm" data-load="${e.date}">open</button></td></tr>`).join('')}</tbody></table>`
     : '<div class="empty">No days saved yet.</div>';
-  document.querySelectorAll('[data-load]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-load]').forEach(b => b.onclick = async () => {
+    if (loadedDate && loadedDate !== b.dataset.load) await persistDate(loadedDate, true);
     $('j-date').value = b.dataset.load; load(b.dataset.load); window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
 $('btnSave').onclick = saveDay;
-$('j-date').addEventListener('change', () => load($('j-date').value));
+$('j-date').addEventListener('change', async () => {
+  clearTimeout(autoTimer);
+  if (loadedDate && loadedDate !== $('j-date').value) await persistDate(loadedDate, true);
+  load($('j-date').value);
+});
 $('o-window').addEventListener('change', () => renderTable(collectOoda()));
+
+// Auto-save on any edit: instant local draft + debounced cloud push
+const mainEl = document.querySelector('main');
+mainEl.addEventListener('input', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
+mainEl.addEventListener('change', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
+mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab')) scheduleAutosave(); });
+window.addEventListener('pagehide', () => { const d = $('j-date').value; if (d) writeDrafts(d); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistDate($('j-date').value, true); });
 document.querySelectorAll('.sec-head').forEach(h =>
   h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
 document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
