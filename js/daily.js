@@ -4,7 +4,7 @@ Shell.mount('pages/journal.html', '../');
 const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
-const JFIELDS = ['pre-context', 'pre-bias', 'pre-game', 'pre-setups', 'pre-goal', 'pre-risk',
+const JFIELDS = ['pre-context', 'pre-bias', 'pre-game', 'pre-market-state', 'pre-vvwap', 'pre-sequence', 'pre-setups', 'pre-goal', 'pre-risk',
   'post-rules', 'post-score', 'post-best', 'post-worst', 'post-emotion', 'post-tomorrow'];
 
 function readJournal() { const o = {}; JFIELDS.forEach(f => o[f] = $(f).value); return o; }
