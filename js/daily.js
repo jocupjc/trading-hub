@@ -5,7 +5,10 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra',
-  'post-rules', 'post-score', 'post-best', 'post-worst', 'post-emotion', 'post-tomorrow'];
+  'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel'];
+// Post-market reflection single-select groups (multi-select: grp-rd-emotion)
+const POST_GROUPS = ['grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
+  'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
   'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
 
@@ -46,12 +49,36 @@ function gameAlert(btn) {
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
-function stoppAlert(btn) {
-  const el = $('alert-stopp'); if (!el) return; el.className = 'alert-box';
-  if (!btn) return;
-  const v = btn.dataset.val;
-  if (v === 'yes-immediately') { el.innerHTML = 'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.'; el.classList.add('show', 'ok'); }
-  else if (v === 'no') { el.innerHTML = 'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.'; el.classList.add('show', 'bad'); }
+function multiGroupValue(id) { const g = $(id); return g ? [...g.querySelectorAll('.tog.active')].map(b => b.dataset.val) : []; }
+function setMultiGroup(id, vals) { const g = $(id); if (!g) return; const set = new Set(vals || []); g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', set.has(b.dataset.val))); }
+// Post-market insights — ported 1:1 from the Daily Reflection tool
+function postInsights() {
+  const out = [];
+  const losses = groupValue('grp-losses');
+  const stopp = groupValue('grp-stopp');
+  const rache = groupValue('grp-rache');
+  const emotion = multiGroupValue('grp-rd-emotion');
+  const sl = groupValue('grp-sl');
+  const setupQual = groupValue('grp-setup-qual');
+  const commitment = groupValue('grp-commitment');
+  const eineSache = ($('txt-eine-sache') || {}).value || '';
+  if (losses === '4+') out.push({ type: 'bad', text: 'Du hast das 3-Trade-Limit übertreten. Das ist das kritischste Signal des Tages — analysiere genau, was dich dazu gebracht hat.' });
+  else if (losses === '3' && stopp === 'yes-immediately') out.push({ type: 'good', text: 'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.' });
+  else if (losses === '3' && stopp === 'no') out.push({ type: 'bad', text: 'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.' });
+  if (rache === 'yes') out.push({ type: 'bad', text: 'Rache-Trade ausgeführt: häufigstes Muster hinter großen Verlusttagen. Was hat den Impuls ausgelöst?' });
+  else if (rache === 'impulse-resisted') out.push({ type: 'good', text: 'Rache-Impuls erkannt und widerstanden — das ist mentale Stärke. Diese Fähigkeit schützt dein Konto.' });
+  if (emotion.includes('fomo') || emotion.includes('greed')) out.push({ type: 'warn', text: 'FOMO / Gier ist ein Signal, kein Handelsgrund. Morgen: Warte auf das Setup, nicht auf das Gefühl.' });
+  if (sl === 'ignored') out.push({ type: 'bad', text: 'Stop-Loss nicht gesetzt oder ignoriert. Das ist die teuerste Gewohnheit im Trading — keine Ausnahmen, nie.' });
+  else if (sl === 'moved-once') out.push({ type: 'warn', text: 'Stop-Loss nachgezogen oder bewegt. Jede Ausnahme trainiert das Gehirn, Regeln als optional zu sehen.' });
+  if (setupQual === 'impulsive') out.push({ type: 'warn', text: 'Impulsive Entries entstehen aus Langeweile oder dem Druck, dabei sein zu müssen. Kein Setup = kein Trade.' });
+  if (commitment === '100') out.push({ type: 'good', text: 'Starkes Commitment für morgen. Schreibe deine eine Verbesserung sichtbar auf — Post-it am Monitor.' });
+  if (eineSache && eineSache.trim().length > 10) out.push({ type: 'info', text: 'Vorsatz: "' + eineSache.trim().substring(0, 90) + (eineSache.length > 90 ? '...' : '') + '"' });
+  if (out.length === 0) out.push({ type: 'info', text: 'Reflexion abgeschlossen. Regelmäßiges Journaling ist einer der stärksten Hebel für Trading-Disziplin.' });
+  return out;
+}
+function renderPostInsights() {
+  const el = $('post-insights'); if (!el) return;
+  el.innerHTML = postInsights().map(i => `<div class="insight ${i.type}">${esc(i.text)}</div>`).join('');
 }
 function intensityAlert(v) {
   const el = $('alert-intensity'); if (!el) return; el.className = 'alert-box';
@@ -67,8 +94,9 @@ function readJournal() {
   CHECK_FIELDS.forEach(f => { const el = $(f); o[f] = el ? el.checked : false; });
   o['pre-emotion'] = groupValue('grp-emotion');
   o['pre-game'] = groupValue('grp-game');
-  o['post-stopp'] = groupValue('grp-stopp');
   o['pre-intensity'] = scaleValue('scale-intensity');
+  POST_GROUPS.forEach(g => o[g] = groupValue(g));
+  o['grp-rd-emotion'] = multiGroupValue('grp-rd-emotion');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
@@ -86,8 +114,10 @@ function fillJournal(p) {
   });
   setGroupValue('grp-emotion', (p && p['pre-emotion']) || '', emotionAlert);
   setGroupValue('grp-game', (p && p['pre-game']) || '', gameAlert);
-  setGroupValue('grp-stopp', (p && p['post-stopp']) || '', stoppAlert);
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
+  POST_GROUPS.forEach(g => setGroupValue(g, (p && p[g]) || '', () => {}));
+  setMultiGroup('grp-rd-emotion', (p && p['grp-rd-emotion']) || []);
+  renderPostInsights();
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
   RF_KEYS.forEach(k => setRf(k, p && p['rf-' + k]));
@@ -367,7 +397,7 @@ document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
   cb.addEventListener('change', () => cb.closest('.chk-row').classList.toggle('on', cb.checked)));
 
 // Single-select toggle button groups (emotion, game) with contextual alerts
-[['grp-emotion', emotionAlert], ['grp-game', gameAlert], ['grp-stopp', stoppAlert]].forEach(([gid, alertFn]) => {
+[['grp-emotion', emotionAlert], ['grp-game', gameAlert]].forEach(([gid, alertFn]) => {
   const g = $(gid); if (!g) return;
   g.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => {
     const was = b.classList.contains('active');
@@ -376,6 +406,20 @@ document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
     alertFn(b.classList.contains('active') ? b : null);
   }));
 });
+// Post-market reflection: single-select groups + multi-select emotions + live insights
+POST_GROUPS.forEach(gid => {
+  const g = $(gid); if (!g) return;
+  g.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => {
+    const was = b.classList.contains('active');
+    g.querySelectorAll('.tog').forEach(x => x.classList.remove('active'));
+    if (!was) b.classList.add('active');
+    renderPostInsights();
+  }));
+});
+const _rdEmotion = $('grp-rd-emotion');
+if (_rdEmotion) _rdEmotion.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { b.classList.toggle('active'); renderPostInsights(); }));
+const _eineSache = $('txt-eine-sache');
+if (_eineSache) _eineSache.addEventListener('input', renderPostInsights);
 // Intensity 1–10 scale (click again on the selected number to reset)
 const _si = $('scale-intensity');
 if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {
