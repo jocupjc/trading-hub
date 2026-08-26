@@ -30,6 +30,7 @@ const Shell = {
 
     return `
       <aside class="sidebar">
+        <button class="nav-collapse" id="nav-collapse" title="Hide navigation" aria-label="Hide navigation">‹</button>
         <div class="brand">
           <div class="mark">Trading Hub</div>
           <div class="sub">Journal · Trades · Analytics</div>
@@ -37,14 +38,28 @@ const Shell = {
           <div id="account" class="account"></div>
         </div>
         <nav class="nav">${items}</nav>
-      </aside>`;
+      </aside>
+      <button class="nav-open" id="nav-open" title="Show navigation" aria-label="Show navigation">☰</button>`;
   },
 
   mount(activeHref, rel = '') {
     DB.initSupabase();
     const host = document.getElementById('shell');
     if (host) host.innerHTML = this.render(activeHref, rel);
+    this.initNavToggle();
     if (window.Auth && Auth.refresh) Auth.refresh();
+  },
+
+  initNavToggle() {
+    const app = document.querySelector('.app');
+    if (!app) return;
+    const KEY = 'th:nav-collapsed';
+    const set = (v) => { app.classList.toggle('nav-collapsed', v); localStorage.setItem(KEY, v ? '1' : '0'); };
+    set(localStorage.getItem(KEY) === '1');
+    const c = document.getElementById('nav-collapse');
+    const o = document.getElementById('nav-open');
+    if (c) c.addEventListener('click', () => set(true));
+    if (o) o.addEventListener('click', () => set(false));
   },
 
   toast(msg) {
