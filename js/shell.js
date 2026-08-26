@@ -3,11 +3,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const NAV = [
+  { group: 'Daily journal' },
+  { href: 'pages/journal.html', icon: '✎', label: 'Daily Journal' },
   { group: 'Overview' },
   { href: 'index.html', icon: '◧', label: 'Dashboard' },
   { href: 'pages/trades.html', icon: '⤢', label: 'Trades & PnL' },
-  { group: 'Daily journal' },
-  { href: 'pages/journal.html', icon: '✎', label: 'Daily Journal' },
   { group: 'Psychology' },
   { href: 'pages/embed.html?tool=committee-of-self&title=Committee%20of%20Self', icon: '❂', label: 'Committee of Self' },
   { href: 'pages/embed.html?tool=ronin-sequence&title=Ronin%20Sequence', icon: '⌘', label: 'Ronin Sequence' },
