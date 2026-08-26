@@ -252,10 +252,12 @@ document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
     alertFn(b.classList.contains('active') ? b : null);
   }));
 });
-// Intensity 1–10 scale
+// Intensity 1–10 scale (click again on the selected number to reset)
 const _si = $('scale-intensity');
 if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {
+  const wasSel = b.classList.contains('sel-green') || b.classList.contains('sel-amber') || b.classList.contains('sel-coral');
   _si.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+  if (wasSel) { intensityAlert(0); return; }
   const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green');
   intensityAlert(v);
 }));
