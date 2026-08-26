@@ -64,8 +64,10 @@ function readJournal() {
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
-  BOX_KEYS.forEach(k => o['box-' + k] = boxState(k));
-  BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-box-model="${k}"]`); o['box-model-' + k] = el ? el.value : ''; });
+  BOX_SETS.forEach(s => {
+    BOX_KEYS.forEach(k => o[s.attr + '-' + k] = boxStateOf(s.attr, k));
+    BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); o[s.attr + '-model-' + k] = el ? el.value : ''; });
+  });
   return o;
 }
 function fillJournal(p) {
@@ -83,9 +85,11 @@ function fillJournal(p) {
   rfNewsTags = (p && Array.isArray(p['rf-news-tags'])) ? p['rf-news-tags'].slice() : [];
   renderNewsTags();
   updateRfBadges();
-  BOX_KEYS.forEach(k => { const el = boxItem(k); if (el) setBoxState(el, (p && p['box-' + k]) || ''); });
-  BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-box-model="${k}"]`); if (el) el.value = (p && p['box-model-' + k]) || ''; });
-  updateBoxSummary();
+  BOX_SETS.forEach(s => {
+    BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, (p && p[s.attr + '-' + k]) || ''); });
+    BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = (p && p[s.attr + '-model-' + k]) || ''; });
+    updateBoxSummary(s.attr, s.summary);
+  });
 }
 
 // Ronin-style directional items (Pre-trade prep)
@@ -151,14 +155,16 @@ function updateRfBadges() {
     + (ampCount ? `<span class="rf-count rf-count-gray">${ampCount} amplifier${ampCount > 1 ? 's' : ''}</span>` : '');
 }
 
-// ── 0930–1030 Box Formation checklist — ported 1:1 from Ronin Sequence ────────
+// ── Box Formation checklists — ported 1:1 from Ronin Sequence ─────────────────
 const BOX_CYCLE = ['monthly', 'weekly', 'daily', 'rdr', 'dailyModel', 'partials', 'ddrComSym', 'ddrSepMinMin', 'gaps', 'ass', 'vwap', 'svpHtf'];
 const BOX_CHECK = ['markTime', 'svpLtf', 'vibsH1m30', 'confluencesCheck', 'rdrModel', 'markMakeOrBreak', 'checkDdr', 'markTargets', 'transitionHL', 'wdrrbOpen', 'chaining'];
 const BOX_KEYS = [...BOX_CYCLE, ...BOX_CHECK];
 const BOX_MODEL_KEYS = ['weekly', 'dailyModel', 'rdrModel'];
+// two independent checklist instances: 0930–1030 (box) and 0230–0400 (box2)
+const BOX_SETS = [{ attr: 'box', summary: 'box-summary' }, { attr: 'box2', summary: 'box2-summary' }];
 
-function boxItem(key) { return document.querySelector(`.cl-item[data-box="${key}"]`); }
-function boxState(key) { const el = boxItem(key); return el ? (el.dataset.state || '') : ''; }
+function boxItem(attr, key) { return document.querySelector(`.cl-item[data-${attr}="${key}"]`); }
+function boxStateOf(attr, key) { const el = boxItem(attr, key); return el ? (el.dataset.state || '') : ''; }
 function setBoxState(item, state) {
   item.dataset.state = state || '';
   item.classList.remove('U', 'D', 'N', 'CHK', 'CHKY');
@@ -172,12 +178,12 @@ function setBoxState(item, state) {
     else if (badge) badge.textContent = '·';
   }
 }
-function updateBoxSummary() {
-  const el = $('box-summary'); if (!el) return;
-  const u = BOX_CYCLE.filter(k => boxState(k) === 'U').length;
-  const d = BOX_CYCLE.filter(k => boxState(k) === 'D').length;
-  const n = BOX_CYCLE.filter(k => boxState(k) === 'N').length;
-  const checked = BOX_CHECK.filter(k => boxState(k) === 'X').length;
+function updateBoxSummary(attr, summaryId) {
+  const el = $(summaryId); if (!el) return;
+  const u = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'U').length;
+  const d = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'D').length;
+  const n = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'N').length;
+  const checked = BOX_CHECK.filter(k => boxStateOf(attr, k) === 'X').length;
   if (!u && !d && !n && !checked) { el.innerHTML = ''; return; }
   const winner = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
   const biasBadge = winner ? `<span class="cl-bias cl-bias-${winner}">${winner === 'U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>` : '';
@@ -406,14 +412,14 @@ if (_newsWrap) _newsWrap.addEventListener('click', e => {
   renderNewsTags(); scheduleAutosave();
 });
 
-// Box Formation checklist — click to cycle (U→D→N→empty) or toggle checks (✓)
-document.querySelectorAll('.cl-item[data-box]').forEach(item => item.addEventListener('click', () => {
+// Box Formation checklists — click to cycle (U→D→N→empty) or toggle checks (✓)
+BOX_SETS.forEach(s => document.querySelectorAll(`.cl-item[data-${s.attr}]`).forEach(item => item.addEventListener('click', () => {
   const cur = item.dataset.state || '';
   const checkonly = item.dataset.checkonly === '1';
   const next = checkonly ? (cur === 'X' ? '' : 'X') : (cur === '' ? 'U' : cur === 'U' ? 'D' : cur === 'D' ? 'N' : '');
   setBoxState(item, next);
-  updateBoxSummary();
-}));
+  updateBoxSummary(s.attr, s.summary);
+})));
 
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
