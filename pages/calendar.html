@@ -5,6 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calendar · Trading Hub</title>
   <link rel="stylesheet" href="../css/styles.css?v=4">
+  <style>
+    .cal-controls { display:flex; align-items:center; gap:10px; }
+    .cal-yearbtn { font-family:var(--mono); font-size:15px; width:30px; height:30px; border-radius:7px; border:.5px solid var(--bh); background:var(--card2); color:var(--tx); cursor:pointer; line-height:1; }
+    .cal-yearbtn:hover { border-color:var(--ac); color:var(--ac); }
+    #cal-year { font-family:var(--mono); font-size:15px; min-width:52px; text-align:center; }
+    .cal-legend { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:18px; font-family:var(--mono); font-size:11px; color:var(--mu); }
+    .cal-legend span { display:inline-flex; align-items:center; gap:6px; }
+    .cal-legend i { width:14px; height:14px; border-radius:3px; display:inline-block; flex:none; }
+    .lg-default { background:var(--card2); border:.5px solid var(--b); }
+    .lg-target { background:#3fae4f; }
+    .lg-stop { background:#e8402f; }
+    .lg-contained { background:#6b7280; }
+    .lg-nodata { background:repeating-linear-gradient(45deg,#3a3d44,#3a3d44 4px,#22242a 4px,#22242a 8px); }
+    .cal-months { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:18px; }
+    .cal-month { border:.5px solid var(--b); border-radius:12px; background:var(--card); padding:12px; }
+    .cal-month-head { font-family:var(--mono); font-size:12px; letter-spacing:.5px; color:var(--tx); margin-bottom:10px; }
+    .cal-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+    .cal-wd { font-family:var(--mono); font-size:9px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); text-align:center; padding-bottom:2px; }
+    .cal-empty { aspect-ratio:1/1; }
+    .cal-day { aspect-ratio:1/1; border:.5px solid var(--b); border-radius:6px; background:var(--card2); color:var(--mu); font-family:var(--mono); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .1s; padding:0; }
+    .cal-day:hover { border-color:var(--bh); }
+    .cal-day.state-target { background:#3fae4f; color:#0f1a12; border-color:#3fae4f; font-weight:700; }
+    .cal-day.state-stop { background:#e8402f; color:#1f0e0b; border-color:#e8402f; font-weight:700; }
+    .cal-day.state-contained { background:#6b7280; color:#0f1114; border-color:#6b7280; font-weight:700; }
+    .cal-day.state-nodata { background:repeating-linear-gradient(45deg,#3a3d44,#3a3d44 4px,#22242a 4px,#22242a 8px); color:var(--tx); border-color:#3a3d44; }
+    .cal-summary { margin-top:10px; font-family:var(--mono); font-size:10px; line-height:1.5; color:var(--mu); }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -15,11 +42,23 @@
           <h1 id="title">Calendar</h1>
           <div class="sub" id="subtitle"></div>
         </div>
+        <div class="cal-controls">
+          <span id="cal-status" class="mono" style="font-size:10px;color:var(--mu);min-width:56px;text-align:right"></span>
+          <button class="cal-yearbtn" id="cal-prev" aria-label="Previous year">‹</button>
+          <span id="cal-year"></span>
+          <button class="cal-yearbtn" id="cal-next" aria-label="Next year">›</button>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-label" id="card-label">Coming soon</div>
-        <div class="empty" id="placeholder">This calendar is a placeholder — its content will be defined later.</div>
+
+      <div class="cal-legend">
+        <span><i class="lg-default"></i>Default (empty)</span>
+        <span><i class="lg-target"></i>Target reached first</span>
+        <span><i class="lg-stop"></i>Stop breached first</span>
+        <span><i class="lg-contained"></i>Contained</span>
+        <span><i class="lg-nodata"></i>No data</span>
       </div>
+
+      <div class="cal-months" id="cal-root"></div>
     </main>
   </div>
 
@@ -28,26 +67,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=13"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script>
-    const INSTRUMENTS = { NQ: 'NQ', ES: 'ES', CL: 'CL' };
-    const TYPES = {
-      ddr: { label: 'DDR', name: 'Daily Defining Range' },
-      wddrs: { label: 'WDDRS', name: 'Weekly / Daily Defining Range Sequence' },
-    };
-    const params = new URLSearchParams(location.search);
-    const type = TYPES[params.get('type')] ? params.get('type') : 'ddr';
-    const inst = INSTRUMENTS[params.get('inst')] ? params.get('inst') : 'NQ';
-    const t = TYPES[type];
-
-    Shell.mount(`pages/calendar.html?type=${type}&inst=${inst}`, '../');
-
-    const heading = `${t.label} Calendar · ${inst}`;
-    document.getElementById('title').textContent = heading;
-    document.getElementById('subtitle').textContent = `${t.name} — ${inst}`;
-    document.getElementById('card-label').textContent = `${t.label} · ${inst}`;
-    document.getElementById('placeholder').textContent =
-      `Placeholder for the ${t.label} (${t.name}) calendar for ${inst}. Content to be defined.`;
-    document.title = heading + ' · Trading Hub';
-  </script>
+  <script src="../js/calendar.js?v=1"></script>
 </body>
 </html>
