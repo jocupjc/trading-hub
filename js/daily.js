@@ -26,6 +26,12 @@ function setScaleValue(id, val, onSel) {
   if (val) { const b = s.querySelector(`.scale-btn[data-v="${val}"]`); if (b) { const v = +val; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green'); onSel(v); return; } }
   onSel(null);
 }
+// Performance self score — higher is better (inverted colours vs intensity)
+function setPerfScale(id, val) {
+  const s = $(id); if (!s) return;
+  s.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+  if (val) { const b = s.querySelector(`.scale-btn[data-v="${val}"]`); if (b) { const v = +val; b.classList.add(v >= 8 ? 'sel-green' : v >= 5 ? 'sel-amber' : 'sel-coral'); } }
+}
 
 function emotionAlert(btn) {
   const el = $('alert-emotion'); if (!el) return; el.className = 'alert-box';
@@ -97,6 +103,7 @@ function readJournal() {
   o['pre-intensity'] = scaleValue('scale-intensity');
   POST_GROUPS.forEach(g => o[g] = groupValue(g));
   o['grp-rd-emotion'] = multiGroupValue('grp-rd-emotion');
+  o['post-perf'] = scaleValue('scale-perf');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
@@ -117,6 +124,7 @@ function fillJournal(p) {
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
   POST_GROUPS.forEach(g => setGroupValue(g, (p && p[g]) || '', () => {}));
   setMultiGroup('grp-rd-emotion', (p && p['grp-rd-emotion']) || []);
+  setPerfScale('scale-perf', (p && p['post-perf']) || '');
   renderPostInsights();
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
@@ -439,6 +447,13 @@ if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('cli
   if (wasSel) { intensityAlert(0); return; }
   const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green');
   intensityAlert(v);
+}));
+const _sp = $('scale-perf');
+if (_sp) _sp.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {
+  const wasSel = b.classList.contains('sel-green') || b.classList.contains('sel-amber') || b.classList.contains('sel-coral');
+  _sp.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+  if (wasSel) return;
+  const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-green' : v >= 5 ? 'sel-amber' : 'sel-coral');
 }));
 
 // Ronin directional items — click to cycle U → D → third → empty
