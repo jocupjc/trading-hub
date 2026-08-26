@@ -5,15 +5,63 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-context', 'pre-bias', 'pre-market-state', 'pre-vvwap', 'pre-sequence',
-  'pre-emotion', 'pre-intensity', 'pre-trigger', 'pre-game', 'pre-cgame', 'pre-setups', 'pre-goal', 'pre-risk', 'pre-mantra',
+  'pre-trigger', 'pre-cgame', 'pre-setups', 'pre-goal', 'pre-risk', 'pre-mantra',
   'post-rules', 'post-score', 'post-best', 'post-worst', 'post-emotion', 'post-tomorrow'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
   'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
+
+// ── Mental Game: button groups, 1–10 scale, contextual alerts ────────────────
+function groupValue(id) { const b = $(id) && $(id).querySelector('.tog.active'); return b ? b.dataset.val : ''; }
+function setGroupValue(id, val, onSel) {
+  const g = $(id); if (!g) return; let active = null;
+  g.querySelectorAll('.tog').forEach(b => { const on = !!val && b.dataset.val === val; b.classList.toggle('active', on); if (on) active = b; });
+  onSel(active);
+}
+function scaleValue(id) { const b = $(id) && $(id).querySelector('.scale-btn.sel-green, .scale-btn.sel-amber, .scale-btn.sel-coral'); return b ? b.dataset.v : ''; }
+function setScaleValue(id, val, onSel) {
+  const s = $(id); if (!s) return;
+  s.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+  if (val) { const b = s.querySelector(`.scale-btn[data-v="${val}"]`); if (b) { const v = +val; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green'); onSel(v); return; } }
+  onSel(null);
+}
+
+function emotionAlert(btn) {
+  const el = $('alert-emotion'); if (!el) return; el.className = 'alert-box';
+  if (!btn) return;
+  const msgs = {
+    neutral: { c: 'ok', m: '<strong>Neutraler Zustand.</strong> Optimal für objektives Trading. Halte diesen Zustand durch Selbstbeobachtung aktiv.' },
+    conf: { c: 'ok', m: '<strong>Zuversicht erkannt.</strong> Produktiv — aber achte auf Winner\'s Tilt bei einer guten Streak. Bleib diszipliniert.' },
+    fear: { c: 'warn', m: '<strong>Angst erkannt.</strong> Achte auf zu kleines Sizing und frühzeitiges Aussteigen bei intaktem Setup. Vertraue dem Prozess.' },
+    tilt: { c: 'bad', m: '<strong>Tilt erkannt.</strong> Sei heute besonders wachsam. Überprüfe dein Tages-Limit doppelt und definiere deinen Abbruch-Punkt im Voraus.' },
+    euphoria: { c: 'warn', m: '<strong>Euphorie / Winner-Tilt erkannt.</strong> Gefährlichster Zustand für Over-Sizing und Regelbrüche. Setze dich explizit an dein normales Sizing.' }
+  };
+  const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
+}
+function gameAlert(btn) {
+  const el = $('alert-game'); if (!el) return; el.className = 'alert-box';
+  if (!btn) return;
+  const msgs = {
+    A: { c: 'ok', m: '<strong>A-Game bereit.</strong> Normales Sizing. Voller Plan. Volle Konzentration.' },
+    B: { c: 'warn', m: '<strong>B-Game.</strong> Sizing um 25–50% reduzieren. Engere Regeln. Fokus auf Prozess, nicht P&L.' },
+    C: { c: 'bad', m: '<strong>C-Game erkannt.</strong> Erwäge, heute nicht zu handeln oder auf Paper-Trading zu wechseln. C-Game kostet langfristig mehr als es bringt.' }
+  };
+  const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
+}
+function intensityAlert(v) {
+  const el = $('alert-intensity'); if (!el) return; el.className = 'alert-box';
+  if (!v) return;
+  if (v >= 8) { el.innerHTML = '<strong>Intensität ' + v + '/10</strong> — Erwäge, heute nicht zu handeln oder das Sizing auf 25% zu reduzieren. Hohes emotionales Arousal korreliert stark mit schlechteren Entscheidungen.'; el.classList.add('show', 'bad'); }
+  else if (v >= 5) { el.innerHTML = '<strong>Mittlere Intensität ' + v + '/10</strong> — Bleibe wachsam. Sizing reduzieren, extra Pausen einplanen.'; el.classList.add('show', 'warn'); }
+  else { el.innerHTML = '<strong>Niedrige Intensität ' + v + '/10</strong> — Gute Voraussetzungen für regelkonformes Trading.'; el.classList.add('show', 'ok'); }
+}
 
 function readJournal() {
   const o = {};
   JFIELDS.forEach(f => { const el = $(f); o[f] = el ? el.value : ''; });
   CHECK_FIELDS.forEach(f => { const el = $(f); o[f] = el ? el.checked : false; });
+  o['pre-emotion'] = groupValue('grp-emotion');
+  o['pre-game'] = groupValue('grp-game');
+  o['pre-intensity'] = scaleValue('scale-intensity');
   return o;
 }
 function fillJournal(p) {
@@ -22,6 +70,9 @@ function fillJournal(p) {
     const el = $(f);
     if (el) { el.checked = !!(p && p[f]); const row = el.closest('.chk-row'); if (row) row.classList.toggle('on', el.checked); }
   });
+  setGroupValue('grp-emotion', (p && p['pre-emotion']) || '', emotionAlert);
+  setGroupValue('grp-game', (p && p['pre-game']) || '', gameAlert);
+  setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
 }
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
@@ -145,5 +196,24 @@ document.querySelectorAll('.sec-head').forEach(h =>
   h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
 document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
   cb.addEventListener('change', () => cb.closest('.chk-row').classList.toggle('on', cb.checked)));
+
+// Single-select toggle button groups (emotion, game) with contextual alerts
+[['grp-emotion', emotionAlert], ['grp-game', gameAlert]].forEach(([gid, alertFn]) => {
+  const g = $(gid); if (!g) return;
+  g.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => {
+    const was = b.classList.contains('active');
+    g.querySelectorAll('.tog').forEach(x => x.classList.remove('active'));
+    if (!was) b.classList.add('active');
+    alertFn(b.classList.contains('active') ? b : null);
+  }));
+});
+// Intensity 1–10 scale
+const _si = $('scale-intensity');
+if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {
+  _si.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+  const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green');
+  intensityAlert(v);
+}));
+
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
