@@ -35,8 +35,8 @@
     .chk-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; }
     .chk-row { display:flex; align-items:center; gap:9px; padding:6px 9px; font-size:13px; color:var(--am); cursor:pointer; border-radius:6px; transition:color .15s, background .15s; }
     .chk-row input { width:15px; height:15px; accent-color:var(--am); flex:none; }
-    .chk-row:has(input:checked) { color:var(--gr); background:var(--grg); }
-    .chk-row:has(input:checked) input { accent-color:var(--gr); }
+    .chk-row.on { color:var(--gr); background:var(--grg); }
+    .chk-row.on input { accent-color:var(--gr); }
     .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
     @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
   </style>
@@ -209,6 +209,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=4"></script>
+  <script src="../js/daily.js?v=5"></script>
 </body>
 </html>
