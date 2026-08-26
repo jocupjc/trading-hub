@@ -46,6 +46,13 @@ function gameAlert(btn) {
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
+function stoppAlert(btn) {
+  const el = $('alert-stopp'); if (!el) return; el.className = 'alert-box';
+  if (!btn) return;
+  const v = btn.dataset.val;
+  if (v === 'yes-immediately') { el.innerHTML = 'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.'; el.classList.add('show', 'ok'); }
+  else if (v === 'no') { el.innerHTML = 'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.'; el.classList.add('show', 'bad'); }
+}
 function intensityAlert(v) {
   const el = $('alert-intensity'); if (!el) return; el.className = 'alert-box';
   if (!v) return;
@@ -60,6 +67,7 @@ function readJournal() {
   CHECK_FIELDS.forEach(f => { const el = $(f); o[f] = el ? el.checked : false; });
   o['pre-emotion'] = groupValue('grp-emotion');
   o['pre-game'] = groupValue('grp-game');
+  o['post-stopp'] = groupValue('grp-stopp');
   o['pre-intensity'] = scaleValue('scale-intensity');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
@@ -78,6 +86,7 @@ function fillJournal(p) {
   });
   setGroupValue('grp-emotion', (p && p['pre-emotion']) || '', emotionAlert);
   setGroupValue('grp-game', (p && p['pre-game']) || '', gameAlert);
+  setGroupValue('grp-stopp', (p && p['post-stopp']) || '', stoppAlert);
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
@@ -358,7 +367,7 @@ document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
   cb.addEventListener('change', () => cb.closest('.chk-row').classList.toggle('on', cb.checked)));
 
 // Single-select toggle button groups (emotion, game) with contextual alerts
-[['grp-emotion', emotionAlert], ['grp-game', gameAlert]].forEach(([gid, alertFn]) => {
+[['grp-emotion', emotionAlert], ['grp-game', gameAlert], ['grp-stopp', stoppAlert]].forEach(([gid, alertFn]) => {
   const g = $(gid); if (!g) return;
   g.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => {
     const was = b.classList.contains('active');
