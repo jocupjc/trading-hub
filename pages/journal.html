@@ -28,6 +28,10 @@
     .ab.on-STOP { background:var(--cog); border-color:var(--co); color:var(--co); }
     .col-t { width:96px; } .col-a { width:120px; } .col-b { width:120px; } .col-m { width:110px; } .col-act { width:250px; }
     .section-tag { font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--ac); background:var(--acg); border:.5px solid rgba(79,142,247,.3); padding:3px 10px; border-radius:20px; }
+    .sec-head { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin-bottom:12px; }
+    .sec-head .chev { color:var(--mu); font-size:12px; transition:transform .15s; }
+    .jsection.collapsed .chev { transform:rotate(-90deg); }
+    .jsection.collapsed .sec-body { display:none; }
   </style>
 </head>
 <body>
@@ -46,8 +50,9 @@
       </div>
 
       <!-- ═══ PRE-MARKET (top) ═══ -->
-      <div class="card">
-        <div class="row" style="margin-bottom:12px"><span class="section-tag">Pre-market — the plan</span></div>
+      <div class="card jsection">
+        <div class="sec-head"><span class="section-tag">Pre-market — the plan</span><span class="chev">▾</span></div>
+        <div class="sec-body">
         <div class="grid g2" style="gap:12px">
           <label class="field" style="grid-column:span 2"><span class="fl">Daily bias &amp; context</span>
             <textarea id="pre-context" placeholder="Overnight, gaps, key levels, higher-timeframe read…"></textarea></label>
@@ -62,11 +67,13 @@
           <label class="field"><span class="fl">Biggest mental risk today</span>
             <textarea id="pre-risk" placeholder="Where am I most likely to break a rule?"></textarea></label>
         </div>
+        </div>
       </div>
 
       <!-- ═══ OODA LIVE (middle) ═══ -->
-      <div class="card" style="margin-top:14px">
-        <div class="row" style="margin-bottom:12px"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span></div>
+      <div class="card jsection" style="margin-top:14px">
+        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span class="chev">▾</span></div>
+        <div class="sec-body">
         <div class="ooda-ctx">
           <label class="field"><span class="fl">Instrument</span><input id="o-inst" placeholder="ES / NQ…"></label>
           <label class="field" style="flex:2"><span class="fl">Daily context</span><input id="o-ctx" placeholder="Bias, key levels, plan…"></label>
@@ -90,11 +97,13 @@
             <tbody id="obody"></tbody>
           </table>
         </div>
+        </div>
       </div>
 
       <!-- ═══ POST-MARKET (bottom) ═══ -->
-      <div class="card" style="margin-top:14px">
-        <div class="row" style="margin-bottom:12px"><span class="section-tag">Post-market — the review</span></div>
+      <div class="card jsection" style="margin-top:14px">
+        <div class="sec-head"><span class="section-tag">Post-market — the review</span><span class="chev">▾</span></div>
+        <div class="sec-body">
         <div class="grid g2" style="gap:12px">
           <label class="field"><span class="fl">Rule-compliant day?</span>
             <select id="post-rules"><option value="">—</option><option>Yes, fully</option><option>Mostly</option><option>No</option></select></label>
@@ -107,6 +116,7 @@
             <textarea id="post-emotion" placeholder="What did I feel, and what triggered it?"></textarea></label>
           <label class="field" style="grid-column:span 2"><span class="fl">One thing I do differently tomorrow</span>
             <textarea id="post-tomorrow" placeholder="Specific and actionable."></textarea></label>
+        </div>
         </div>
       </div>
 
@@ -134,6 +144,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=1"></script>
+  <script src="../js/daily.js?v=2"></script>
 </body>
 </html>
