@@ -90,7 +90,7 @@ const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 
 // ── Guided diaphragmatic breathing overlay ───────────────────────────────────
 const Breathe = {
-  running: false, timer: null, countdown: null, REQUIRED: 4, rounds: 0, locked: false,
+  running: false, timer: null, countdown: null, REQUIRED: 6, rounds: 0, locked: false,
   phases: [
     { name: 'Breathe in', dur: 4, scale: 1.6 },
     { name: 'Hold', dur: 2, scale: 1.6 },
