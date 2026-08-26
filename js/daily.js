@@ -226,19 +226,24 @@ function setBoxState(item, state) {
   }
 }
 function updateBoxSummary(attr, summaryId) {
-  const el = $(summaryId); if (!el) return;
+  const el = $(summaryId); const el2 = $(summaryId + '-ooda');
+  if (!el && !el2) return;
   const u = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'U').length;
   const d = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'D').length;
   const n = BOX_CYCLE.filter(k => boxStateOf(attr, k) === 'N').length;
   const checked = BOX_CHECK.filter(k => boxStateOf(attr, k) === 'X').length;
-  if (!u && !d && !n && !checked) { el.innerHTML = ''; return; }
-  const winner = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
-  const biasBadge = winner ? `<span class="cl-bias cl-bias-${winner}">${winner === 'U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>` : '';
-  el.innerHTML = biasBadge
-    + (u ? `<span class="cl-u-count${winner === 'U' ? ' cl-winning' : ''}">${u}U</span>` : '')
-    + (d ? `<span class="cl-d-count${winner === 'D' ? ' cl-winning' : ''}">${d}D</span>` : '')
-    + (n ? `<span class="cl-n-count">${n}N</span>` : '')
-    + (checked ? `<span class="cl-chk-count">${checked}✓</span>` : '');
+  let html = '';
+  if (u || d || n || checked) {
+    const winner = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
+    const biasBadge = winner ? `<span class="cl-bias cl-bias-${winner}">${winner === 'U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>` : '';
+    html = biasBadge
+      + (u ? `<span class="cl-u-count${winner === 'U' ? ' cl-winning' : ''}">${u}U</span>` : '')
+      + (d ? `<span class="cl-d-count${winner === 'D' ? ' cl-winning' : ''}">${d}D</span>` : '')
+      + (n ? `<span class="cl-n-count">${n}N</span>` : '')
+      + (checked ? `<span class="cl-chk-count">${checked}✓</span>` : '');
+  }
+  if (el) el.innerHTML = html;
+  if (el2) el2.innerHTML = html;
 }
 
 
