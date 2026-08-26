@@ -31,6 +31,22 @@ a:hover { text-decoration: underline; }
 
 /* ── App layout: fixed sidebar + scrollable main ── */
 .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.app.nav-collapsed { grid-template-columns: 0 1fr; }
+.app.nav-collapsed .sidebar { display: none; }
+.app.nav-collapsed .nav-open { display: flex; }
+.app.nav-collapsed .main { padding-left: 64px; }
+.nav-collapse {
+  position: absolute; top: 14px; right: 12px; width: 26px; height: 26px; padding: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center; line-height: 1; font-size: 16px;
+  border-radius: 6px; border: .5px solid var(--bh); background: var(--card2); color: var(--mu); cursor: pointer;
+}
+.nav-collapse:hover { color: var(--tx); border-color: var(--ac); }
+.nav-open {
+  position: fixed; top: 14px; left: 14px; z-index: 60; width: 36px; height: 36px; display: none;
+  align-items: center; justify-content: center; font-size: 17px; border-radius: 8px;
+  border: .5px solid var(--bh); background: var(--card); color: var(--tx); cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.nav-open:hover { border-color: var(--ac); color: var(--ac); }
 .sidebar {
   background: var(--card); border-right: .5px solid var(--b);
   padding: 20px 14px; display: flex; flex-direction: column; gap: 20px;
