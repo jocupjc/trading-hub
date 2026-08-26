@@ -64,6 +64,8 @@ function readJournal() {
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
+  BOX_KEYS.forEach(k => o['box-' + k] = boxState(k));
+  BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-box-model="${k}"]`); o['box-model-' + k] = el ? el.value : ''; });
   return o;
 }
 function fillJournal(p) {
@@ -81,6 +83,9 @@ function fillJournal(p) {
   rfNewsTags = (p && Array.isArray(p['rf-news-tags'])) ? p['rf-news-tags'].slice() : [];
   renderNewsTags();
   updateRfBadges();
+  BOX_KEYS.forEach(k => { const el = boxItem(k); if (el) setBoxState(el, (p && p['box-' + k]) || ''); });
+  BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-box-model="${k}"]`); if (el) el.value = (p && p['box-model-' + k]) || ''; });
+  updateBoxSummary();
 }
 
 // Ronin-style directional items (Pre-trade prep)
@@ -144,6 +149,43 @@ function updateRfBadges() {
     + (reversal ? '<span class="rf-badge rf-badge-orange">↻ REVERSAL LIKELY</span>' : '')
     + (cautionCount ? `<span class="rf-count rf-count-yellow">${cautionCount} caution</span>` : '')
     + (ampCount ? `<span class="rf-count rf-count-gray">${ampCount} amplifier${ampCount > 1 ? 's' : ''}</span>` : '');
+}
+
+// ── 0930–1030 Box Formation checklist — ported 1:1 from Ronin Sequence ────────
+const BOX_CYCLE = ['monthly', 'weekly', 'daily', 'rdr', 'dailyModel', 'partials', 'ddrComSym', 'ddrSepMinMin', 'gaps', 'ass', 'vwap', 'svpHtf'];
+const BOX_CHECK = ['markTime', 'svpLtf', 'vibsH1m30', 'confluencesCheck', 'rdrModel', 'markMakeOrBreak', 'checkDdr', 'markTargets', 'transitionHL', 'wdrrbOpen', 'chaining'];
+const BOX_KEYS = [...BOX_CYCLE, ...BOX_CHECK];
+const BOX_MODEL_KEYS = ['weekly', 'dailyModel', 'rdrModel'];
+
+function boxItem(key) { return document.querySelector(`.cl-item[data-box="${key}"]`); }
+function boxState(key) { const el = boxItem(key); return el ? (el.dataset.state || '') : ''; }
+function setBoxState(item, state) {
+  item.dataset.state = state || '';
+  item.classList.remove('U', 'D', 'N', 'CHK', 'CHKY');
+  const badge = item.querySelector('.cl-badge');
+  const checkonly = item.dataset.checkonly === '1';
+  if (checkonly) {
+    if (state === 'X') { item.classList.add(item.dataset.yellow === '1' ? 'CHKY' : 'CHK'); if (badge) badge.textContent = '✓'; }
+    else if (badge) badge.textContent = '·';
+  } else {
+    if (state) { item.classList.add(state); if (badge) badge.textContent = state; }
+    else if (badge) badge.textContent = '·';
+  }
+}
+function updateBoxSummary() {
+  const el = $('box-summary'); if (!el) return;
+  const u = BOX_CYCLE.filter(k => boxState(k) === 'U').length;
+  const d = BOX_CYCLE.filter(k => boxState(k) === 'D').length;
+  const n = BOX_CYCLE.filter(k => boxState(k) === 'N').length;
+  const checked = BOX_CHECK.filter(k => boxState(k) === 'X').length;
+  if (!u && !d && !n && !checked) { el.innerHTML = ''; return; }
+  const winner = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
+  const biasBadge = winner ? `<span class="cl-bias cl-bias-${winner}">${winner === 'U' ? '▲ UP BIAS' : '▼ DOWN BIAS'}</span>` : '';
+  el.innerHTML = biasBadge
+    + (u ? `<span class="cl-u-count${winner === 'U' ? ' cl-winning' : ''}">${u}U</span>` : '')
+    + (d ? `<span class="cl-d-count${winner === 'D' ? ' cl-winning' : ''}">${d}D</span>` : '')
+    + (n ? `<span class="cl-n-count">${n}N</span>` : '')
+    + (checked ? `<span class="cl-chk-count">${checked}✓</span>` : '');
 }
 
 
@@ -363,6 +405,15 @@ if (_newsWrap) _newsWrap.addEventListener('click', e => {
   rfNewsTags = rfNewsTags.filter(z => z !== t);
   renderNewsTags(); scheduleAutosave();
 });
+
+// Box Formation checklist — click to cycle (U→D→N→empty) or toggle checks (✓)
+document.querySelectorAll('.cl-item[data-box]').forEach(item => item.addEventListener('click', () => {
+  const cur = item.dataset.state || '';
+  const checkonly = item.dataset.checkonly === '1';
+  const next = checkonly ? (cur === 'X' ? '' : 'X') : (cur === '' ? 'U' : cur === 'U' ? 'D' : cur === 'D' ? 'N' : '');
+  setBoxState(item, next);
+  updateBoxSummary();
+}));
 
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
