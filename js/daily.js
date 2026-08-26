@@ -200,6 +200,7 @@ const ALGO = ['', 'ASS DOWN', 'ASS UP', 'MCR', 'Ranging'];
 const ACTIONS = ['WAIT', 'HUNT', 'ENTER', 'TRAIL', 'STOP'];
 const BODY = ['', 'Regulated', 'Energized', 'Anxious', 'Euphoric', 'Stressed'];
 const MIND = ['', 'Focused', 'Neutral', 'Scattered'];
+const OODA_WINDOW = '08:30-17:30';
 let ROWS = [];
 
 $('j-date').value = todayStr();
@@ -219,7 +220,7 @@ function buildRows(windowStr) {
 function opt(list, val) { return list.map(o => `<option ${o === val ? 'selected' : ''}>${o}</option>`).join(''); }
 
 function renderTable(data) {
-  ROWS = buildRows($('o-window').value);
+  ROWS = buildRows(OODA_WINDOW);
   const byIdx = {}; (data.rows || []).forEach(r => byIdx[r.i] = r);
   $('obody').innerHTML = ROWS.map(r => {
     const d = byIdx[r.i] || {};
@@ -256,10 +257,7 @@ function collectOoda() {
     const obs = g('obs'), ori = g('ori'), algo = g('algo'), body = g('body'), mind = g('mind');
     if (obs || ori || algo || body || mind || acts.length) rows.push({ i, obs, ori, algo, body, mind, acts });
   });
-  return {
-    inst: $('o-inst').value, ctx: $('o-ctx').value, lvl: $('o-lvl').value,
-    bias: $('o-bias').value, window: $('o-window').value, rows,
-  };
+  return { rows };
 }
 
 function highlightNow() {
@@ -299,8 +297,6 @@ async function load(date) {
   } catch (e) {}
   fillJournal(dj || {});
   oj = oj || {};
-  $('o-inst').value = oj.inst || ''; $('o-ctx').value = oj.ctx || ''; $('o-lvl').value = oj.lvl || '';
-  $('o-bias').value = oj.bias || ''; if (oj.window) $('o-window').value = oj.window;
   renderTable(oj);
   loadedDate = date;
   setStatus('');
@@ -348,7 +344,6 @@ $('j-date').addEventListener('change', async () => {
   if (loadedDate && loadedDate !== $('j-date').value) await persistDate(loadedDate, true);
   load($('j-date').value);
 });
-$('o-window').addEventListener('change', () => renderTable(collectOoda()));
 
 // Auto-save on any edit: instant local draft + debounced cloud push
 const mainEl = document.querySelector('main');
