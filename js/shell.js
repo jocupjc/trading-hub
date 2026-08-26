@@ -7,6 +7,7 @@ const NAV = [
   { href: 'pages/journal.html', icon: '✎', label: 'Daily Journal' },
   { group: 'Overview', collapsible: true },
   { href: 'index.html', icon: '◧', label: 'Dashboard' },
+  { href: 'pages/monthly.html', icon: '▦', label: 'Monthly statistics' },
   { href: 'pages/trades.html', icon: '⤢', label: 'Trades & PnL' },
   { group: 'DDR calendar', collapsible: true },
   { href: 'pages/calendar.html?type=ddr&inst=NQ', icon: '▤', label: 'NQ' },
