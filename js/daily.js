@@ -4,8 +4,7 @@ Shell.mount('pages/journal.html', '../');
 const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
-const JFIELDS = ['pre-context', 'pre-bias', 'pre-market-state', 'pre-vvwap', 'pre-sequence',
-  'pre-trigger', 'pre-cgame', 'pre-setups', 'pre-goal', 'pre-risk', 'pre-mantra',
+const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra',
   'post-rules', 'post-score', 'post-best', 'post-worst', 'post-emotion', 'post-tomorrow'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
   'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
@@ -62,6 +61,7 @@ function readJournal() {
   o['pre-emotion'] = groupValue('grp-emotion');
   o['pre-game'] = groupValue('grp-game');
   o['pre-intensity'] = scaleValue('scale-intensity');
+  document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   return o;
 }
 function fillJournal(p) {
@@ -73,6 +73,28 @@ function fillJournal(p) {
   setGroupValue('grp-emotion', (p && p['pre-emotion']) || '', emotionAlert);
   setGroupValue('grp-game', (p && p['pre-game']) || '', gameAlert);
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
+  document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
+  updatePrepSummary();
+}
+
+// Ronin-style directional items (Pre-trade prep)
+function setPrepState(item, state) {
+  item.dataset.state = state || '';
+  item.classList.remove('U', 'D', 'N');
+  const badge = item.querySelector('.cl-badge');
+  if (state) { item.classList.add(state === 'U' ? 'U' : state === 'D' ? 'D' : 'N'); if (badge) badge.textContent = state; }
+  else if (badge) badge.textContent = '·';
+}
+function updatePrepSummary() {
+  const items = [...document.querySelectorAll('[data-prep]')];
+  const u = items.filter(i => i.dataset.state === 'U').length;
+  const d = items.filter(i => i.dataset.state === 'D').length;
+  const n = items.filter(i => i.dataset.state && i.dataset.state !== 'U' && i.dataset.state !== 'D').length;
+  const el = $('prep-summary'); if (!el) return;
+  if (!u && !d && !n) { el.innerHTML = ''; return; }
+  const bias = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
+  const biasBadge = bias ? `<span class="cl-bias cl-bias-${bias}">${bias === 'U' ? '▲ UP' : '▼ DOWN'}</span>` : '';
+  el.innerHTML = `${biasBadge}${u ? `<span class="cl-u-count">${u}U</span>` : ''}${d ? `<span class="cl-d-count">${d}D</span>` : ''}${n ? `<span class="cl-n-count">${n}N</span>` : ''}`;
 }
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
@@ -234,7 +256,7 @@ $('o-window').addEventListener('change', () => renderTable(collectOoda()));
 const mainEl = document.querySelector('main');
 mainEl.addEventListener('input', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
 mainEl.addEventListener('change', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
-mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab')) scheduleAutosave(); });
+mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .cl-item')) scheduleAutosave(); });
 window.addEventListener('pagehide', () => { const d = $('j-date').value; if (d) writeDrafts(d); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistDate($('j-date').value, true); });
 document.querySelectorAll('.sec-head').forEach(h =>
@@ -260,6 +282,15 @@ if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('cli
   if (wasSel) { intensityAlert(0); return; }
   const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-coral' : v >= 5 ? 'sel-amber' : 'sel-green');
   intensityAlert(v);
+}));
+
+// Ronin directional items — click to cycle U → D → third → empty
+document.querySelectorAll('[data-prep]').forEach(item => item.addEventListener('click', () => {
+  const third = item.dataset.third || 'N';
+  const cur = item.dataset.state || '';
+  const next = cur === '' ? 'U' : cur === 'U' ? 'D' : cur === 'D' ? third : '';
+  setPrepState(item, next);
+  updatePrepSummary();
 }));
 
 setInterval(highlightNow, 60000);
