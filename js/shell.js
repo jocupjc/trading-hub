@@ -13,6 +13,8 @@ const NAV = [
   { href: 'pages/embed.html?tool=ronin-sequence&title=Ronin%20Sequence', icon: '⌘', label: 'Ronin Sequence' },
   { href: 'pages/embed.html?tool=mental-game&title=Mental%20Game', icon: '☯', label: 'Mental Game' },
   { href: 'pages/embed.html?tool=reflection&title=Daily%20Reflection', icon: '❖', label: 'Daily Reflection' },
+  { group: 'Calm' },
+  { breathe: true, icon: '◯', label: 'Breathe' },
 ];
 
 const Shell = {
@@ -24,6 +26,7 @@ const Shell = {
 
     const items = NAV.map(n => {
       if (n.group) return `<div class="group-label">${n.group}</div>`;
+      if (n.breathe) return `<a class="nav-link" href="#" data-breathe><span class="ic">${n.icon}</span>${n.label}</a>`;
       const active = n.href === activeHref ? ' active' : '';
       return `<a class="nav-link${active}" href="${rel}${n.href}"><span class="ic">${n.icon}</span>${n.label}</a>`;
     }).join('');
@@ -31,6 +34,7 @@ const Shell = {
     return `
       <aside class="sidebar">
         <button class="nav-collapse" id="nav-collapse" title="Hide navigation" aria-label="Hide navigation">‹</button>
+        <button class="breathe-top" data-breathe title="Guided diaphragmatic breathing"><span class="breathe-mini"></span>Breathe</button>
         <div class="brand">
           <div class="mark">Trading Hub</div>
           <div class="sub">Journal · Trades · Analytics</div>
@@ -47,6 +51,7 @@ const Shell = {
     const host = document.getElementById('shell');
     if (host) host.innerHTML = this.render(activeHref, rel);
     this.initNavToggle();
+    this.initBreathe();
     if (window.Auth && Auth.refresh) Auth.refresh();
   },
 
@@ -60,6 +65,12 @@ const Shell = {
     const o = document.getElementById('nav-open');
     if (c) c.addEventListener('click', () => set(true));
     if (o) o.addEventListener('click', () => set(false));
+  },
+
+  initBreathe() {
+    Breathe.injectStyles();
+    document.querySelectorAll('[data-breathe]').forEach(el =>
+      el.addEventListener('click', e => { e.preventDefault(); Breathe.open(); }));
   },
 
   toast(msg) {
@@ -76,5 +87,76 @@ const fmtD = (v) => (v > 0 ? '+' : '') + '$' + Number(v).toFixed(2);
 const cls = (v) => (v > 0.001 ? 'pos' : v < -0.001 ? 'neg' : 'neu');
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ── Guided diaphragmatic breathing overlay ───────────────────────────────────
+const Breathe = {
+  running: false, timer: null, countdown: null,
+  phases: [
+    { name: 'Breathe in', dur: 4, scale: 1.6 },
+    { name: 'Hold', dur: 2, scale: 1.6 },
+    { name: 'Breathe out', dur: 6, scale: 1 },
+  ],
+  injectStyles() {
+    if (document.getElementById('breathe-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'breathe-styles';
+    s.textContent = `
+      .breathe-top { display:flex; align-items:center; gap:10px; width:100%; padding:9px 12px; border-radius:var(--r); border:.5px solid rgba(79,142,247,.3); background:var(--acg); color:var(--ac); font-family:var(--mono); font-size:12px; letter-spacing:.5px; cursor:pointer; }
+      .breathe-top:hover { border-color:var(--ac); }
+      .breathe-mini { width:16px; height:16px; border-radius:50%; flex:none; background:radial-gradient(circle at 50% 40%, #d7e6ff, var(--ac)); animation:breathe-pulse 5.5s ease-in-out infinite; }
+      @keyframes breathe-pulse { 0%,100% { transform:scale(.7); box-shadow:0 0 0 0 rgba(79,142,247,.5); } 50% { transform:scale(1.05); box-shadow:0 0 0 6px rgba(79,142,247,0); } }
+      .breathe-overlay { position:fixed; inset:0; z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:30px; background:rgba(8,10,14,.85); backdrop-filter:blur(7px); }
+      .breathe-overlay.show { display:flex; }
+      .breathe-close { position:absolute; top:18px; right:20px; width:38px; height:38px; border-radius:8px; border:.5px solid var(--bh); background:var(--card); color:var(--tx); font-size:15px; cursor:pointer; }
+      .breathe-close:hover { border-color:var(--ac); color:var(--ac); }
+      .breathe-stage { width:340px; height:340px; display:flex; align-items:center; justify-content:center; }
+      .breathe-circle { width:150px; height:150px; border-radius:50%; display:flex; align-items:center; justify-content:center; transform:scale(1); transition:transform linear; will-change:transform; background:radial-gradient(circle at 50% 38%, rgba(79,142,247,.4), rgba(79,142,247,.08)); border:1px solid rgba(79,142,247,.55); box-shadow:0 0 70px rgba(79,142,247,.28); }
+      .breathe-label { text-align:center; font-family:var(--mono); color:#eaf1ff; }
+      .breathe-phase { display:block; font-size:15px; letter-spacing:.5px; }
+      .breathe-count { display:block; font-size:26px; margin-top:4px; color:#fff; }
+      .breathe-hint { font-family:var(--mono); font-size:11px; letter-spacing:.4px; color:var(--mu); text-align:center; max-width:340px; padding:0 20px; line-height:1.6; }`;
+    document.head.appendChild(s);
+  },
+  ensureDom() {
+    if (document.getElementById('breathe-overlay')) return;
+    const o = document.createElement('div');
+    o.id = 'breathe-overlay'; o.className = 'breathe-overlay';
+    o.innerHTML = `
+      <button class="breathe-close" aria-label="Close">✕</button>
+      <div class="breathe-stage"><div class="breathe-circle"><div class="breathe-label" id="breathe-label">Ready</div></div></div>
+      <div class="breathe-hint">Diaphragmatic breathing — let your belly expand as you breathe in through the nose, and soften as you breathe out through the mouth.</div>`;
+    document.body.appendChild(o);
+    o.querySelector('.breathe-close').addEventListener('click', () => this.stop());
+    o.addEventListener('click', e => { if (e.target === o) this.stop(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && this.running) this.stop(); });
+  },
+  open() {
+    this.injectStyles(); this.ensureDom();
+    document.getElementById('breathe-overlay').classList.add('show');
+    this.running = true;
+    this.phase(0);
+  },
+  phase(i) {
+    if (!this.running) return;
+    const p = this.phases[i];
+    const circle = document.querySelector('#breathe-overlay .breathe-circle');
+    const label = document.getElementById('breathe-label');
+    circle.style.transitionDuration = p.dur + 's';
+    circle.style.transform = `scale(${p.scale})`;
+    let remain = p.dur;
+    const paint = () => label.innerHTML = `<span class="breathe-phase">${p.name}</span><span class="breathe-count">${remain}</span>`;
+    paint();
+    clearInterval(this.countdown);
+    this.countdown = setInterval(() => { remain--; if (remain > 0) paint(); }, 1000);
+    this.timer = setTimeout(() => { clearInterval(this.countdown); this.phase((i + 1) % this.phases.length); }, p.dur * 1000);
+  },
+  stop() {
+    this.running = false;
+    clearTimeout(this.timer); clearInterval(this.countdown);
+    const o = document.getElementById('breathe-overlay');
+    if (o) { o.classList.remove('show'); const c = o.querySelector('.breathe-circle'); if (c) { c.style.transitionDuration = '.6s'; c.style.transform = 'scale(1)'; } }
+  },
+};
+window.Breathe = Breathe;
 
 window.Shell = Shell;
