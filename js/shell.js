@@ -117,7 +117,8 @@ const Shell = {
         items.classList.toggle('collapsed', collapsed);
         localStorage.setItem(KEY, collapsed ? '1' : '0');
       };
-      set(localStorage.getItem(KEY) === '1');
+      const stored = localStorage.getItem(KEY);
+      set(stored === null ? true : stored === '1');
       btn.addEventListener('click', () => set(!items.classList.contains('collapsed')));
     });
   },
