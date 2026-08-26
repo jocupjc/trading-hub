@@ -37,6 +37,25 @@
     .chk-row input { width:15px; height:15px; accent-color:var(--am); flex:none; }
     .chk-row.on { color:var(--gr); background:var(--grg); }
     .chk-row.on input { accent-color:var(--gr); }
+    .field-label { font-size:11px; color:var(--mu); margin:14px 0 6px; font-family:var(--mono); letter-spacing:.3px; }
+    .insight { padding:10px 13px; border-radius:8px; font-size:12px; line-height:1.6; color:var(--mu); background:rgba(255,255,255,0.03); border:.5px solid var(--b); margin-bottom:10px; }
+    .insight strong { color:var(--tx); font-weight:600; }
+    .btn-group { display:flex; flex-wrap:wrap; gap:6px; }
+    .tog { font-family:var(--mono); font-size:12px; padding:6px 14px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .18s; }
+    .tog:hover { border-color:rgba(255,255,255,.2); color:var(--tx); }
+    .btn-group[data-theme="blue"] .tog.active { background:var(--acg); border-color:var(--ac); color:var(--ac); box-shadow:0 0 12px var(--acg); }
+    .btn-group[data-theme="green"] .tog.active { background:var(--grg); border-color:var(--gr); color:var(--gr); box-shadow:0 0 12px var(--grg); }
+    .scale-row { display:flex; gap:5px; flex-wrap:wrap; }
+    .scale-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:34px; text-align:center; }
+    .scale-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
+    .scale-btn.sel-green { background:var(--grg); border-color:var(--gr); color:var(--gr); }
+    .scale-btn.sel-amber { background:var(--amg); border-color:var(--am); color:var(--am); }
+    .scale-btn.sel-coral { background:var(--cog); border-color:var(--co); color:var(--co); }
+    .alert-box { padding:10px 13px; border-radius:8px; font-size:12px; line-height:1.6; margin-top:8px; display:none; }
+    .alert-box.show { display:block; }
+    .alert-box.warn { background:var(--amg); border:.5px solid rgba(245,158,11,.35); color:var(--am); }
+    .alert-box.ok { background:var(--grg); border:.5px solid rgba(52,211,153,.35); color:var(--gr); }
+    .alert-box.bad { background:var(--cog); border:.5px solid rgba(248,113,113,.35); color:var(--co); }
     .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
     @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
   </style>
@@ -77,22 +96,44 @@
           </div>
 
           <div class="sub-label">Mental State Check</div>
-          <div class="grid g2" style="gap:12px">
-            <label class="field"><span class="fl">Aktueller Zustand</span>
-              <select id="pre-emotion"><option value="">—</option><option>Neutral / Ruhig</option><option>Zuversicht / Fokus</option><option>Angst / Nervosität</option><option>Tilt / Frustration</option><option>Euphorie / Winner-Tilt</option></select></label>
-            <label class="field"><span class="fl">Intensität (1–10)</span>
-              <select id="pre-intensity"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
-            <label class="field" style="grid-column:span 2"><span class="fl">Auslöser (optional)</span>
-              <textarea id="pre-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen…"></textarea></label>
+          <div class="insight"><strong>Tendler:</strong> Das Ziel ist nicht, perfekt gestimmt zu sein – sondern ehrlich zu wissen, wo du stehst. Emotionaler Zustand bestimmt, welches Game du heute spielen kannst.</div>
+          <div class="field-label">Aktueller Zustand</div>
+          <div class="btn-group" id="grp-emotion" data-theme="blue">
+            <button type="button" class="tog" data-val="Neutral / Ruhig" data-key="neutral">Neutral / Ruhig</button>
+            <button type="button" class="tog" data-val="Zuversicht / Fokus" data-key="conf">Zuversicht / Fokus</button>
+            <button type="button" class="tog" data-val="Angst / Nervosität" data-key="fear">Angst / Nervosität</button>
+            <button type="button" class="tog" data-val="Tilt / Frustration" data-key="tilt">Tilt / Frustration</button>
+            <button type="button" class="tog" data-val="Euphorie / Winner-Tilt" data-key="euphoria">Euphorie / Winner-Tilt</button>
           </div>
+          <div class="alert-box" id="alert-emotion"></div>
+          <div class="field-label">Intensität (1 = kaum spürbar → 10 = überwältigend)</div>
+          <div class="scale-row" id="scale-intensity">
+            <button type="button" class="scale-btn" data-v="1">1</button>
+            <button type="button" class="scale-btn" data-v="2">2</button>
+            <button type="button" class="scale-btn" data-v="3">3</button>
+            <button type="button" class="scale-btn" data-v="4">4</button>
+            <button type="button" class="scale-btn" data-v="5">5</button>
+            <button type="button" class="scale-btn" data-v="6">6</button>
+            <button type="button" class="scale-btn" data-v="7">7</button>
+            <button type="button" class="scale-btn" data-v="8">8</button>
+            <button type="button" class="scale-btn" data-v="9">9</button>
+            <button type="button" class="scale-btn" data-v="10">10</button>
+          </div>
+          <div class="alert-box" id="alert-intensity"></div>
+          <div class="field-label">Auslöser (optional)</div>
+          <textarea id="pre-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen…"></textarea>
 
           <div class="sub-label">A / B / C — Game Einschätzung</div>
-          <div class="grid g2" style="gap:12px">
-            <label class="field"><span class="fl">Welches Game heute?</span>
-              <select id="pre-game"><option value="">—</option><option>A-Game</option><option>B-Game</option><option>C-Game</option></select></label>
-            <label class="field" style="grid-column:span 2"><span class="fl">Meine typischen C-Game Fehler</span>
-              <textarea id="pre-cgame" placeholder="1. Revenge-Trading nach Verlust  2. FOMO-Einstieg ohne Setup  3. Stop-Loss verschieben…"></textarea></label>
+          <div class="insight"><strong>Tendlers Kernprinzip:</strong> C-Game zu eliminieren ist wichtiger als A-Game zu spielen. Ein solides B-Game jeden Tag schlägt A/C-Game-Wechsel langfristig.</div>
+          <div class="field-label">Welches Game kannst du heute realistisch spielen?</div>
+          <div class="btn-group" id="grp-game" data-theme="green">
+            <button type="button" class="tog" data-val="A-Game" data-key="A">A-Game</button>
+            <button type="button" class="tog" data-val="B-Game" data-key="B">B-Game</button>
+            <button type="button" class="tog" data-val="C-Game" data-key="C">C-Game</button>
           </div>
+          <div class="alert-box" id="alert-game"></div>
+          <div class="field-label">Meine typischen C-Game Fehler</div>
+          <textarea id="pre-cgame" placeholder="1. Revenge-Trading nach Verlust  2. FOMO-Einstieg ohne Setup  3. Stop-Loss verschieben…"></textarea>
 
           <div class="sub-label">Warm-up Checkliste</div>
           <div class="chk-grid">
@@ -107,14 +148,13 @@
           </div>
 
           <div class="sub-label">Tagesintention &amp; Fokus</div>
-          <div class="grid g2" style="gap:12px">
-            <label class="field" style="grid-column:span 2"><span class="fl">Prozess-Ziel heute (kein P&amp;L-Ziel)</span>
-              <textarea id="pre-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld…"></textarea></label>
-            <label class="field" style="grid-column:span 2"><span class="fl">Größtes mentales Risiko heute</span>
-              <textarea id="pre-risk" placeholder="Wo bin ich am ehesten anfällig, eine Regel zu brechen?"></textarea></label>
-            <label class="field" style="grid-column:span 2"><span class="fl">Mantra / Anker für heute</span>
-              <textarea id="pre-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis."></textarea></label>
-          </div>
+          <div class="insight"><strong>Tendler:</strong> Das Gehirn lernt durch Wiederholung. Täglich bewusst formulierte Intentionen bauen neue neuronale Pfade und ersetzen automatische Reaktionsmuster.</div>
+          <div class="field-label">Mein Prozess-Ziel heute (kein P&amp;L-Ziel)</div>
+          <textarea id="pre-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld heraus…"></textarea>
+          <div class="field-label">Mein größtes mentales Risiko heute</div>
+          <textarea id="pre-risk" placeholder="z.B. Nach einem Verlust sofort wieder einsteigen wollen…"></textarea>
+          <div class="field-label">Mantra / Anker für heute</div>
+          <textarea id="pre-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis." style="min-height:50px"></textarea>
         </div>
       </div>
 
@@ -209,6 +249,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=5"></script>
+  <script src="../js/daily.js?v=6"></script>
 </body>
 </html>
