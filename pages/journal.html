@@ -225,15 +225,8 @@
           </span>
         </div>
         <div class="sec-body">
-          <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
-          <div class="cl-grid">
-            <div class="cl-item" data-prep="pre-market-state" data-third="C"><div class="cl-badge">·</div><div class="cl-item-label">Market state</div></div>
-            <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
-            <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
-          </div>
-
           <!-- Red Flags — ported 1:1 from Ronin Sequence -->
-          <div class="rf-block">
+          <div class="rf-block" style="margin-top:0;padding-top:0;border-top:none">
             <div class="rf-title"><span>⚑ Red Flags</span><span class="rf-badges" id="rf-badges"></span></div>
 
             <div class="rf-signal-label">Model Signal</div>
@@ -274,6 +267,14 @@
               <div class="rf-item tone-gray" data-rf="adrSpanningWdrrbMid"><span class="rf-box"></span><span class="rf-label">ADR spanning WDRRB mid</span></div>
               <div class="rf-item tone-gray" data-rf="multiFalseDay"><span class="rf-box"></span><span class="rf-label">Multi-False Day</span></div>
             </div>
+          </div>
+
+          <div class="rf-signal-label" style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">Directional bias</div>
+          <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
+          <div class="cl-grid">
+            <div class="cl-item" data-prep="pre-market-state" data-third="C"><div class="cl-badge">·</div><div class="cl-item-label">Market state</div></div>
+            <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
+            <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
           </div>
         </div>
       </div>
