@@ -20,7 +20,13 @@
     .lg-nodata { background:repeating-linear-gradient(45deg,#3a3d44,#3a3d44 4px,#22242a 4px,#22242a 8px); }
     .cal-months { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:18px; }
     .cal-month { border:.5px solid var(--b); border-radius:12px; background:var(--card); padding:12px; }
-    .cal-month-head { font-family:var(--mono); font-size:12px; letter-spacing:.5px; color:var(--tx); margin-bottom:10px; }
+    .cal-toolbtn { font-family:var(--mono); font-size:11px; padding:6px 12px; border-radius:8px; border:.5px solid var(--bh); background:var(--card2); color:var(--mu); cursor:pointer; }
+    .cal-toolbtn:hover { border-color:var(--ac); color:var(--ac); }
+    .cal-month-head { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; cursor:pointer; font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--ac); background:var(--acg); border:.5px solid rgba(79,142,247,.3); padding:6px 12px; border-radius:20px; margin-bottom:10px; }
+    .cal-month-head:hover { border-color:var(--ac); }
+    .cal-chev { font-size:11px; transition:transform .15s; }
+    .cal-month.collapsed .cal-chev { transform:rotate(-90deg); }
+    .cal-month.collapsed .cal-month-body { display:none; }
     .cal-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
     .cal-wd { font-family:var(--mono); font-size:9px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); text-align:center; padding-bottom:2px; }
     .cal-empty { aspect-ratio:1/1; }
@@ -43,6 +49,8 @@
           <div class="sub" id="subtitle"></div>
         </div>
         <div class="cal-controls">
+          <button class="cal-toolbtn" id="cal-expand">Expand all</button>
+          <button class="cal-toolbtn" id="cal-collapse">Collapse all</button>
           <span id="cal-status" class="mono" style="font-size:10px;color:var(--mu);min-width:56px;text-align:right"></span>
           <button class="cal-yearbtn" id="cal-prev" aria-label="Previous year">‹</button>
           <span id="cal-year"></span>
@@ -67,6 +75,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=14"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/calendar.js?v=1"></script>
+  <script src="../js/calendar.js?v=2"></script>
 </body>
 </html>
