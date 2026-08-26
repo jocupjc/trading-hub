@@ -34,7 +34,6 @@ const Shell = {
     return `
       <aside class="sidebar">
         <button class="nav-collapse" id="nav-collapse" title="Hide navigation" aria-label="Hide navigation">‹</button>
-        <button class="breathe-top" data-breathe title="Guided diaphragmatic breathing"><span class="breathe-mini"></span>Breathe</button>
         <div class="brand">
           <div class="mark">Trading Hub</div>
           <div class="sub">Journal · Trades · Analytics</div>
@@ -43,7 +42,8 @@ const Shell = {
         </div>
         <nav class="nav">${items}</nav>
       </aside>
-      <button class="nav-open" id="nav-open" title="Show navigation" aria-label="Show navigation">☰</button>`;
+      <button class="nav-open" id="nav-open" title="Show navigation" aria-label="Show navigation">☰</button>
+      <button class="breathe-fab" data-breathe title="Guided diaphragmatic breathing" aria-label="Breathe"></button>`;
   },
 
   mount(activeHref, rel = '') {
@@ -90,7 +90,7 @@ const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 
 // ── Guided diaphragmatic breathing overlay ───────────────────────────────────
 const Breathe = {
-  running: false, timer: null, countdown: null,
+  running: false, timer: null, countdown: null, REQUIRED: 4, rounds: 0, locked: false,
   phases: [
     { name: 'Breathe in', dur: 4, scale: 1.6 },
     { name: 'Hold', dur: 2, scale: 1.6 },
@@ -114,7 +114,14 @@ const Breathe = {
       .breathe-label { text-align:center; font-family:var(--mono); color:#eaf1ff; }
       .breathe-phase { display:block; font-size:15px; letter-spacing:.5px; }
       .breathe-count { display:block; font-size:26px; margin-top:4px; color:#fff; }
-      .breathe-hint { font-family:var(--mono); font-size:11px; letter-spacing:.4px; color:var(--mu); text-align:center; max-width:340px; padding:0 20px; line-height:1.6; }`;
+      .breathe-hint { font-family:var(--mono); font-size:11px; letter-spacing:.4px; color:var(--mu); text-align:center; max-width:340px; padding:0 20px; line-height:1.6; }
+      .breathe-rounds { font-family:var(--mono); font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ac); }
+      .breathe-overlay.locked .breathe-close { display:none; }
+      .breathe-fab { position:fixed; right:18px; bottom:18px; z-index:120; width:52px; height:52px; border-radius:50%; border:none; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 38%, var(--ac), #2c5fb0); box-shadow:0 4px 16px rgba(0,0,0,.4); animation:breathe-fab-pulse 5.5s ease-in-out infinite; }
+      .breathe-fab::after { content:''; width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,.92); animation:breathe-dot 5.5s ease-in-out infinite; }
+      .breathe-fab:hover { filter:brightness(1.08); }
+      @keyframes breathe-fab-pulse { 0%,100% { box-shadow:0 4px 16px rgba(0,0,0,.4), 0 0 0 0 rgba(79,142,247,.5); } 50% { box-shadow:0 4px 16px rgba(0,0,0,.4), 0 0 0 12px rgba(79,142,247,0); } }
+      @keyframes breathe-dot { 0%,100% { transform:scale(.7); } 50% { transform:scale(1.12); } }`;
     document.head.appendChild(s);
   },
   ensureDom() {
@@ -124,7 +131,8 @@ const Breathe = {
     o.innerHTML = `
       <button class="breathe-close" aria-label="Close">✕</button>
       <div class="breathe-stage"><div class="breathe-circle"><div class="breathe-label" id="breathe-label">Ready</div></div></div>
-      <div class="breathe-hint">Diaphragmatic breathing — let your belly expand as you breathe in through the nose, and soften as you breathe out through the mouth.</div>`;
+      <div class="breathe-hint">Diaphragmatic breathing — let your belly expand as you breathe in through the nose, and soften as you breathe out through the mouth.</div>
+      <div class="breathe-rounds" id="breathe-rounds"></div>`;
     document.body.appendChild(o);
     o.querySelector('.breathe-close').addEventListener('click', () => this.stop());
     o.addEventListener('click', e => { if (e.target === o) this.stop(); });
@@ -132,9 +140,23 @@ const Breathe = {
   },
   open() {
     this.injectStyles(); this.ensureDom();
-    document.getElementById('breathe-overlay').classList.add('show');
+    this.rounds = 0; this.locked = true;
+    const o = document.getElementById('breathe-overlay');
+    o.classList.add('show', 'locked');
+    this.updateRounds();
     this.running = true;
     this.phase(0);
+  },
+  updateRounds() {
+    const el = document.getElementById('breathe-rounds');
+    if (!el) return;
+    el.textContent = this.locked ? `Round ${Math.min(this.rounds + 1, this.REQUIRED)} of ${this.REQUIRED}` : 'Close whenever you feel ready';
+  },
+  unlock() {
+    this.locked = false;
+    const o = document.getElementById('breathe-overlay');
+    if (o) o.classList.remove('locked');
+    this.updateRounds();
   },
   phase(i) {
     if (!this.running) return;
@@ -148,9 +170,18 @@ const Breathe = {
     paint();
     clearInterval(this.countdown);
     this.countdown = setInterval(() => { remain--; if (remain > 0) paint(); }, 1000);
-    this.timer = setTimeout(() => { clearInterval(this.countdown); this.phase((i + 1) % this.phases.length); }, p.dur * 1000);
+    this.timer = setTimeout(() => {
+      clearInterval(this.countdown);
+      if (i === this.phases.length - 1) {
+        this.rounds++;
+        if (this.rounds >= this.REQUIRED && this.locked) this.unlock();
+        this.updateRounds();
+      }
+      this.phase((i + 1) % this.phases.length);
+    }, p.dur * 1000);
   },
   stop() {
+    if (this.locked) return;
     this.running = false;
     clearTimeout(this.timer); clearInterval(this.countdown);
     const o = document.getElementById('breathe-overlay');
