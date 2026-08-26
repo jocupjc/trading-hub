@@ -77,6 +77,26 @@
     .cl-u-count { color:var(--gr); background:var(--grg); border:.5px solid rgba(52,211,153,.3); padding:1px 7px; border-radius:20px; }
     .cl-d-count { color:var(--co); background:var(--cog); border:.5px solid rgba(248,113,113,.3); padding:1px 7px; border-radius:20px; }
     .cl-n-count { color:var(--mu); background:rgba(139,143,154,.1); border:.5px solid rgba(139,143,154,.3); padding:1px 7px; border-radius:20px; }
+
+    /* Box Formation checklist — ported 1:1 from Ronin Sequence */
+    .cl-block { margin-top:16px; }
+    .cl-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+    .cl-title { font-family:var(--mono); font-size:12px; letter-spacing:.5px; color:var(--tx); font-weight:600; }
+    .cl-subgroup-label { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--mu); margin:14px 0 8px; }
+    .cl-item.C { background:var(--cog); border-color:rgba(248,113,113,.4); }
+    .cl-item.C .cl-badge { background:var(--co); border-color:var(--co); color:#1a0f0f; }
+    .cl-item.CHK { background:rgba(139,143,154,.14); border-color:var(--mu); }
+    .cl-item.CHK .cl-badge { background:var(--mu); border-color:var(--mu); color:#fff; }
+    .cl-item.CHKY { background:rgba(230,196,60,.16); border-color:#e6c43c; }
+    .cl-item.CHKY .cl-badge { background:#e6c43c; border-color:#e6c43c; color:#1a1608; }
+    .cl-item.C .cl-item-label, .cl-item.CHK .cl-item-label, .cl-item.CHKY .cl-item-label { color:var(--tx); }
+    .cl-chk-count { color:var(--mu); background:rgba(139,143,154,.14); border:.5px solid var(--mu); padding:1px 7px; border-radius:20px; }
+    .cl-u-count.cl-winning { color:#0f1a14; background:var(--gr); border-color:var(--gr); font-weight:700; }
+    .cl-d-count.cl-winning { color:#1a0f0f; background:var(--co); border-color:var(--co); font-weight:700; }
+    .cl-item-wrap { display:flex; flex-direction:column; gap:4px; }
+    .cl-model-input { font-family:var(--mono); font-size:11px; padding:4px 8px; border-radius:5px; background:var(--card); border:.5px dashed var(--b); color:var(--am); width:100%; }
+    .cl-model-input:focus { outline:none; border-style:solid; border-color:var(--bh); }
+    .cl-model-input::placeholder { color:var(--mu); }
     .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
 
     /* Red Flags — ported 1:1 from Ronin Sequence */
@@ -280,6 +300,57 @@
             <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
             <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
           </div>
+
+          <!-- 0930–1030 Box Formation checklist — ported 1:1 from Ronin Sequence -->
+          <div class="cl-block">
+            <div class="cl-head">
+              <div>
+                <div class="cl-title">0930 – 1030 Box Formation</div>
+                <div class="cl-sub">Pre-market · Box Reversal</div>
+              </div>
+              <div class="cl-summary" id="box-summary"></div>
+            </div>
+
+            <div class="cl-subgroup-label">Directional</div>
+            <div class="cl-grid">
+              <div class="cl-item" data-box="monthly" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Monthly Seq</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box="weekly" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Weekly Seq</span></div>
+                <input class="cl-model-input" data-box-model="weekly" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box="daily" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Daily Seq</span></div>
+              <div class="cl-item" data-box="rdr" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">RDR Seq</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box="dailyModel" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Daily Model</span></div>
+                <input class="cl-model-input" data-box-model="dailyModel" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box="partials" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Partials</span></div>
+              <div class="cl-item" data-box="ddrComSym" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">DDR Com. Sym</span></div>
+              <div class="cl-item" data-box="ddrSepMinMin" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">DDR Sep. min/min</span></div>
+              <div class="cl-item" data-box="gaps" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">GAPs</span></div>
+              <div class="cl-item" data-box="ass" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market Structure</span></div>
+              <div class="cl-item" data-box="vwap" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">VWAP</span></div>
+              <div class="cl-item" data-box="svpHtf" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">SVP HTF</span></div>
+            </div>
+
+            <div class="cl-subgroup-label">Checks</div>
+            <div class="cl-grid">
+              <div class="cl-item" data-box="markTime" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Time</span></div>
+              <div class="cl-item" data-box="svpLtf" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">SVP LTF</span></div>
+              <div class="cl-item" data-box="vibsH1m30" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Magnetic VIBs</span></div>
+              <div class="cl-item" data-box="confluencesCheck" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Confluences</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box="rdrModel" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">RDR Model</span></div>
+                <input class="cl-model-input" data-box-model="rdrModel" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box="markMakeOrBreak" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Make or Break</span></div>
+              <div class="cl-item" data-box="checkDdr" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Check DDR</span></div>
+              <div class="cl-item" data-box="markTargets" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Targets</span></div>
+              <div class="cl-item" data-box="transitionHL" data-checkonly="1" data-yellow="1"><span class="cl-badge">·</span><span class="cl-item-label">Transition H/L</span></div>
+              <div class="cl-item" data-box="wdrrbOpen" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">WDRRB Open</span></div>
+              <div class="cl-item" data-box="chaining" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Chaining</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -359,6 +430,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=8"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=10"></script>
+  <script src="../js/daily.js?v=11"></script>
 </body>
 </html>
