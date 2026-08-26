@@ -156,7 +156,7 @@ function updateRfBadges() {
 }
 
 // ── Box Formation checklists — ported 1:1 from Ronin Sequence ─────────────────
-const BOX_CYCLE = ['monthly', 'weekly', 'daily', 'rdr', 'dailyModel', 'partials', 'ddrComSym', 'ddrSepMinMin', 'gaps', 'ass', 'vwap', 'svpHtf'];
+const BOX_CYCLE = ['marketState', 'monthly', 'weekly', 'daily', 'rdr', 'dailyModel', 'partials', 'ddrComSym', 'ddrSepMinMin', 'gaps', 'ass', 'vwap', 'svpHtf'];
 const BOX_CHECK = ['markTime', 'svpLtf', 'vibsH1m30', 'confluencesCheck', 'rdrModel', 'markMakeOrBreak', 'checkDdr', 'markTargets', 'transitionHL', 'wdrrbOpen', 'chaining'];
 const BOX_KEYS = [...BOX_CYCLE, ...BOX_CHECK];
 const BOX_MODEL_KEYS = ['weekly', 'dailyModel', 'rdrModel'];
