@@ -59,6 +59,10 @@
     .pm-pip.active { background:var(--ac); }
     .pm-steplabel { font-family:var(--mono); font-size:10px; color:var(--mu); letter-spacing:.4px; white-space:nowrap; margin-left:6px; }
     .pm-nav { display:flex; gap:8px; margin-top:18px; }
+    .ooda-boxsum { display:flex; flex-wrap:wrap; gap:18px; margin-bottom:14px; }
+    .ooda-boxsum-item { display:flex; align-items:center; gap:8px; }
+    .ooda-boxsum-label { font-family:var(--mono); font-size:10px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); }
+    .ooda-boxsum .cl-summary:empty::before { content:'—'; color:var(--mu); font-family:var(--mono); }
     .scale-row { display:flex; gap:5px; flex-wrap:wrap; }
     .scale-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:34px; text-align:center; }
     .scale-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
@@ -415,6 +419,10 @@
       <div class="card jsection collapsed" style="margin-top:14px">
         <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span class="chev">▾</span></div>
         <div class="sec-body">
+        <div class="ooda-boxsum">
+          <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0230 – 0400 ODR</span><span class="cl-summary" id="box2-summary-ooda"></span></div>
+          <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0930 – 1030 RDR</span><span class="cl-summary" id="box-summary-ooda"></span></div>
+        </div>
         <div class="ooda-table-wrap">
           <table class="ooda">
             <thead><tr>
@@ -614,6 +622,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=17"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=21"></script>
+  <script src="../js/daily.js?v=22"></script>
 </body>
 </html>
