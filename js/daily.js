@@ -4,11 +4,22 @@ Shell.mount('pages/journal.html', '../');
 const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
-const JFIELDS = ['pre-context', 'pre-bias', 'pre-game', 'pre-market-state', 'pre-vvwap', 'pre-sequence', 'pre-setups', 'pre-goal', 'pre-risk',
+const JFIELDS = ['pre-context', 'pre-bias', 'pre-market-state', 'pre-vvwap', 'pre-sequence',
+  'pre-emotion', 'pre-intensity', 'pre-trigger', 'pre-game', 'pre-cgame', 'pre-setups', 'pre-goal', 'pre-risk', 'pre-mantra',
   'post-rules', 'post-score', 'post-best', 'post-worst', 'post-emotion', 'post-tomorrow'];
+const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
+  'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
 
-function readJournal() { const o = {}; JFIELDS.forEach(f => o[f] = $(f).value); return o; }
-function fillJournal(p) { JFIELDS.forEach(f => $(f).value = (p && p[f]) || ''); }
+function readJournal() {
+  const o = {};
+  JFIELDS.forEach(f => { const el = $(f); o[f] = el ? el.value : ''; });
+  CHECK_FIELDS.forEach(f => { const el = $(f); o[f] = el ? el.checked : false; });
+  return o;
+}
+function fillJournal(p) {
+  JFIELDS.forEach(f => { const el = $(f); if (el) el.value = (p && p[f]) || ''; });
+  CHECK_FIELDS.forEach(f => { const el = $(f); if (el) el.checked = !!(p && p[f]); });
+}
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
 const ALGO = ['', 'ASS DOWN', 'ASS UP', 'MCR', 'Ranging'];
