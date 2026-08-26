@@ -5,7 +5,7 @@
 const NAV = [
   { group: 'Daily journal' },
   { href: 'pages/journal.html', icon: '✎', label: 'Daily Journal' },
-  { group: 'Overview' },
+  { group: 'Overview', collapsible: true },
   { href: 'index.html', icon: '◧', label: 'Dashboard' },
   { href: 'pages/trades.html', icon: '⤢', label: 'Trades & PnL' },
   { group: 'DDR calendar', collapsible: true },
@@ -16,7 +16,7 @@ const NAV = [
   { href: 'pages/calendar.html?type=wddrs&inst=NQ', icon: '▤', label: 'NQ' },
   { href: 'pages/calendar.html?type=wddrs&inst=ES', icon: '▤', label: 'ES' },
   { href: 'pages/calendar.html?type=wddrs&inst=CL', icon: '▤', label: 'CL' },
-  { group: 'Psychology' },
+  { group: 'Psychology', collapsible: true },
   { href: 'pages/embed.html?tool=committee-of-self&title=Committee%20of%20Self', icon: '❂', label: 'Committee of Self' },
   { href: 'pages/embed.html?tool=ronin-sequence&title=Ronin%20Sequence', icon: '⌘', label: 'Ronin Sequence' },
   { href: 'pages/embed.html?tool=mental-game&title=Mental%20Game', icon: '☯', label: 'Mental Game' },
