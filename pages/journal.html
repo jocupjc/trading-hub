@@ -32,6 +32,11 @@
     .sec-head .chev { color:var(--mu); font-size:12px; transition:transform .15s; }
     .jsection.collapsed .chev { transform:rotate(-90deg); }
     .jsection.collapsed .sec-body { display:none; }
+    .chk-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; }
+    .chk-row { display:flex; align-items:center; gap:9px; padding:6px 2px; font-size:13px; color:var(--tx); cursor:pointer; }
+    .chk-row input { width:15px; height:15px; accent-color:var(--gr); flex:none; }
+    .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
+    @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -53,20 +58,61 @@
       <div class="card jsection">
         <div class="sec-head"><span class="section-tag">Pre-market — the plan</span><span class="chev">▾</span></div>
         <div class="sec-body">
-        <div class="grid g2" style="gap:12px">
-          <label class="field" style="grid-column:span 2"><span class="fl">Daily bias &amp; context</span>
-            <textarea id="pre-context" placeholder="Overnight, gaps, key levels, higher-timeframe read…"></textarea></label>
-          <label class="field"><span class="fl">Directional bias</span>
-            <select id="pre-bias"><option value="">—</option><option>Long</option><option>Short</option><option>Neutral / Two-sided</option></select></label>
-          <label class="field"><span class="fl">A/B/C game today</span>
-            <select id="pre-game"><option value="">—</option><option>A-Game</option><option>B-Game</option><option>C-Game</option></select></label>
-          <label class="field" style="grid-column:span 2"><span class="fl">Setups I will take</span>
-            <textarea id="pre-setups" placeholder="Only these setups qualify today…"></textarea></label>
-          <label class="field"><span class="fl">Process goal (not P&amp;L)</span>
-            <textarea id="pre-goal" placeholder="e.g. Wait for confirmation, no pre-empting the box…"></textarea></label>
-          <label class="field"><span class="fl">Biggest mental risk today</span>
-            <textarea id="pre-risk" placeholder="Where am I most likely to break a rule?"></textarea></label>
-        </div>
+          <div class="sub-label" style="margin-top:0">Check-in</div>
+          <div class="chk-grid">
+            <label class="chk-row"><input type="checkbox" id="pre-chk-sleep"> Mindestens 7h geschlafen?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-chk-food"> Gegessen &amp; getrunken?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-chk-activity"> Körperliche Aktivität erledigt?</label>
+          </div>
+
+          <div class="grid g2" style="gap:12px;margin-top:14px">
+            <label class="field" style="grid-column:span 2"><span class="fl">Daily bias &amp; context</span>
+              <textarea id="pre-context" placeholder="Overnight, gaps, key levels, higher-timeframe read…"></textarea></label>
+            <label class="field"><span class="fl">Directional bias</span>
+              <select id="pre-bias"><option value="">—</option><option>Long</option><option>Short</option><option>Neutral / Two-sided</option></select></label>
+            <label class="field" style="grid-column:span 2"><span class="fl">Setups I will take</span>
+              <textarea id="pre-setups" placeholder="Only these setups qualify today…"></textarea></label>
+          </div>
+
+          <div class="sub-label">Mental State Check</div>
+          <div class="grid g2" style="gap:12px">
+            <label class="field"><span class="fl">Aktueller Zustand</span>
+              <select id="pre-emotion"><option value="">—</option><option>Neutral / Ruhig</option><option>Zuversicht / Fokus</option><option>Angst / Nervosität</option><option>Tilt / Frustration</option><option>Euphorie / Winner-Tilt</option></select></label>
+            <label class="field"><span class="fl">Intensität (1–10)</span>
+              <select id="pre-intensity"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
+            <label class="field" style="grid-column:span 2"><span class="fl">Auslöser (optional)</span>
+              <textarea id="pre-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen…"></textarea></label>
+          </div>
+
+          <div class="sub-label">A / B / C — Game Einschätzung</div>
+          <div class="grid g2" style="gap:12px">
+            <label class="field"><span class="fl">Welches Game heute?</span>
+              <select id="pre-game"><option value="">—</option><option>A-Game</option><option>B-Game</option><option>C-Game</option></select></label>
+            <label class="field" style="grid-column:span 2"><span class="fl">Meine typischen C-Game Fehler</span>
+              <textarea id="pre-cgame" placeholder="1. Revenge-Trading nach Verlust  2. FOMO-Einstieg ohne Setup  3. Stop-Loss verschieben…"></textarea></label>
+          </div>
+
+          <div class="sub-label">Warm-up Checkliste</div>
+          <div class="chk-grid">
+            <label class="chk-row"><input type="checkbox" id="pre-w1"> Gestern-Bias geprüft: unverarbeitete Verluste / Gewinne?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w2"> Marktkontext gelesen (News, Gaps, Volatilität)</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w3"> Tages-Verlustlimit definiert und akzeptiert</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w4"> Max. Anzahl Positionen / Trades festgelegt</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w5"> Stop-Loss Strategie ist klar und unwiderruflich</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w6"> Persönliches Tilt-Warnsignal bewusst aktiviert</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w7"> Setup-Kriterien für heute klar definiert</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w8"> Abbruchkriterien für heute definiert (wann höre ich auf?)</label>
+          </div>
+
+          <div class="sub-label">Tagesintention &amp; Fokus</div>
+          <div class="grid g2" style="gap:12px">
+            <label class="field" style="grid-column:span 2"><span class="fl">Prozess-Ziel heute (kein P&amp;L-Ziel)</span>
+              <textarea id="pre-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld…"></textarea></label>
+            <label class="field" style="grid-column:span 2"><span class="fl">Größtes mentales Risiko heute</span>
+              <textarea id="pre-risk" placeholder="Wo bin ich am ehesten anfällig, eine Regel zu brechen?"></textarea></label>
+            <label class="field" style="grid-column:span 2"><span class="fl">Mantra / Anker für heute</span>
+              <textarea id="pre-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis."></textarea></label>
+          </div>
         </div>
       </div>
 
@@ -161,6 +207,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=3"></script>
+  <script src="../js/daily.js?v=4"></script>
 </body>
 </html>
