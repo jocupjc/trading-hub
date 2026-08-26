@@ -57,6 +57,26 @@
     .alert-box.warn { background:var(--amg); border:.5px solid rgba(245,158,11,.35); color:var(--am); }
     .alert-box.ok { background:var(--grg); border:.5px solid rgba(52,211,153,.35); color:var(--gr); }
     .alert-box.bad { background:var(--cog); border:.5px solid rgba(248,113,113,.35); color:var(--co); }
+    .cl-sub { font-size:11px; color:var(--mu); }
+    .cl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:6px; }
+    .cl-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; border:.5px solid var(--b); background:var(--card2); cursor:pointer; user-select:none; transition:all .12s; }
+    .cl-item:hover { border-color:var(--bh); }
+    .cl-item.U { background:var(--grg); border-color:rgba(52,211,153,.4); }
+    .cl-item.D { background:var(--cog); border-color:rgba(248,113,113,.4); }
+    .cl-item.N { background:rgba(139,143,154,.08); border-color:rgba(139,143,154,.3); }
+    .cl-badge { font-family:var(--mono); font-size:11px; font-weight:700; width:20px; height:20px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--card); border:.5px solid var(--b); color:var(--mu); }
+    .cl-item.U .cl-badge { background:var(--gr); border-color:var(--gr); color:#0f1a14; }
+    .cl-item.D .cl-badge { background:var(--co); border-color:var(--co); color:#1a0f0f; }
+    .cl-item.N .cl-badge { background:var(--mu); border-color:var(--mu); color:#fff; }
+    .cl-item-label { font-size:13px; color:var(--mu); }
+    .cl-item.U .cl-item-label, .cl-item.D .cl-item-label, .cl-item.N .cl-item-label { color:var(--tx); }
+    .cl-summary { display:flex; gap:6px; align-items:center; font-family:var(--mono); font-size:11px; }
+    .cl-bias { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.5px; padding:2px 8px; border-radius:20px; }
+    .cl-bias-U { color:#0f1a14; background:var(--gr); }
+    .cl-bias-D { color:#1a0f0f; background:var(--co); }
+    .cl-u-count { color:var(--gr); background:var(--grg); border:.5px solid rgba(52,211,153,.3); padding:1px 7px; border-radius:20px; }
+    .cl-d-count { color:var(--co); background:var(--cog); border:.5px solid rgba(248,113,113,.3); padding:1px 7px; border-radius:20px; }
+    .cl-n-count { color:var(--mu); background:rgba(139,143,154,.1); border:.5px solid rgba(139,143,154,.3); padding:1px 7px; border-radius:20px; }
     .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
     @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
   </style>
@@ -151,18 +171,22 @@
         </div>
       </div>
 
-      <!-- ═══ PRE-TRADE PREP (between pre-market and OODA) ═══ -->
+      <!-- ═══ PRE-TRADE PREP (Ronin directional) ═══ -->
       <div class="card jsection" style="margin-top:14px">
-        <div class="sec-head"><span class="section-tag">Pre-trade prep</span><span class="chev">▾</span></div>
-        <div class="sec-body">
-        <div class="grid g2" style="gap:12px">
-          <label class="field"><span class="fl">Market state</span>
-            <select id="pre-market-state"><option value="">—</option><option>Up</option><option>Down</option><option>Compression</option></select></label>
-          <label class="field"><span class="fl">VVWAP</span>
-            <select id="pre-vvwap"><option value="">—</option><option>Up</option><option>Down</option><option>Neutral</option></select></label>
-          <label class="field"><span class="fl">Sequence</span>
-            <select id="pre-sequence"><option value="">—</option><option>Up</option><option>Down</option><option>Neutral</option></select></label>
+        <div class="sec-head">
+          <span class="section-tag">Pre-trade prep</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span class="cl-summary" id="prep-summary"></span>
+            <span class="chev">▾</span>
+          </span>
         </div>
+        <div class="sec-body">
+          <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
+          <div class="cl-grid">
+            <div class="cl-item" data-prep="pre-market-state" data-third="C"><div class="cl-badge">·</div><div class="cl-item-label">Market state</div></div>
+            <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
+            <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
+          </div>
         </div>
       </div>
 
@@ -242,6 +266,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=8"></script>
+  <script src="../js/daily.js?v=9"></script>
 </body>
 </html>
