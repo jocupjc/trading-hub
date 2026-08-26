@@ -76,10 +76,12 @@
       return `<button class="cal-day${st ? ' state-' + st : ''}" data-date="${key(y, m, d)}">${d}</button>`;
     }).join('')).join('');
 
-    return `<div class="cal-month">
-      <div class="cal-month-head">${MONTHS[m]} ${y}</div>
-      <div class="cal-grid">${head}${body}</div>
-      <div class="cal-summary" data-m="${m}">${summary(y, m)}</div>
+    return `<div class="cal-month" data-month="${m}">
+      <button class="cal-month-head" data-monthtoggle="${m}"><span>${MONTHS[m]} ${y}</span><span class="cal-chev">▾</span></button>
+      <div class="cal-month-body">
+        <div class="cal-grid">${head}${body}</div>
+        <div class="cal-summary" data-m="${m}">${summary(y, m)}</div>
+      </div>
     </div>`;
   }
 
@@ -89,6 +91,8 @@
   }
 
   function onClick(e) {
+    const head = e.target.closest('.cal-month-head');
+    if (head) { head.closest('.cal-month').classList.toggle('collapsed'); return; }
     const btn = e.target.closest('.cal-day');
     if (!btn) return;
     const date = btn.dataset.date;
@@ -115,6 +119,8 @@
     document.title = heading + ' · Trading Hub';
     $('cal-prev').addEventListener('click', () => setYear(year - 1));
     $('cal-next').addEventListener('click', () => setYear(year + 1));
+    $('cal-expand').addEventListener('click', () => document.querySelectorAll('.cal-month').forEach((el) => el.classList.remove('collapsed')));
+    $('cal-collapse').addEventListener('click', () => document.querySelectorAll('.cal-month').forEach((el) => el.classList.add('collapsed')));
     $('cal-root').addEventListener('click', onClick);
     (window.Auth && Auth.ready ? Auth.ready : Promise.resolve()).then(load);
   }
