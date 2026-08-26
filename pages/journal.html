@@ -53,6 +53,12 @@
     .btn-group[data-theme="teal"] .tog.active { background:rgba(45,212,191,.14); border-color:#2dd4bf; color:#2dd4bf; box-shadow:0 0 12px rgba(45,212,191,.14); }
     .q-hint { font-size:11px; color:var(--mu); margin:2px 0 6px; }
     .row-2col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .pm-stepbar { display:flex; gap:6px; align-items:center; margin-bottom:16px; }
+    .pm-pip { height:3px; flex:1; border-radius:2px; background:var(--bh); transition:background .3s; }
+    .pm-pip.done { background:var(--gr); }
+    .pm-pip.active { background:var(--ac); }
+    .pm-steplabel { font-family:var(--mono); font-size:10px; color:var(--mu); letter-spacing:.4px; white-space:nowrap; margin-left:6px; }
+    .pm-nav { display:flex; gap:8px; margin-top:18px; }
     .scale-row { display:flex; gap:5px; flex-wrap:wrap; }
     .scale-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:34px; text-align:center; }
     .scale-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
@@ -426,7 +432,15 @@
       <div class="card jsection collapsed" style="margin-top:14px">
         <div class="sec-head"><span class="section-tag">Post-market — the review</span><span class="chev">▾</span></div>
         <div class="sec-body">
-          <!-- Daily Reflection ported 1:1 from tools/reflection.html -->
+          <div class="pm-stepbar">
+            <div class="pm-pip active" data-pip="0"></div>
+            <div class="pm-pip" data-pip="1"></div>
+            <div class="pm-pip" data-pip="2"></div>
+            <div class="pm-pip" data-pip="3"></div>
+            <span class="pm-steplabel" id="pm-steplabel">01 / 04 — Daily result</span>
+          </div>
+          <!-- Daily Reflection ported 1:1 from tools/reflection.html — stepped wizard -->
+          <div class="pm-step" data-step="0">
           <div class="sub-label" style="margin-top:0">Daily result</div>
           <div class="field-label">How many loss trades did you have today?</div>
           <div class="btn-group" id="grp-losses" data-theme="coral">
@@ -456,8 +470,11 @@
             <button type="button" class="tog" data-val="mostly">Mostly</button>
             <button type="button" class="tog" data-val="no">No</button>
           </div>
+          <div class="pm-nav"><button type="button" class="btn pri" data-pmnext="1">Next → Emotions</button></div>
+          </div>
 
-          <div class="sub-label">Emotions</div>
+          <div class="pm-step" data-step="1" style="display:none">
+          <div class="sub-label" style="margin-top:0">Emotions</div>
           <div class="field-label">Which emotions influenced your trading today? <span class="cl-sub">(multiple selection)</span></div>
           <div class="btn-group" id="grp-rd-emotion" data-theme="purple">
             <button type="button" class="tog" data-val="patience">Patience</button>
@@ -485,8 +502,11 @@
             <button type="button" class="tog" data-val="stressed">Stressed</button>
             <button type="button" class="tog" data-val="tired">Tired</button>
           </div>
+          <div class="pm-nav"><button type="button" class="btn" data-pmprev="0">← Back</button><button type="button" class="btn pri" data-pmnext="2">Next → Setups</button></div>
+          </div>
 
-          <div class="sub-label">Setups &amp; execution</div>
+          <div class="pm-step" data-step="2" style="display:none">
+          <div class="sub-label" style="margin-top:0">Setups &amp; execution</div>
           <div class="field-label">What was the average quality of your setups today?</div>
           <div class="btn-group" id="grp-setup-qual" data-theme="blue">
             <button type="button" class="tog" data-val="a-class">A-Class</button>
@@ -513,8 +533,11 @@
             <button type="button" class="tog" data-val="partially">Partially</button>
             <button type="button" class="tog" data-val="forced">Forced</button>
           </div>
+          <div class="pm-nav"><button type="button" class="btn" data-pmprev="1">← Back</button><button type="button" class="btn pri" data-pmnext="3">Next → Intentions</button></div>
+          </div>
 
-          <div class="sub-label">Intentions for tomorrow</div>
+          <div class="pm-step" data-step="3" style="display:none">
+          <div class="sub-label" style="margin-top:0">Intentions for tomorrow</div>
           <div class="field-label">What is the one concrete thing you will do differently tomorrow?</div>
           <div class="q-hint">Specific and actionable — not 'I will be better'</div>
           <textarea id="txt-eine-sache" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup…"></textarea>
@@ -542,6 +565,8 @@
 
           <div class="sub-label">Insights &amp; patterns</div>
           <div id="post-insights"></div>
+          <div class="pm-nav"><button type="button" class="btn" data-pmprev="2">← Back</button></div>
+          </div>
         </div>
       </div>
 
@@ -571,6 +596,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=17"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=18"></script>
+  <script src="../js/daily.js?v=19"></script>
 </body>
 </html>
