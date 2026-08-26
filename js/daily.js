@@ -62,6 +62,8 @@ function readJournal() {
   o['pre-game'] = groupValue('grp-game');
   o['pre-intensity'] = scaleValue('scale-intensity');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
+  RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
+  o['rf-news-tags'] = rfNewsTags.slice();
   return o;
 }
 function fillJournal(p) {
@@ -75,6 +77,10 @@ function fillJournal(p) {
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
+  RF_KEYS.forEach(k => setRf(k, p && p['rf-' + k]));
+  rfNewsTags = (p && Array.isArray(p['rf-news-tags'])) ? p['rf-news-tags'].slice() : [];
+  renderNewsTags();
+  updateRfBadges();
 }
 
 // Ronin-style directional items (Pre-trade prep)
@@ -96,6 +102,50 @@ function updatePrepSummary() {
   const biasBadge = bias ? `<span class="cl-bias cl-bias-${bias}">${bias === 'U' ? '▲ UP' : '▼ DOWN'}</span>` : '';
   el.innerHTML = `${biasBadge}${u ? `<span class="cl-u-count">${u}U</span>` : ''}${d ? `<span class="cl-d-count">${d}D</span>` : ''}${n ? `<span class="cl-n-count">${n}N</span>` : ''}`;
 }
+
+// ── Red Flags — ported 1:1 from Ronin Sequence ───────────────────────────────
+const RF_KEYS = ['rcModel', 'rxModel', 'news', 'insideWdr', 'weeklyRcModel', 'wdrrbFalseDay',
+  'adrHalfDisagree', 'tripleFalseOdr', 'yesterdayInsideDay', 'wdrrbQ37', 'turnaroundThursday',
+  'noWdrrbBreakout', 'brokenAdr', 'adrCombDdrMin', 'adrSpanningWdrrbMid', 'multiFalseDay'];
+const RF_YELLOW = new Set(['news', 'insideWdr', 'weeklyRcModel', 'wdrrbFalseDay', 'adrHalfDisagree', 'tripleFalseOdr']);
+const RF_MODEL = ['rcModel', 'rxModel'];
+const RF_OUTSIDE = ['yesterdayInsideDay'];
+const RF_REVERSAL = ['wdrrbQ37', 'turnaroundThursday'];
+const RF_SPECIAL = new Set([...RF_MODEL, ...RF_OUTSIDE, ...RF_REVERSAL]);
+let rfNewsTags = [];
+
+function rfItem(key) { return document.querySelector(`.rf-item[data-rf="${key}"]`); }
+function rfOn(key) { const el = rfItem(key); return !!(el && el.classList.contains('on')); }
+function setRf(key, on) { const el = rfItem(key); if (el) el.classList.toggle('on', !!on); }
+
+function renderNewsTags() {
+  const wrap = $('rf-news-tags'); if (!wrap) return;
+  const input = $('rf-news-tag-input');
+  wrap.querySelectorAll('.rf-tag').forEach(t => t.remove());
+  rfNewsTags.forEach(t => {
+    const chip = document.createElement('span'); chip.className = 'rf-tag';
+    chip.innerHTML = `${esc(t)}<span class="x" data-rmtag="${esc(t)}">×</span>`;
+    wrap.insertBefore(chip, input);
+  });
+}
+function updateRfBadges() {
+  const el = $('rf-badges'); if (!el) return;
+  const rc = rfOn('rcModel'), rx = rfOn('rxModel');
+  let model = '';
+  if (rc && rx) model = '<span class="rf-badge rf-badge-yellow">CAUTION</span>';
+  else if (rc) model = '<span class="rf-badge rf-badge-green">🟢 GREEN LIGHT</span>';
+  else if (rx) model = '<span class="rf-badge rf-badge-red">🔴 RED LIGHT</span>';
+  const outside = RF_OUTSIDE.some(rfOn);
+  const reversal = RF_REVERSAL.some(rfOn);
+  const cautionCount = RF_KEYS.filter(k => !RF_SPECIAL.has(k) && RF_YELLOW.has(k) && rfOn(k)).length;
+  const ampCount = RF_KEYS.filter(k => !RF_SPECIAL.has(k) && !RF_YELLOW.has(k) && rfOn(k)).length;
+  el.innerHTML = model
+    + (outside ? '<span class="rf-badge rf-badge-info">↔ OUTSIDE DAY PROBABLE</span>' : '')
+    + (reversal ? '<span class="rf-badge rf-badge-orange">↻ REVERSAL LIKELY</span>' : '')
+    + (cautionCount ? `<span class="rf-count rf-count-yellow">${cautionCount} caution</span>` : '')
+    + (ampCount ? `<span class="rf-count rf-count-gray">${ampCount} amplifier${ampCount > 1 ? 's' : ''}</span>` : '');
+}
+
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
 const ALGO = ['', 'ASS DOWN', 'ASS UP', 'MCR', 'Ranging'];
@@ -256,7 +306,7 @@ $('o-window').addEventListener('change', () => renderTable(collectOoda()));
 const mainEl = document.querySelector('main');
 mainEl.addEventListener('input', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
 mainEl.addEventListener('change', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
-mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .cl-item')) scheduleAutosave(); });
+mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .cl-item, .rf-item')) scheduleAutosave(); });
 window.addEventListener('pagehide', () => { const d = $('j-date').value; if (d) writeDrafts(d); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistDate($('j-date').value, true); });
 document.querySelectorAll('.sec-head').forEach(h =>
@@ -292,6 +342,27 @@ document.querySelectorAll('[data-prep]').forEach(item => item.addEventListener('
   setPrepState(item, next);
   updatePrepSummary();
 }));
+
+// Red Flags — click to toggle; badges reflect Ronin's caution/amplifier/signal logic
+document.querySelectorAll('.rf-item[data-rf]').forEach(item => item.addEventListener('click', () => {
+  item.classList.toggle('on');
+  updateRfBadges();
+}));
+const _newsInput = $('rf-news-tag-input');
+if (_newsInput) _newsInput.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const v = _newsInput.value.trim();
+  if (v && !rfNewsTags.includes(v)) { rfNewsTags.push(v); _newsInput.value = ''; renderNewsTags(); scheduleAutosave(); }
+});
+const _newsWrap = $('rf-news-tags');
+if (_newsWrap) _newsWrap.addEventListener('click', e => {
+  const x = e.target.closest('[data-rmtag]');
+  if (!x) return;
+  const t = x.getAttribute('data-rmtag');
+  rfNewsTags = rfNewsTags.filter(z => z !== t);
+  renderNewsTags(); scheduleAutosave();
+});
 
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
