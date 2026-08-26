@@ -380,6 +380,15 @@ async function renderArchive() {
 $('btnSave').onclick = saveDay;
 $('jExpand').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.remove('collapsed')));
 $('jCollapse').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.add('collapsed')));
+// Post-market reflection wizard steps
+function goPmStep(n) {
+  document.querySelectorAll('.pm-step').forEach(s => s.style.display = (+s.dataset.step === n ? '' : 'none'));
+  document.querySelectorAll('.pm-pip').forEach(p => { const i = +p.dataset.pip; p.classList.toggle('done', i < n); p.classList.toggle('active', i === n); });
+  const labels = ['01 / 04 — Daily result', '02 / 04 — Emotions', '03 / 04 — Setups & execution', '04 / 04 — Intentions for tomorrow'];
+  const el = $('pm-steplabel'); if (el) el.textContent = labels[n];
+}
+document.querySelectorAll('[data-pmnext]').forEach(b => b.addEventListener('click', () => goPmStep(+b.dataset.pmnext)));
+document.querySelectorAll('[data-pmprev]').forEach(b => b.addEventListener('click', () => goPmStep(+b.dataset.pmprev)));
 $('j-date').addEventListener('change', async () => {
   clearTimeout(autoTimer);
   if (loadedDate && loadedDate !== $('j-date').value) await persistDate(loadedDate, true);
