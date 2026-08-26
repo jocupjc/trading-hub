@@ -46,6 +46,12 @@
     .tog:hover { border-color:rgba(255,255,255,.2); color:var(--tx); }
     .btn-group[data-theme="blue"] .tog.active { background:var(--acg); border-color:var(--ac); color:var(--ac); box-shadow:0 0 12px var(--acg); }
     .btn-group[data-theme="green"] .tog.active { background:var(--grg); border-color:var(--gr); color:var(--gr); box-shadow:0 0 12px var(--grg); }
+    .btn-group[data-theme="coral"] .tog.active { background:var(--cog); border-color:var(--co); color:var(--co); box-shadow:0 0 12px var(--cog); }
+    .btn-group[data-theme="amber"] .tog.active { background:var(--amg); border-color:var(--am); color:var(--am); box-shadow:0 0 12px var(--amg); }
+    .btn-group[data-theme="purple"] .tog.active { background:rgba(167,139,250,.15); border-color:#a78bfa; color:#a78bfa; box-shadow:0 0 12px rgba(167,139,250,.15); }
+    .btn-group[data-theme="teal"] .tog.active { background:rgba(45,212,191,.14); border-color:#2dd4bf; color:#2dd4bf; box-shadow:0 0 12px rgba(45,212,191,.14); }
+    .q-hint { font-size:11px; color:var(--mu); margin:2px 0 6px; }
+    .row-2col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .scale-row { display:flex; gap:5px; flex-wrap:wrap; }
     .scale-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:34px; text-align:center; }
     .scale-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
@@ -142,7 +148,7 @@
     .rf-taginput { font-family:var(--mono); font-size:11px; background:transparent; border:.5px dashed var(--b); border-radius:5px; padding:2px 7px; color:var(--tx); width:90px; }
     .rf-taginput:focus { outline:none; border-style:solid; border-color:var(--bh); }
 
-    @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
+    @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } .row-2col { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -417,28 +423,122 @@
       <div class="card jsection collapsed" style="margin-top:14px">
         <div class="sec-head"><span class="section-tag">Post-market — the review</span><span class="chev">▾</span></div>
         <div class="sec-body">
-        <div class="sub-label" style="margin-top:0">Loss limit</div>
-        <div class="field-label">Did you stop immediately after reaching the limit?</div>
-        <div class="btn-group" id="grp-stopp" data-theme="green">
-          <button type="button" class="tog" data-val="yes-immediately">Yes, immediately</button>
-          <button type="button" class="tog" data-val="hesitant">Hesitantly</button>
-          <button type="button" class="tog" data-val="no">No, kept trading</button>
-          <button type="button" class="tog" data-val="n/a">Limit not reached</button>
-        </div>
-        <div class="alert-box" id="alert-stopp"></div>
-        <div class="grid g2" style="gap:12px">
-          <label class="field"><span class="fl">Rule-compliant day?</span>
-            <select id="post-rules"><option value="">—</option><option>Yes, fully</option><option>Mostly</option><option>No</option></select></label>
-          <label class="field"><span class="fl">Process score (1–10)</span><input type="number" min="1" max="10" id="post-score"></label>
-          <label class="field" style="grid-column:span 2"><span class="fl">Best decision today</span>
-            <textarea id="post-best" placeholder="What did I do well and why?"></textarea></label>
-          <label class="field" style="grid-column:span 2"><span class="fl">Worst decision / biggest leak</span>
-            <textarea id="post-worst" placeholder="Be honest — what cost me?"></textarea></label>
-          <label class="field" style="grid-column:span 2"><span class="fl">Dominant emotion</span>
-            <textarea id="post-emotion" placeholder="What did I feel, and what triggered it?"></textarea></label>
-          <label class="field" style="grid-column:span 2"><span class="fl">One thing I do differently tomorrow</span>
-            <textarea id="post-tomorrow" placeholder="Specific and actionable."></textarea></label>
-        </div>
+          <!-- Daily Reflection ported 1:1 from tools/reflection.html -->
+          <div class="sub-label" style="margin-top:0">Daily result</div>
+          <div class="field-label">How many loss trades did you have today?</div>
+          <div class="btn-group" id="grp-losses" data-theme="coral">
+            <button type="button" class="tog" data-val="0">0</button>
+            <button type="button" class="tog" data-val="1">1</button>
+            <button type="button" class="tog" data-val="2">2</button>
+            <button type="button" class="tog" data-val="3">3 — Limit</button>
+            <button type="button" class="tog" data-val="4+">4+ — Exceeded</button>
+          </div>
+          <div class="field-label">Did you stop immediately after reaching the limit?</div>
+          <div class="btn-group" id="grp-stopp" data-theme="green">
+            <button type="button" class="tog" data-val="yes-immediately">Yes, immediately</button>
+            <button type="button" class="tog" data-val="hesitant">Hesitantly</button>
+            <button type="button" class="tog" data-val="no">No, kept trading</button>
+            <button type="button" class="tog" data-val="n/a">Limit not reached</button>
+          </div>
+          <div class="field-label">How do you feel about today's result?</div>
+          <div class="btn-group" id="grp-gefuehl" data-theme="blue">
+            <button type="button" class="tog" data-val="very-satisfied">Very satisfied</button>
+            <button type="button" class="tog" data-val="okay">Okay</button>
+            <button type="button" class="tog" data-val="unsatisfied">Unsatisfied</button>
+            <button type="button" class="tog" data-val="frustrated">Frustrated</button>
+          </div>
+          <div class="field-label">Was today a rule-compliant trading day?</div>
+          <div class="btn-group" id="grp-regelkonform" data-theme="green">
+            <button type="button" class="tog" data-val="yes">Yes, fully</button>
+            <button type="button" class="tog" data-val="mostly">Mostly</button>
+            <button type="button" class="tog" data-val="no">No</button>
+          </div>
+
+          <div class="sub-label">Emotions</div>
+          <div class="field-label">Which emotions influenced your trading today? <span class="cl-sub">(multiple selection)</span></div>
+          <div class="btn-group" id="grp-rd-emotion" data-theme="purple">
+            <button type="button" class="tog" data-val="patience">Patience</button>
+            <button type="button" class="tog" data-val="fomo">FOMO</button>
+            <button type="button" class="tog" data-val="greed">Greed</button>
+            <button type="button" class="tog" data-val="fear">Fear</button>
+            <button type="button" class="tog" data-val="revenge">Revenge</button>
+            <button type="button" class="tog" data-val="overconfidence">Overconfidence</button>
+            <button type="button" class="tog" data-val="boredom">Boredom</button>
+          </div>
+          <div class="field-label">Was there a revenge trade impulse?</div>
+          <div class="btn-group" id="grp-rache" data-theme="coral">
+            <button type="button" class="tog" data-val="no">No</button>
+            <button type="button" class="tog" data-val="impulse-resisted">Impulse, resisted</button>
+            <button type="button" class="tog" data-val="yes">Yes, executed</button>
+          </div>
+          <div class="field-label">Describe the most emotional moment of the day.</div>
+          <div class="q-hint">What triggered you? What were you thinking in that moment?</div>
+          <textarea id="txt-emotion-moment" placeholder="e.g. After the second loss trade I immediately wanted to re-enter because…"></textarea>
+          <div class="field-label">What was your mental state before the first trade?</div>
+          <div class="btn-group" id="grp-mental" data-theme="teal">
+            <button type="button" class="tog" data-val="focused">Focused</button>
+            <button type="button" class="tog" data-val="calm">Calm</button>
+            <button type="button" class="tog" data-val="restless">Restless</button>
+            <button type="button" class="tog" data-val="stressed">Stressed</button>
+            <button type="button" class="tog" data-val="tired">Tired</button>
+          </div>
+
+          <div class="sub-label">Setups &amp; execution</div>
+          <div class="field-label">What was the average quality of your setups today?</div>
+          <div class="btn-group" id="grp-setup-qual" data-theme="blue">
+            <button type="button" class="tog" data-val="a-class">A-Class</button>
+            <button type="button" class="tog" data-val="b-class">B-Class</button>
+            <button type="button" class="tog" data-val="unclear">Unclear</button>
+            <button type="button" class="tog" data-val="impulsive">Impulsive / no setup</button>
+          </div>
+          <div class="field-label">Stop-loss: Always set before entry and respected?</div>
+          <div class="btn-group" id="grp-sl" data-theme="green">
+            <button type="button" class="tog" data-val="always">Always</button>
+            <button type="button" class="tog" data-val="mostly">Mostly</button>
+            <button type="button" class="tog" data-val="moved-once">Moved once</button>
+            <button type="button" class="tog" data-val="ignored">Ignored / not set</button>
+          </div>
+          <div class="row-2col" style="margin-top:12px">
+            <label class="field"><span class="fl">Best trade — Setup · Entry · Patience · Execution</span>
+              <textarea id="txt-best-trade" placeholder="What went well and why?"></textarea></label>
+            <label class="field"><span class="fl">Worst trade — what went wrong, be honest</span>
+              <textarea id="txt-worst-trade" placeholder="What should I have done differently?"></textarea></label>
+          </div>
+          <div class="field-label">Did you wait for your setup or force entries?</div>
+          <div class="btn-group" id="grp-geduld" data-theme="amber">
+            <button type="button" class="tog" data-val="waited">Waited</button>
+            <button type="button" class="tog" data-val="partially">Partially</button>
+            <button type="button" class="tog" data-val="forced">Forced</button>
+          </div>
+
+          <div class="sub-label">Intentions for tomorrow</div>
+          <div class="field-label">What is the one concrete thing you will do differently tomorrow?</div>
+          <div class="q-hint">Specific and actionable — not 'I will be better'</div>
+          <textarea id="txt-eine-sache" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup…"></textarea>
+          <div class="row-2col" style="margin-top:12px">
+            <label class="field"><span class="fl">Max. daily loss tomorrow (€)</span>
+              <textarea id="txt-max-loss" placeholder="e.g. −300€" style="min-height:48px"></textarea></label>
+            <label class="field"><span class="fl">Daily target tomorrow (€)</span>
+              <textarea id="txt-tagesziel" placeholder="e.g. +200€" style="min-height:48px"></textarea></label>
+          </div>
+          <div class="field-label">How will you prepare mentally before market open tomorrow?</div>
+          <div class="btn-group" id="grp-vorbereitung" data-theme="teal">
+            <button type="button" class="tog" data-val="meditation">Meditation</button>
+            <button type="button" class="tog" data-val="journaling">Journaling</button>
+            <button type="button" class="tog" data-val="chart-analysis">Chart analysis</button>
+            <button type="button" class="tog" data-val="exercise">Exercise</button>
+            <button type="button" class="tog" data-val="prayer">Prayer</button>
+            <button type="button" class="tog" data-val="nothing">Nothing planned</button>
+          </div>
+          <div class="field-label">How committed are you to following the rules tomorrow?</div>
+          <div class="btn-group" id="grp-commitment" data-theme="green">
+            <button type="button" class="tog" data-val="100">100%</button>
+            <button type="button" class="tog" data-val="strong">Strong</button>
+            <button type="button" class="tog" data-val="unsure">Unsure</button>
+          </div>
+
+          <div class="sub-label">Insights &amp; patterns</div>
+          <div id="post-insights"></div>
         </div>
       </div>
 
@@ -468,6 +568,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=17"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=16"></script>
+  <script src="../js/daily.js?v=17"></script>
 </body>
 </html>
