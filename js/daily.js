@@ -378,6 +378,8 @@ async function renderArchive() {
 }
 
 $('btnSave').onclick = saveDay;
+$('jExpand').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.remove('collapsed')));
+$('jCollapse').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.add('collapsed')));
 $('j-date').addEventListener('change', async () => {
   clearTimeout(autoTimer);
   if (loadedDate && loadedDate !== $('j-date').value) await persistDate(loadedDate, true);
