@@ -139,3 +139,79 @@ $('btnSave').onclick = save;
 $('btnClear').onclick = clearForm;
 $('btnExport').onclick = exportCSV;
 Auth.ready.then(refresh);
+
+// ─── Charts & screenshots (embedded; date comes from the trade form) ─────────
+$('c-note').textContent = DB.active() === 'supabase'
+  ? 'Screenshots upload to Supabase storage.'
+  : 'Offline mode: screenshots are stored in this browser.';
+
+$('c-kind').addEventListener('change', () => {
+  const isShot = $('c-kind').value === 'screenshot';
+  $('c-wrap-url').style.display = isShot ? 'none' : 'block';
+  $('c-wrap-file').style.display = isShot ? 'block' : 'none';
+});
+
+async function addChart() {
+  const date = $('f-date').value || todayStr();
+  const title = $('c-title').value.trim();
+  const kind = $('c-kind').value;
+  try {
+    if (kind === 'screenshot') {
+      const file = $('c-file').files[0];
+      if (!file) return Shell.toast('Choose an image');
+      Shell.toast('Uploading…');
+      const { url, storage_path } = await DB.uploadScreenshot(file, date);
+      await DB.saveLink({ date, title: title || file.name, kind: 'screenshot', url, storage_path });
+    } else {
+      const url = $('c-url').value.trim();
+      if (!url) return Shell.toast('Paste a URL');
+      await DB.saveLink({ date, title: title || url, kind: 'link', url });
+    }
+    Shell.toast('Added');
+    $('c-title').value = ''; $('c-url').value = ''; $('c-file').value = '';
+    await renderCharts();
+  } catch (e) { console.error(e); Shell.toast('Failed — ' + (e.message || 'error')); }
+}
+
+async function renderCharts() {
+  let links; try { links = await DB.getLinks(); } catch { links = []; }
+  const years = [...new Set(links.map(l => l.year))].sort((a, b) => b - a);
+  const cur = $('c-year').value;
+  $('c-year').innerHTML = '<option value="">All years</option>' + years.map(y => `<option>${y}</option>`).join('');
+  if (cur) $('c-year').value = cur;
+
+  const filterY = $('c-year').value;
+  const shown = filterY ? links.filter(l => String(l.year) === filterY) : links;
+  const byYear = {};
+  shown.forEach(l => (byYear[l.year] = byYear[l.year] || []).push(l));
+  const yrs = Object.keys(byYear).sort((a, b) => b - a);
+
+  $('c-wrap').innerHTML = yrs.length ? yrs.map(y => `
+    <div class="card-label" style="margin:6px 0 8px">${y} — ${byYear[y].length} item${byYear[y].length > 1 ? 's' : ''}</div>
+    <div class="gal-grid" style="margin-bottom:8px">${byYear[y].map(chartCard).join('')}</div>`).join('')
+    : '<div class="empty">No charts saved yet.</div>';
+
+  document.querySelectorAll('[data-cdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Delete this item?')) return;
+    await DB.deleteLink(b.dataset.cdel); Shell.toast('Deleted'); renderCharts();
+  });
+}
+
+function chartCard(l) {
+  const thumb = l.kind === 'screenshot'
+    ? `<img src="${l.url}" onclick="window.open('${l.url}','_blank')" alt="">`
+    : `<a class="gal-thumb-link" href="${l.url}" target="_blank">📈</a>`;
+  return `<div class="gal-card">${thumb}
+    <div class="gal-body">
+      <div class="gal-title">${esc(l.title) || 'Untitled'}</div>
+      <div class="gal-meta">${l.date || '—'} · ${l.kind}</div>
+      <div class="gal-actions">
+        <a class="btn sm" href="${l.url}" target="_blank">open</a>
+        <button class="btn sm danger" data-cdel="${l.id}">del</button>
+      </div>
+    </div></div>`;
+}
+
+$('c-add').onclick = addChart;
+$('c-year').addEventListener('change', renderCharts);
+Auth.ready.then(renderCharts);
