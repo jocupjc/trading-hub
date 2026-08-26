@@ -121,6 +121,19 @@ const DB = (() => {
     return list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
   }
 
+  // Charts attached to a specific trade
+  async function getTradeLinks(tradeId) {
+    if (!tradeId) return [];
+    if (sb) {
+      const { data, error } = await sb.from('chart_links').select('*')
+        .eq('trade_id', tradeId).order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+    return LS.get(K.links, []).filter(l => l.trade_id === tradeId)
+      .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  }
+
   async function saveLink(l) {
     const row = { ...l };
     row.year = row.year || (row.date ? +row.date.slice(0, 4) : new Date().getFullYear());
@@ -206,7 +219,7 @@ const DB = (() => {
     initSupabase, active,
     getTrades, saveTrade, deleteTrade,
     getTradingDays, getTradingDay, saveTradingDay,
-    getLinks, saveLink, deleteLink, uploadScreenshot,
+    getLinks, getTradeLinks, saveLink, deleteLink, uploadScreenshot,
     getJournal, listJournal, saveJournal,
   };
 })();

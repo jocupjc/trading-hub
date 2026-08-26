@@ -41,12 +41,14 @@ function fillForm(t) {
   $('f-model').value = t.model || '';
   $('f-notes').value = t.notes || '';
   livePreview();
+  updateChartPanel(t.id || '');
 }
 
 function clearForm() {
   fields.forEach(k => { if (!['date', 'inst', 'dir'].includes(k)) $('f-' + k).value = ''; });
   $('f-date').value = todayStr(); $('f-outcome').value = '';
   livePreview();
+  updateChartPanel('');
 }
 
 // Live R preview from prices
@@ -61,8 +63,12 @@ function livePreview() {
 async function save() {
   const t = readForm();
   if (!t.date) return Shell.toast('Pick a date');
-  try { await DB.saveTrade(t); Shell.toast('Trade saved'); clearForm(); await refresh(); }
-  catch (e) { console.error(e); Shell.toast('Save failed'); }
+  try {
+    const saved = await DB.saveTrade(t);
+    Shell.toast('Trade saved — attach charts below or click Clear');
+    fillForm(saved); // keep in edit mode so charts can be attached to this trade
+    await refresh();
+  } catch (e) { console.error(e); Shell.toast('Save failed'); }
 }
 
 async function refresh() {
@@ -140,7 +146,9 @@ $('btnClear').onclick = clearForm;
 $('btnExport').onclick = exportCSV;
 Auth.ready.then(refresh);
 
-// ─── Charts & screenshots (embedded; date comes from the trade form) ─────────
+// ─── Charts & screenshots attached to the specific trade in the form ─────────
+let currentTradeId = null;
+
 $('c-note').textContent = DB.active() === 'supabase'
   ? 'Screenshots upload to Supabase storage.'
   : 'Offline mode: screenshots are stored in this browser.';
@@ -151,7 +159,17 @@ $('c-kind').addEventListener('change', () => {
   $('c-wrap-file').style.display = isShot ? 'block' : 'none';
 });
 
+// Enable/disable the charts panel based on whether a saved trade is loaded
+async function updateChartPanel(tradeId) {
+  currentTradeId = tradeId || null;
+  const has = !!currentTradeId;
+  $('c-hint').style.display = has ? 'none' : 'block';
+  $('c-controls').style.display = has ? 'block' : 'none';
+  if (has) await renderCharts(); else $('c-wrap').innerHTML = '';
+}
+
 async function addChart() {
+  if (!currentTradeId) return Shell.toast('Save the trade first');
   const date = $('f-date').value || todayStr();
   const title = $('c-title').value.trim();
   const kind = $('c-kind').value;
@@ -161,11 +179,11 @@ async function addChart() {
       if (!file) return Shell.toast('Choose an image');
       Shell.toast('Uploading…');
       const { url, storage_path } = await DB.uploadScreenshot(file, date);
-      await DB.saveLink({ date, title: title || file.name, kind: 'screenshot', url, storage_path });
+      await DB.saveLink({ trade_id: currentTradeId, date, title: title || file.name, kind: 'screenshot', url, storage_path });
     } else {
       const url = $('c-url').value.trim();
       if (!url) return Shell.toast('Paste a URL');
-      await DB.saveLink({ date, title: title || url, kind: 'link', url });
+      await DB.saveLink({ trade_id: currentTradeId, date, title: title || url, kind: 'link', url });
     }
     Shell.toast('Added');
     $('c-title').value = ''; $('c-url').value = ''; $('c-file').value = '';
@@ -174,22 +192,11 @@ async function addChart() {
 }
 
 async function renderCharts() {
-  let links; try { links = await DB.getLinks(); } catch { links = []; }
-  const years = [...new Set(links.map(l => l.year))].sort((a, b) => b - a);
-  const cur = $('c-year').value;
-  $('c-year').innerHTML = '<option value="">All years</option>' + years.map(y => `<option>${y}</option>`).join('');
-  if (cur) $('c-year').value = cur;
-
-  const filterY = $('c-year').value;
-  const shown = filterY ? links.filter(l => String(l.year) === filterY) : links;
-  const byYear = {};
-  shown.forEach(l => (byYear[l.year] = byYear[l.year] || []).push(l));
-  const yrs = Object.keys(byYear).sort((a, b) => b - a);
-
-  $('c-wrap').innerHTML = yrs.length ? yrs.map(y => `
-    <div class="card-label" style="margin:6px 0 8px">${y} — ${byYear[y].length} item${byYear[y].length > 1 ? 's' : ''}</div>
-    <div class="gal-grid" style="margin-bottom:8px">${byYear[y].map(chartCard).join('')}</div>`).join('')
-    : '<div class="empty">No charts saved yet.</div>';
+  if (!currentTradeId) { $('c-wrap').innerHTML = ''; return; }
+  let links; try { links = await DB.getTradeLinks(currentTradeId); } catch { links = []; }
+  $('c-wrap').innerHTML = links.length
+    ? `<div class="gal-grid">${links.map(chartCard).join('')}</div>`
+    : '<div class="empty" style="padding:16px 0">No charts attached to this trade yet.</div>';
 
   document.querySelectorAll('[data-cdel]').forEach(b => b.onclick = async () => {
     if (!confirm('Delete this item?')) return;
@@ -204,7 +211,7 @@ function chartCard(l) {
   return `<div class="gal-card">${thumb}
     <div class="gal-body">
       <div class="gal-title">${esc(l.title) || 'Untitled'}</div>
-      <div class="gal-meta">${l.date || '—'} · ${l.kind}</div>
+      <div class="gal-meta">${l.kind}</div>
       <div class="gal-actions">
         <a class="btn sm" href="${l.url}" target="_blank">open</a>
         <button class="btn sm danger" data-cdel="${l.id}">del</button>
@@ -213,5 +220,3 @@ function chartCard(l) {
 }
 
 $('c-add').onclick = addChart;
-$('c-year').addEventListener('change', renderCharts);
-Auth.ready.then(renderCharts);
