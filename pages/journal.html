@@ -33,6 +33,7 @@
     .jsection.collapsed .chev { transform:rotate(-90deg); }
     .jsection.collapsed .sec-body { display:none; }
     .chk-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; }
+    .chk-grid.chk-inline { display:flex; flex-wrap:wrap; gap:4px 22px; }
     .chk-row { display:flex; align-items:center; gap:9px; padding:6px 9px; font-size:13px; color:var(--am); cursor:pointer; border-radius:6px; transition:color .15s, background .15s; }
     .chk-row input { width:15px; height:15px; accent-color:var(--am); flex:none; }
     .chk-row.on { color:var(--gr); background:var(--grg); }
@@ -81,7 +82,7 @@
         <div class="sec-head"><span class="section-tag">Pre-market — the plan</span><span class="chev">▾</span></div>
         <div class="sec-body">
           <div class="sub-label" style="margin-top:0">Check-in</div>
-          <div class="chk-grid">
+          <div class="chk-grid chk-inline">
             <label class="chk-row"><input type="checkbox" id="pre-chk-sleep"> Mindestens 7h geschlafen?</label>
             <label class="chk-row"><input type="checkbox" id="pre-chk-food"> Gegessen &amp; getrunken?</label>
             <label class="chk-row"><input type="checkbox" id="pre-chk-activity"> Körperliche Aktivität erledigt?</label>
@@ -241,6 +242,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=7"></script>
+  <script src="../js/daily.js?v=8"></script>
 </body>
 </html>
