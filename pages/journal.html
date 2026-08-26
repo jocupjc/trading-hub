@@ -58,7 +58,7 @@
     .alert-box.ok { background:var(--grg); border:.5px solid rgba(52,211,153,.35); color:var(--gr); }
     .alert-box.bad { background:var(--cog); border:.5px solid rgba(248,113,113,.35); color:var(--co); }
     .cl-sub { font-size:11px; color:var(--mu); }
-    .cl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:6px; }
+    .cl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:6px; align-items:start; }
     .cl-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; border:.5px solid var(--b); background:var(--card2); cursor:pointer; user-select:none; transition:all .12s; }
     .cl-item:hover { border-color:var(--bh); }
     .cl-item.U { background:var(--grg); border-color:rgba(52,211,153,.4); }
@@ -81,7 +81,7 @@
     /* Box Formation checklist — ported 1:1 from Ronin Sequence */
     .cl-block { margin-top:16px; }
     .cl-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
-    .cl-title { font-family:var(--mono); font-size:12px; letter-spacing:.5px; color:var(--tx); font-weight:600; }
+    .cl-title { font-family:var(--mono); font-size:12px; letter-spacing:.5px; color:#e07b39; font-weight:600; }
     .cl-subgroup-label { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--mu); margin:14px 0 8px; }
     .cl-item.C { background:var(--cog); border-color:rgba(248,113,113,.4); }
     .cl-item.C .cl-badge { background:var(--co); border-color:var(--co); color:#1a0f0f; }
@@ -93,7 +93,7 @@
     .cl-chk-count { color:var(--mu); background:rgba(139,143,154,.14); border:.5px solid var(--mu); padding:1px 7px; border-radius:20px; }
     .cl-u-count.cl-winning { color:#0f1a14; background:var(--gr); border-color:var(--gr); font-weight:700; }
     .cl-d-count.cl-winning { color:#1a0f0f; background:var(--co); border-color:var(--co); font-weight:700; }
-    .cl-item-wrap { display:flex; flex-direction:column; gap:4px; }
+    .cl-item-wrap { display:flex; flex-direction:column; gap:5px; }
     .cl-model-input { font-family:var(--mono); font-size:11px; padding:4px 8px; border-radius:5px; background:var(--card); border:.5px dashed var(--b); color:var(--am); width:100%; }
     .cl-model-input:focus { outline:none; border-style:solid; border-color:var(--bh); }
     .cl-model-input::placeholder { color:var(--mu); }
