@@ -78,6 +78,50 @@
     .cl-d-count { color:var(--co); background:var(--cog); border:.5px solid rgba(248,113,113,.3); padding:1px 7px; border-radius:20px; }
     .cl-n-count { color:var(--mu); background:rgba(139,143,154,.1); border:.5px solid rgba(139,143,154,.3); padding:1px 7px; border-radius:20px; }
     .sub-label { font-family:var(--mono); font-size:10px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:18px 0 8px; }
+
+    /* Red Flags — ported 1:1 from Ronin Sequence */
+    .rf-block { margin-top:18px; padding-top:16px; border-top:.5px solid var(--b); }
+    .rf-title { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:var(--co); display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; row-gap:6px; }
+    .rf-badges { display:flex; gap:6px; flex-wrap:wrap; }
+    .rf-signal-label { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--mu); margin:0 0 8px; }
+    .rf-signal-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+    .rf-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:6px 12px; }
+    .rf-divider { padding-bottom:14px; margin-bottom:14px; border-bottom:.5px solid var(--b); }
+    .rf-item { display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 9px; border-radius:6px; border:.5px solid transparent; user-select:none; transition:all .12s; }
+    .rf-item:hover { background:var(--card2); }
+    .rf-box { width:16px; height:16px; border-radius:4px; border:1.5px solid var(--mu); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:transparent; flex-shrink:0; transition:all .12s; }
+    .rf-item.on .rf-box::after { content:'✓'; }
+    .rf-label { font-size:13px; color:var(--mu); }
+    .rf-item.on .rf-label { color:var(--tx); }
+    .rf-item.tone-green.on { border-color:rgba(52,211,153,.3); background:var(--grg); }
+    .rf-item.tone-green.on .rf-box { background:var(--gr); border-color:var(--gr); color:#0f1a14; }
+    .rf-item.tone-red.on { border-color:rgba(248,113,113,.3); background:var(--cog); }
+    .rf-item.tone-red.on .rf-box { background:var(--co); border-color:var(--co); color:#1a0f0f; }
+    .rf-item.tone-yellow.on { border-color:rgba(230,196,60,.3); background:rgba(230,196,60,.09); }
+    .rf-item.tone-yellow.on .rf-box { background:#e6c43c; border-color:#e6c43c; color:#1a1608; }
+    .rf-item.tone-info.on { border-color:rgba(110,168,224,.3); background:rgba(110,168,224,.09); }
+    .rf-item.tone-info.on .rf-box { background:#6ea8e0; border-color:#6ea8e0; color:#0d1520; }
+    .rf-item.tone-orange.on { border-color:rgba(224,123,57,.3); background:rgba(224,123,57,.09); }
+    .rf-item.tone-orange.on .rf-box { background:#e07b39; border-color:#e07b39; color:#1a0f08; }
+    .rf-item.tone-gray.on { border-color:rgba(139,143,154,.3); background:rgba(139,143,154,.09); }
+    .rf-item.tone-gray.on .rf-box { background:var(--mu); border-color:var(--mu); color:#fff; }
+    .rf-badge { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.5px; padding:3px 10px; border-radius:20px; display:inline-block; }
+    .rf-badge-green { color:#0f1a14; background:var(--gr); }
+    .rf-badge-red { color:#1a0f0f; background:var(--co); }
+    .rf-badge-yellow { color:#1a1608; background:#e6c43c; }
+    .rf-badge-info { color:#0d1520; background:#6ea8e0; }
+    .rf-badge-orange { color:#1a0f08; background:#e07b39; }
+    .rf-count { border-radius:20px; padding:1px 8px; font-size:10px; font-family:var(--mono); }
+    .rf-count-yellow { background:rgba(230,196,60,.15); border:.5px solid #e6c43c; color:#e6c43c; }
+    .rf-count-gray { background:rgba(139,143,154,.14); border:.5px solid var(--mu); color:var(--mu); }
+    .rf-item-wrap { display:flex; flex-direction:column; gap:2px; }
+    .rf-tagrow { display:flex; flex-wrap:wrap; gap:5px; margin:2px 0 0 8px; align-items:center; }
+    .rf-tag { font-family:var(--mono); font-size:11px; background:var(--card2); border:.5px solid var(--b); border-radius:5px; padding:2px 6px; color:var(--tx); display:inline-flex; gap:5px; align-items:center; }
+    .rf-tag .x { cursor:pointer; color:var(--mu); }
+    .rf-tag .x:hover { color:var(--co); }
+    .rf-taginput { font-family:var(--mono); font-size:11px; background:transparent; border:.5px dashed var(--b); border-radius:5px; padding:2px 7px; color:var(--tx); width:90px; }
+    .rf-taginput:focus { outline:none; border-style:solid; border-color:var(--bh); }
+
     @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -187,6 +231,50 @@
             <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
             <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
           </div>
+
+          <!-- Red Flags — ported 1:1 from Ronin Sequence -->
+          <div class="rf-block">
+            <div class="rf-title"><span>⚑ Red Flags</span><span class="rf-badges" id="rf-badges"></span></div>
+
+            <div class="rf-signal-label">Model Signal</div>
+            <div class="rf-signal-row" style="margin-bottom:14px;padding-bottom:14px;border-bottom:.5px solid var(--b)">
+              <div class="rf-item tone-green" data-rf="rcModel"><span class="rf-box"></span><span class="rf-label">Rc Model</span></div>
+              <div class="rf-item tone-red" data-rf="rxModel"><span class="rf-box"></span><span class="rf-label">Rx Model</span></div>
+            </div>
+
+            <div class="rf-signal-label">Caution</div>
+            <div class="rf-grid rf-divider">
+              <div class="rf-item-wrap">
+                <div class="rf-item tone-yellow" data-rf="news"><span class="rf-box"></span><span class="rf-label">News</span></div>
+                <div class="rf-tagrow" id="rf-news-tags"><input class="rf-taginput" id="rf-news-tag-input" placeholder="+ tag"></div>
+              </div>
+              <div class="rf-item tone-yellow" data-rf="insideWdr"><span class="rf-box"></span><span class="rf-label">Inside WDR</span></div>
+              <div class="rf-item tone-yellow" data-rf="weeklyRcModel"><span class="rf-box"></span><span class="rf-label">Weekly Rc Model</span></div>
+              <div class="rf-item tone-yellow" data-rf="wdrrbFalseDay"><span class="rf-box"></span><span class="rf-label">WDRRB False Day</span></div>
+              <div class="rf-item tone-yellow" data-rf="adrHalfDisagree"><span class="rf-box"></span><span class="rf-label">ADR &amp; 0.5 Disagree</span></div>
+              <div class="rf-item tone-yellow" data-rf="tripleFalseOdr"><span class="rf-box"></span><span class="rf-label">Triple False ODR</span></div>
+            </div>
+
+            <div class="rf-signal-label">Outside Day Signal</div>
+            <div class="rf-signal-row rf-divider">
+              <div class="rf-item tone-info" data-rf="yesterdayInsideDay"><span class="rf-box"></span><span class="rf-label">Yesterday was Inside Day</span></div>
+            </div>
+
+            <div class="rf-signal-label">Reversal Signal</div>
+            <div class="rf-signal-row rf-divider">
+              <div class="rf-item tone-orange" data-rf="wdrrbQ37"><span class="rf-box"></span><span class="rf-label">WDRRB Q-3/7+</span></div>
+              <div class="rf-item tone-orange" data-rf="turnaroundThursday"><span class="rf-box"></span><span class="rf-label">Turnaround Thursday</span></div>
+            </div>
+
+            <div class="rf-signal-label">Amplifiers</div>
+            <div class="rf-grid">
+              <div class="rf-item tone-gray" data-rf="noWdrrbBreakout"><span class="rf-box"></span><span class="rf-label">No WDRRB Breakout</span></div>
+              <div class="rf-item tone-gray" data-rf="brokenAdr"><span class="rf-box"></span><span class="rf-label">Broken ADR</span></div>
+              <div class="rf-item tone-gray" data-rf="adrCombDdrMin"><span class="rf-box"></span><span class="rf-label">ODR in Comb. Min/Min</span></div>
+              <div class="rf-item tone-gray" data-rf="adrSpanningWdrrbMid"><span class="rf-box"></span><span class="rf-label">ADR spanning WDRRB mid</span></div>
+              <div class="rf-item tone-gray" data-rf="multiFalseDay"><span class="rf-box"></span><span class="rf-label">Multi-False Day</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -266,6 +354,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=7"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=9"></script>
+  <script src="../js/daily.js?v=10"></script>
 </body>
 </html>
