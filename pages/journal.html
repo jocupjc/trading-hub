@@ -289,16 +289,62 @@
             </div>
           </div>
 
-          <div style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">
-            <div style="font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--tx);font-weight:600">0230 – 0400 ODR Box Formation</div>
-            <div style="font-style:italic;font-size:12px;color:var(--mu);margin-top:2px">pre-market · Box reversal</div>
-          </div>
-          <div class="rf-signal-label" style="margin-top:14px">Directional bias</div>
-          <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
-          <div class="cl-grid">
-            <div class="cl-item" data-prep="pre-market-state" data-third="C"><div class="cl-badge">·</div><div class="cl-item-label">Market state</div></div>
-            <div class="cl-item" data-prep="pre-vvwap" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">VWAP</div></div>
-            <div class="cl-item" data-prep="pre-sequence" data-third="N"><div class="cl-badge">·</div><div class="cl-item-label">Sequence</div></div>
+          <div class="cl-block" style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">
+            <div class="cl-head">
+              <div>
+                <div class="cl-title">0230 – 0400 ODR Box Formation</div>
+                <div class="cl-sub" style="font-style:italic">pre-market · Box reversal</div>
+              </div>
+              <div class="cl-summary" id="box2-summary"></div>
+            </div>
+
+            <div class="cl-subgroup-label">Directional bias</div>
+            <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
+            <div class="cl-grid">
+              <div class="cl-item" data-prep="pre-market-state" data-third="C"><span class="cl-badge">·</span><span class="cl-item-label">Market state</span></div>
+              <div class="cl-item" data-prep="pre-vvwap" data-third="N"><span class="cl-badge">·</span><span class="cl-item-label">VWAP</span></div>
+              <div class="cl-item" data-prep="pre-sequence" data-third="N"><span class="cl-badge">·</span><span class="cl-item-label">Sequence</span></div>
+            </div>
+
+            <div class="cl-subgroup-label">Directional</div>
+            <div class="cl-grid">
+              <div class="cl-item" data-box2="monthly" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Monthly Seq</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box2="weekly" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Weekly Seq</span></div>
+                <input class="cl-model-input" data-box2-model="weekly" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box2="daily" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Daily Seq</span></div>
+              <div class="cl-item" data-box2="rdr" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">RDR Seq</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box2="dailyModel" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Daily Model</span></div>
+                <input class="cl-model-input" data-box2-model="dailyModel" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box2="partials" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Partials</span></div>
+              <div class="cl-item" data-box2="ddrComSym" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">DDR Com. Sym</span></div>
+              <div class="cl-item" data-box2="ddrSepMinMin" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">DDR Sep. min/min</span></div>
+              <div class="cl-item" data-box2="gaps" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">GAPs</span></div>
+              <div class="cl-item" data-box2="ass" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market Structure</span></div>
+              <div class="cl-item" data-box2="vwap" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">VWAP</span></div>
+              <div class="cl-item" data-box2="svpHtf" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">SVP HTF</span></div>
+            </div>
+
+            <div class="cl-subgroup-label">Checks</div>
+            <div class="cl-grid">
+              <div class="cl-item" data-box2="markTime" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Time</span></div>
+              <div class="cl-item" data-box2="svpLtf" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">SVP LTF</span></div>
+              <div class="cl-item" data-box2="vibsH1m30" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Magnetic VIBs</span></div>
+              <div class="cl-item" data-box2="confluencesCheck" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Confluences</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box2="rdrModel" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">RDR Model</span></div>
+                <input class="cl-model-input" data-box2-model="rdrModel" placeholder="model tag">
+              </div>
+              <div class="cl-item" data-box2="markMakeOrBreak" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Make or Break</span></div>
+              <div class="cl-item" data-box2="checkDdr" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Check DDR</span></div>
+              <div class="cl-item" data-box2="markTargets" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Mark Targets</span></div>
+              <div class="cl-item" data-box2="transitionHL" data-checkonly="1" data-yellow="1"><span class="cl-badge">·</span><span class="cl-item-label">Transition H/L</span></div>
+              <div class="cl-item" data-box2="wdrrbOpen" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">WDRRB Open</span></div>
+              <div class="cl-item" data-box2="chaining" data-checkonly="1"><span class="cl-badge">·</span><span class="cl-item-label">Chaining</span></div>
+            </div>
           </div>
 
           <!-- 0930–1030 Box Formation checklist — ported 1:1 from Ronin Sequence -->
@@ -430,6 +476,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=8"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=11"></script>
+  <script src="../js/daily.js?v=12"></script>
 </body>
 </html>
