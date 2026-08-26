@@ -7,7 +7,7 @@ const $ = (id) => document.getElementById(id);
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra',
   'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
-const POST_GROUPS = ['grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
+const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
   'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
   'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
