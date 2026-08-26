@@ -18,7 +18,10 @@ function readJournal() {
 }
 function fillJournal(p) {
   JFIELDS.forEach(f => { const el = $(f); if (el) el.value = (p && p[f]) || ''; });
-  CHECK_FIELDS.forEach(f => { const el = $(f); if (el) el.checked = !!(p && p[f]); });
+  CHECK_FIELDS.forEach(f => {
+    const el = $(f);
+    if (el) { el.checked = !!(p && p[f]); const row = el.closest('.chk-row'); if (row) row.classList.toggle('on', el.checked); }
+  });
 }
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
@@ -140,5 +143,7 @@ $('j-date').addEventListener('change', () => load($('j-date').value));
 $('o-window').addEventListener('change', () => renderTable(collectOoda()));
 document.querySelectorAll('.sec-head').forEach(h =>
   h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
+document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
+  cb.addEventListener('change', () => cb.closest('.chk-row').classList.toggle('on', cb.checked)));
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
