@@ -8,11 +8,11 @@ const NAV = [
   { group: 'Overview' },
   { href: 'index.html', icon: '◧', label: 'Dashboard' },
   { href: 'pages/trades.html', icon: '⤢', label: 'Trades & PnL' },
-  { group: 'DDR calendar' },
+  { group: 'DDR calendar', collapsible: true },
   { href: 'pages/calendar.html?type=ddr&inst=NQ', icon: '▤', label: 'NQ' },
   { href: 'pages/calendar.html?type=ddr&inst=ES', icon: '▤', label: 'ES' },
   { href: 'pages/calendar.html?type=ddr&inst=CL', icon: '▤', label: 'CL' },
-  { group: 'WDDRS calendar' },
+  { group: 'WDDRS calendar', collapsible: true },
   { href: 'pages/calendar.html?type=wddrs&inst=NQ', icon: '▤', label: 'NQ' },
   { href: 'pages/calendar.html?type=wddrs&inst=ES', icon: '▤', label: 'ES' },
   { href: 'pages/calendar.html?type=wddrs&inst=CL', icon: '▤', label: 'CL' },
@@ -32,12 +32,26 @@ const Shell = {
       ? '<span class="backend cloud"><span class="dot"></span>Supabase cloud</span>'
       : '<span class="backend local"><span class="dot"></span>Local (offline)</span>';
 
-    const items = NAV.map(n => {
-      if (n.group) return `<div class="group-label">${n.group}</div>`;
-      if (n.breathe) return `<a class="nav-link" href="#" data-breathe><span class="ic">${n.icon}</span>${n.label}</a>`;
+    let items = '';
+    let openGroup = false;
+    NAV.forEach(n => {
+      if (n.group) {
+        if (openGroup) { items += '</div>'; openGroup = false; }
+        if (n.collapsible) {
+          const gid = n.group.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          items += `<button class="group-label group-toggle" data-navgroup="${gid}"><span>${n.group}</span><span class="nav-chev">▾</span></button>`;
+          items += `<div class="nav-group-items" data-navgroup-items="${gid}">`;
+          openGroup = true;
+        } else {
+          items += `<div class="group-label">${n.group}</div>`;
+        }
+        return;
+      }
+      if (n.breathe) { items += `<a class="nav-link" href="#" data-breathe><span class="ic">${n.icon}</span>${n.label}</a>`; return; }
       const active = n.href === activeHref ? ' active' : '';
-      return `<a class="nav-link${active}" href="${rel}${n.href}"><span class="ic">${n.icon}</span>${n.label}</a>`;
-    }).join('');
+      items += `<a class="nav-link${active}" href="${rel}${n.href}"><span class="ic">${n.icon}</span>${n.label}</a>`;
+    });
+    if (openGroup) items += '</div>';
 
     return `
       <aside class="sidebar">
@@ -58,7 +72,9 @@ const Shell = {
     DB.initSupabase();
     const host = document.getElementById('shell');
     if (host) host.innerHTML = this.render(activeHref, rel);
+    this.injectNavStyles();
     this.initNavToggle();
+    this.initNavGroups();
     this.initBreathe();
     if (window.Auth && Auth.refresh) Auth.refresh();
   },
@@ -73,6 +89,36 @@ const Shell = {
     const o = document.getElementById('nav-open');
     if (c) c.addEventListener('click', () => set(true));
     if (o) o.addEventListener('click', () => set(false));
+  },
+
+  injectNavStyles() {
+    if (document.getElementById('nav-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'nav-styles';
+    s.textContent = `
+      .group-toggle { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; background:none; border:none; cursor:pointer; text-align:left; font-family:var(--mono); font-size:9px; letter-spacing:1.2px; text-transform:uppercase; color:var(--mu); padding:12px 12px 4px; }
+      .group-toggle:hover { color:var(--tx); }
+      .group-toggle .nav-chev { font-size:11px; transition:transform .15s; }
+      .group-toggle.collapsed .nav-chev { transform:rotate(-90deg); }
+      .nav-group-items { display:flex; flex-direction:column; gap:2px; }
+      .nav-group-items.collapsed { display:none; }`;
+    document.head.appendChild(s);
+  },
+
+  initNavGroups() {
+    document.querySelectorAll('.group-toggle').forEach(btn => {
+      const id = btn.dataset.navgroup;
+      const items = document.querySelector(`[data-navgroup-items="${id}"]`);
+      if (!items) return;
+      const KEY = 'th:navgroup:' + id;
+      const set = (collapsed) => {
+        btn.classList.toggle('collapsed', collapsed);
+        items.classList.toggle('collapsed', collapsed);
+        localStorage.setItem(KEY, collapsed ? '1' : '0');
+      };
+      set(localStorage.getItem(KEY) === '1');
+      btn.addEventListener('click', () => set(!items.classList.contains('collapsed')));
+    });
   },
 
   initBreathe() {
