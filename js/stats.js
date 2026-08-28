@@ -167,14 +167,13 @@ const Stats = (() => {
     (days || []).forEach((d) => { byDate[d.date] = d; });
     const pad = (n) => String(n).padStart(2, '0');
     const fmtR = (v) => (v > 0 ? '+' : '') + Number(v).toFixed(1) + 'R';
-    const WD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    const WD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const dim = new Date(year, month + 1, 0).getDate();
-    const weeks = []; let week = [null, null, null, null, null];
+    const weeks = []; let week = new Array(7).fill(null);
     for (let dd = 1; dd <= dim; dd++) {
       const dow = (new Date(year, month, dd).getDay() + 6) % 7; // Mon=0 … Sun=6
-      if (dow > 4) continue;
       week[dow] = dd;
-      if (dow === 4) { weeks.push(week); week = [null, null, null, null, null]; }
+      if (dow === 6) { weeks.push(week); week = new Array(7).fill(null); }
     }
     if (week.some((x) => x !== null)) weeks.push(week);
     const head = WD.map((w) => `<div class="rcal-wd">${w}</div>`).join('');
