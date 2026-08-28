@@ -64,8 +64,10 @@ function monthCard(key, s) {
     </button>
     <div class="mo-body">
       <div class="grid g4">${headline}</div>
-      <div class="card" style="margin-top:14px"><div class="card-label">Daily result (R)</div>${Stats.monthGridHTML(+y, +m - 1, s.days)}</div>
-      <div class="card" style="margin-top:14px"><div class="card-label">Equity Curve — cumulative R</div><div class="chart-box"><canvas id="eq-${key}"></canvas></div></div>
+      <div class="mo-row2">
+        <div class="card"><div class="card-label">Daily result (R)</div>${Stats.monthGridHTML(+y, +m - 1, s.days)}</div>
+        <div class="card"><div class="card-label">Equity Curve — cumulative R</div><div class="chart-box"><canvas id="eq-${key}"></canvas></div></div>
+      </div>
       <div class="grid g4" style="margin-top:14px">${secondary}</div>
       <div class="card" style="margin-top:14px"><div class="card-label">Automatic support — what the numbers are telling you</div>${insights}</div>
     </div>
