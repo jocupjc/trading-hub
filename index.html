@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Overall Dashboard · Trading Hub</title>
   <link rel="stylesheet" href="css/styles.css?v=4">
+  <style>
+    .rcal { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
+    .rcal-wd { font-family:var(--mono); font-size:9px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); text-align:center; padding-bottom:2px; }
+    .rcal-empty { aspect-ratio:1/1; }
+    .rcal-day { aspect-ratio:1/1; border:.5px solid var(--b); border-radius:6px; background:var(--card2); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:2px; }
+    .rcal-day .rcal-date { font-family:var(--mono); font-size:11px; color:var(--mu); }
+    .rcal-day .rcal-r { font-family:var(--mono); font-size:11px; font-weight:600; }
+    .rcal-day.plus { background:var(--grg); border-color:rgba(52,211,153,.4); }
+    .rcal-day.plus .rcal-date, .rcal-day.plus .rcal-r { color:var(--gr); }
+    .rcal-day.minus { background:var(--cog); border-color:rgba(248,113,113,.4); }
+    .rcal-day.minus .rcal-date, .rcal-day.minus .rcal-r { color:var(--co); }
+    .rcal-day.be { background:rgba(139,143,154,.12); border-color:var(--mu); }
+    .rcal-day.be .rcal-r { color:var(--tx); }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -49,6 +63,12 @@
       <!-- Secondary metrics + rule adherence -->
       <div class="grid g4" id="tiles2" style="margin-top:14px"></div>
 
+      <!-- Current-month daily-result calendar -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-label" id="monthCalLabel">This month — daily result (R)</div>
+        <div id="monthCal"></div>
+      </div>
+
       <!-- Insights -->
       <div class="card" style="margin-top:14px">
         <div class="card-label">Automatic support — what the numbers are telling you</div>
@@ -61,9 +81,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="js/config.js?v=3"></script>
   <script src="js/supabase-client.js?v=3"></script>
-  <script src="js/stats.js?v=3"></script>
+  <script src="js/stats.js?v=4"></script>
   <script src="js/shell.js?v=18"></script>
   <script src="js/auth.js?v=3"></script>
-  <script src="js/dashboard.js?v=4"></script>
+  <script src="js/dashboard.js?v=5"></script>
 </body>
 </html>
