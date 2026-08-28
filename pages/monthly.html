@@ -20,6 +20,18 @@
     .mo-card.collapsed .mo-chev { transform:rotate(-90deg); }
     .mo-card.collapsed .mo-body { display:none; }
     .mo-body { margin-top:12px; }
+    .rcal { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
+    .rcal-wd { font-family:var(--mono); font-size:9px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); text-align:center; padding-bottom:2px; }
+    .rcal-empty { aspect-ratio:1/1; }
+    .rcal-day { aspect-ratio:1/1; border:.5px solid var(--b); border-radius:6px; background:var(--card2); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:2px; }
+    .rcal-day .rcal-date { font-family:var(--mono); font-size:11px; color:var(--mu); }
+    .rcal-day .rcal-r { font-family:var(--mono); font-size:11px; font-weight:600; }
+    .rcal-day.plus { background:var(--grg); border-color:rgba(52,211,153,.4); }
+    .rcal-day.plus .rcal-date, .rcal-day.plus .rcal-r { color:var(--gr); }
+    .rcal-day.minus { background:var(--cog); border-color:rgba(248,113,113,.4); }
+    .rcal-day.minus .rcal-date, .rcal-day.minus .rcal-r { color:var(--co); }
+    .rcal-day.be { background:rgba(139,143,154,.12); border-color:var(--mu); }
+    .rcal-day.be .rcal-r { color:var(--tx); }
   </style>
 </head>
 <body>
@@ -45,9 +57,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="../js/config.js?v=3"></script>
   <script src="../js/supabase-client.js?v=6"></script>
-  <script src="../js/stats.js?v=3"></script>
+  <script src="../js/stats.js?v=4"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/monthly.js?v=1"></script>
+  <script src="../js/monthly.js?v=2"></script>
 </body>
 </html>
