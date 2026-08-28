@@ -50,6 +50,8 @@ function monthCard(key, s) {
     tile('Avg Contracts', s.avgContracts || '—', 'size per trade'),
     tile('Avg Points', s.avgPoints || '—', 'per trade'),
     tile('Max Drawdown', fmtR(s.maxDD), 'peak-to-trough', 'neg'),
+  ].join('');
+  const dayStats = [
     tile('Days Green', String(s.greenDays), 'plus days', 'pos'),
     tile('Days Red', String(s.redDays), 'minus days', 'neg'),
     tile('Days B/E', String(s.beDays), 'break-even', 'neu'),
@@ -66,7 +68,7 @@ function monthCard(key, s) {
       <div class="grid g4">${headline}</div>
       <div class="mo-row2">
         <div class="card"><div class="card-label">Daily result (R)</div>${Stats.monthGridHTML(+y, +m - 1, s.days)}</div>
-        <div class="card"><div class="card-label">Equity Curve — cumulative R</div><div class="chart-box"><canvas id="eq-${key}"></canvas></div></div>
+        <div class="card mo-eqcard"><div class="card-label">Equity Curve — cumulative R</div><div class="chart-box"><canvas id="eq-${key}"></canvas></div><div class="grid g2 mo-daystats">${dayStats}</div></div>
       </div>
       <div class="grid g4" style="margin-top:14px">${secondary}</div>
       <div class="card" style="margin-top:14px"><div class="card-label">Automatic support — what the numbers are telling you</div>${insights}</div>
