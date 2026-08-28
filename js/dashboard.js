@@ -25,10 +25,10 @@ function filterByRange(trades, range) {
 
 async function render() {
   const range = document.getElementById('range').value;
-  let trades;
-  try { trades = await DB.getTrades(); }
-  catch (e) { console.error(e); Shell.toast('Load failed — check Supabase config'); trades = []; }
-  trades = filterByRange(trades, range);
+  let all;
+  try { all = await DB.getTrades(); }
+  catch (e) { console.error(e); Shell.toast('Load failed — check Supabase config'); all = []; }
+  const trades = filterByRange(all, range);
   const s = Stats.compute(trades);
 
   // Headline tiles
@@ -63,6 +63,13 @@ async function render() {
   // Insights
   document.getElementById('insights').innerHTML =
     Stats.insights(s).map(i => `<div class="insight ${i.type}">${i.text}</div>`).join('');
+
+  // Current-month calendar — always the current month, from all trades (range-independent)
+  const now = new Date();
+  const MN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const calDays = Stats.compute(all).days;
+  const lbl = document.getElementById('monthCalLabel'); if (lbl) lbl.textContent = `${MN[now.getMonth()]} ${now.getFullYear()} — daily result (R)`;
+  const cal = document.getElementById('monthCal'); if (cal) cal.innerHTML = Stats.monthGridHTML(now.getFullYear(), now.getMonth(), calDays);
 }
 
 // Options for category-based line/bar charts (one slot per trade)

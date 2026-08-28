@@ -161,7 +161,34 @@ const Stats = (() => {
     return out;
   }
 
-  return { compute, insights, deriveTrade };
+  // ── Month calendar grid (Mon–Fri) coloured by daily result, showing day R ───
+  function monthGridHTML(year, month, days) {
+    const byDate = {};
+    (days || []).forEach((d) => { byDate[d.date] = d; });
+    const pad = (n) => String(n).padStart(2, '0');
+    const fmtR = (v) => (v > 0 ? '+' : '') + Number(v).toFixed(1) + 'R';
+    const WD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    const dim = new Date(year, month + 1, 0).getDate();
+    const weeks = []; let week = [null, null, null, null, null];
+    for (let dd = 1; dd <= dim; dd++) {
+      const dow = (new Date(year, month, dd).getDay() + 6) % 7; // Mon=0 … Sun=6
+      if (dow > 4) continue;
+      week[dow] = dd;
+      if (dow === 4) { weeks.push(week); week = [null, null, null, null, null]; }
+    }
+    if (week.some((x) => x !== null)) weeks.push(week);
+    const head = WD.map((w) => `<div class="rcal-wd">${w}</div>`).join('');
+    const body = weeks.map((wk) => wk.map((dd) => {
+      if (dd === null) return '<div class="rcal-empty"></div>';
+      const d = byDate[`${year}-${pad(month + 1)}-${pad(dd)}`];
+      if (!d || !d.trades) return `<div class="rcal-day"><span class="rcal-date">${dd}</span></div>`;
+      const cls = d.result === 'plus' ? 'plus' : d.result === 'minus' ? 'minus' : 'be';
+      return `<div class="rcal-day ${cls}"><span class="rcal-date">${dd}</span><span class="rcal-r">${fmtR(d.r)}</span></div>`;
+    }).join('')).join('');
+    return `<div class="rcal">${head}${body}</div>`;
+  }
+
+  return { compute, insights, deriveTrade, monthGridHTML };
 })();
 
 window.Stats = Stats;
