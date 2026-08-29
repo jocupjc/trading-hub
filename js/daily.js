@@ -486,6 +486,48 @@ document.querySelectorAll('.sec-reset').forEach(b => b.addEventListener('click',
   if (!confirm(`Reset the "${_SEC_NAMES[key] || key}" section? Its entries will be cleared.`)) return;
   resetSection(key);
 }));
+
+// ── Quick trade-log modal (OODA live) → writes to the same trades table ───────
+const _ltInst = $('lt-inst');
+if (_ltInst && window.TH_CONFIG) _ltInst.innerHTML = (TH_CONFIG.INSTRUMENTS || []).map(i => `<option>${i}</option>`).join('');
+function ltPreview() {
+  const el = $('lt-preview'); if (!el || !window.Stats) return;
+  const d = Stats.deriveTrade({
+    entry_price: $('lt-entry').value, stop_price: $('lt-stop').value, exit_price: $('lt-exit').value,
+    direction: $('lt-dir').value, rr: $('lt-rr').value, outcome: $('lt-outcome').value,
+  });
+  el.textContent = d._rr ? `Result: ${fmtR(d._rr)} · ${d._outcome.toUpperCase()}${d._points !== null ? ' · ' + (+d._points).toFixed(2) + ' pts' : ''}` : '';
+}
+function openTradeLog() {
+  const ov = $('lt-overlay'); if (!ov) return;
+  $('lt-date').value = $('j-date').value || todayStr();
+  const nowRow = document.querySelector('#obody tr.now');
+  $('lt-time').value = nowRow ? nowRow.dataset.time : '';
+  ['lt-entry', 'lt-stop', 'lt-target', 'lt-exit', 'lt-contracts', 'lt-rr', 'lt-dollar', 'lt-model', 'lt-notes'].forEach(id => { const el = $(id); if (el) el.value = ''; });
+  $('lt-outcome').value = ''; $('lt-dir').value = 'LONG';
+  ltPreview();
+  ov.classList.add('show');
+}
+function closeTradeLog() { const ov = $('lt-overlay'); if (ov) ov.classList.remove('show'); }
+async function saveTradeLog() {
+  const num = v => (v === '' || v === null || isNaN(+v) ? null : +v);
+  const t = {
+    date: $('lt-date').value, entry_time: $('lt-time').value, instrument: $('lt-inst').value, direction: $('lt-dir').value,
+    entry_price: num($('lt-entry').value), stop_price: num($('lt-stop').value), target_price: num($('lt-target').value),
+    exit_price: num($('lt-exit').value), contracts: num($('lt-contracts').value), rr: num($('lt-rr').value),
+    dollar_pnl: num($('lt-dollar').value), outcome: $('lt-outcome').value || null, model: $('lt-model').value, notes: $('lt-notes').value,
+  };
+  if (!t.date) { Shell.toast('Pick a date'); return; }
+  try { await DB.saveTrade(t); Shell.toast('Trade logged'); closeTradeLog(); }
+  catch (e) { console.error(e); Shell.toast('Save failed'); }
+}
+const _ltOpen = $('lt-open');
+if (_ltOpen) _ltOpen.addEventListener('click', e => { e.stopPropagation(); openTradeLog(); });
+['lt-entry', 'lt-stop', 'lt-exit', 'lt-dir', 'lt-rr', 'lt-outcome'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', ltPreview); });
+const _ltSave = $('lt-save'); if (_ltSave) _ltSave.onclick = saveTradeLog;
+[$('lt-cancel'), $('lt-cancel2')].forEach(b => { if (b) b.onclick = closeTradeLog; });
+const _ltOv = $('lt-overlay'); if (_ltOv) _ltOv.addEventListener('click', e => { if (e.target === _ltOv) closeTradeLog(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { const ov = $('lt-overlay'); if (ov && ov.classList.contains('show')) closeTradeLog(); } });
 $('jExpand').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.remove('collapsed')));
 $('jCollapse').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.add('collapsed')));
 // Post-market reflection wizard steps
