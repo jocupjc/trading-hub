@@ -5,7 +5,8 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra',
-  'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel'];
+  'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
+  'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
 const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
   'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
@@ -56,6 +57,18 @@ function gameAlert(btn) {
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
+function postEmotionAlert(btn) {
+  const el = $('alert-post-emotion'); if (!el) return; el.className = 'alert-box';
+  if (!btn) return;
+  const msgs = {
+    tilt: { c: 'bad', m: '<strong>Tilt-Nachbearbeitung:</strong> Welche Erwartung wurde verletzt? Welche implizite Regel hattest du im Kopf, die der Markt gebrochen hat? Diese Erwartung ist das Problem, nicht der Trade.' },
+    fear: { c: 'warn', m: '<strong>Angst-Nachbearbeitung:</strong> Was ist das schlimmste reale Szenario? Ist es wirklich so katastrophal wie es sich anfühlt? Meist überschätzen wir Konsequenzen massiv.' },
+    greed: { c: 'warn', m: '<strong>FOMO-Nachbearbeitung:</strong> Hätte der verpasste Trade deinem Setup entsprochen? Wenn ja: Notiere die Regel. Wenn nein: Es war kein deiner Trades.' },
+    euphoria: { c: 'warn', m: '<strong>Winner-Tilt Nachbearbeitung:</strong> Zähle alle Regelbrüche heute. Waren die Gewinne Können oder Glück? Kalibriere ehrlich neu.' },
+    conf: { c: 'ok', m: '<strong>Selbstvertrauen stärken:</strong> Notiere, was heute gut lief und warum. Das Gehirn neigt dazu, Erfolge zu vergessen und Fehler zu speichern — aktiv gegensteuern.' }
+  };
+  const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
+}
 function multiGroupValue(id) { const g = $(id); return g ? [...g.querySelectorAll('.tog.active')].map(b => b.dataset.val) : []; }
 function setMultiGroup(id, vals) { const g = $(id); if (!g) return; const set = new Set(vals || []); g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', set.has(b.dataset.val))); }
 // Post-market insights — ported 1:1 from the Daily Reflection tool
@@ -101,6 +114,7 @@ function readJournal() {
   CHECK_FIELDS.forEach(f => { const el = $(f); o[f] = el ? el.checked : false; });
   o['pre-emotion'] = groupValue('grp-emotion');
   o['pre-game'] = groupValue('grp-game');
+  o['grp-post-emotion'] = groupValue('grp-post-emotion');
   o['pre-intensity'] = scaleValue('scale-intensity');
   POST_GROUPS.forEach(g => o[g] = groupValue(g));
   o['grp-rd-emotion'] = multiGroupValue('grp-rd-emotion');
@@ -122,6 +136,7 @@ function fillJournal(p) {
   });
   setGroupValue('grp-emotion', (p && p['pre-emotion']) || '', emotionAlert);
   setGroupValue('grp-game', (p && p['pre-game']) || '', gameAlert);
+  setGroupValue('grp-post-emotion', (p && p['grp-post-emotion']) || '', postEmotionAlert);
   setScaleValue('scale-intensity', (p && p['pre-intensity']) || '', intensityAlert);
   POST_GROUPS.forEach(g => setGroupValue(g, (p && p[g]) || '', () => {}));
   setMultiGroup('grp-rd-emotion', (p && p['grp-rd-emotion']) || []);
@@ -431,7 +446,7 @@ document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
   cb.addEventListener('change', () => { cb.closest('.chk-row').classList.toggle('on', cb.checked); updateDebrief(); }));
 
 // Single-select toggle button groups (emotion, game) with contextual alerts
-[['grp-emotion', emotionAlert], ['grp-game', gameAlert]].forEach(([gid, alertFn]) => {
+[['grp-emotion', emotionAlert], ['grp-game', gameAlert], ['grp-post-emotion', postEmotionAlert]].forEach(([gid, alertFn]) => {
   const g = $(gid); if (!g) return;
   g.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => {
     const was = b.classList.contains('active');
