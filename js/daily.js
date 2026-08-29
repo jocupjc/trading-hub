@@ -6,7 +6,7 @@ const $ = (id) => document.getElementById(id);
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra',
   'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
-  'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe'];
+  'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
 const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
   'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
@@ -119,6 +119,8 @@ function readJournal() {
   POST_GROUPS.forEach(g => o[g] = groupValue(g));
   o['grp-rd-emotion'] = multiGroupValue('grp-rd-emotion');
   o['post-perf'] = scaleValue('scale-perf');
+  o['scale-process'] = scaleValue('scale-process');
+  o['scale-emoctrl'] = scaleValue('scale-emoctrl');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
@@ -141,6 +143,8 @@ function fillJournal(p) {
   POST_GROUPS.forEach(g => setGroupValue(g, (p && p[g]) || '', () => {}));
   setMultiGroup('grp-rd-emotion', (p && p['grp-rd-emotion']) || []);
   setPerfScale('scale-perf', (p && p['post-perf']) || '');
+  setPerfScale('scale-process', (p && p['scale-process']) || '');
+  setPerfScale('scale-emoctrl', (p && p['scale-emoctrl']) || '');
   renderPostInsights();
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
@@ -485,6 +489,16 @@ if (_sp) _sp.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('cli
   if (wasSel) return;
   const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-green' : v >= 5 ? 'sel-amber' : 'sel-coral');
 }));
+// Performance-Bewertung: process quality + emotional control (higher is better)
+['scale-process', 'scale-emoctrl'].forEach(sid => {
+  const s = $(sid); if (!s) return;
+  s.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {
+    const wasSel = b.classList.contains('sel-green') || b.classList.contains('sel-amber') || b.classList.contains('sel-coral');
+    s.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel-green', 'sel-amber', 'sel-coral'));
+    if (wasSel) return;
+    const v = +b.dataset.v; b.classList.add(v >= 8 ? 'sel-green' : v >= 5 ? 'sel-amber' : 'sel-coral');
+  }));
+});
 
 // Ronin directional items — click to cycle U → D → third → empty
 document.querySelectorAll('[data-prep]').forEach(item => item.addEventListener('click', () => {
