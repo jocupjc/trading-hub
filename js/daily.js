@@ -314,11 +314,10 @@ function renderTable(data) {
   const byIdx = {}; (data.rows || []).forEach(r => byIdx[r.i] = r);
   $('obody').innerHTML = ROWS.map(r => {
     const d = byIdx[r.i] || {};
-    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="7"></td></tr>' : '';
+    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="6"></td></tr>' : '';
     return `${sep}<tr data-i="${r.i}" data-time="${r.time}">
       <td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>
-      <td><textarea data-f="obs" data-i="${r.i}" placeholder="Observe…">${esc(d.obs || '')}</textarea></td>
-      <td><textarea data-f="ori" data-i="${r.i}" placeholder="Orient…">${esc(d.ori || '')}</textarea></td>
+      <td><textarea data-f="obs" data-i="${r.i}" placeholder="Observe / Orient…">${esc([d.obs, d.ori].filter(Boolean).join('\n'))}</textarea></td>
       <td class="col-a"><select data-f="algo" data-i="${r.i}">${opt(ALGO, d.algo || '')}</select></td>
       <td class="col-act"><div class="ag">${ACTIONS.map(a =>
         `<button class="ab ${(d.acts || []).includes(a) ? 'on-' + a : ''}" data-act="${a}" data-i="${r.i}">${a}</button>`).join('')}</div></td>
