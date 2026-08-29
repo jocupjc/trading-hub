@@ -11,7 +11,7 @@ const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra
 const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
   'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
-  'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8',
+  'pre-w1', 'pre-w3', 'pre-w5', 'pre-w6', 'pre-w8',
   'pm-db1', 'pm-db2', 'pm-db3', 'pm-db4',
   'pm-cl1', 'pm-cl2', 'pm-cl3', 'pm-cl4'];
 
@@ -415,7 +415,7 @@ function saveDay() { return persistDate($('j-date').value, false); }
 function resetSection(key) {
   if (key === 'pre') {
     ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra'].forEach(f => { const el = $(f); if (el) el.value = ''; });
-    ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity', 'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8']
+    ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity', 'pre-w1', 'pre-w3', 'pre-w5', 'pre-w6', 'pre-w8']
       .forEach(f => { const el = $(f); if (el) { el.checked = false; const row = el.closest('.chk-row'); if (row) row.classList.remove('on'); } });
     setGroupValue('grp-emotion', '', emotionAlert);
     setGroupValue('grp-game', '', gameAlert);
