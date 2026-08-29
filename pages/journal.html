@@ -28,6 +28,13 @@
     .ab.on-STOP { background:var(--cog); border-color:var(--co); color:var(--co); }
     .col-t { width:96px; } .col-a { width:120px; } .col-b { width:120px; } .col-m { width:110px; } .col-act { width:250px; }
     .col-dir { width:56px; text-align:center; }
+    .lt-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-start; justify-content:center; z-index:200; padding:48px 16px; overflow:auto; }
+    .lt-overlay.show { display:flex; }
+    .lt-modal { background:var(--card); border:.5px solid var(--bh); border-radius:14px; width:100%; max-width:760px; padding:20px 22px; }
+    .lt-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .lt-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .lt-actions { display:flex; align-items:center; gap:10px; margin-top:16px; }
+    @media (max-width:640px){ .lt-grid { grid-template-columns:1fr 1fr; } }
     table.ooda td.col-dir { text-align:center; }
     .ob-dir { font-family:var(--mono); font-size:11px; min-width:30px; padding:4px 8px; border-radius:6px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; }
     .ob-dir.U { background:var(--grg); border-color:var(--gr); color:var(--gr); }
@@ -423,7 +430,7 @@
 
       <!-- ═══ OODA LIVE (middle) ═══ -->
       <div class="card jsection collapsed" style="margin-top:14px">
-        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
+        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm" id="lt-open">＋ Log trade</button><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
         <div class="ooda-boxsum">
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0230 – 0400 ODR</span><span class="cl-summary" id="box2-summary-ooda"></span></div>
@@ -687,11 +694,44 @@
     </main>
   </div>
 
+  <!-- Quick trade-log modal (OODA live) -->
+  <div class="lt-overlay" id="lt-overlay">
+    <div class="lt-modal">
+      <div class="lt-head">
+        <span class="section-tag">Log trade</span>
+        <button type="button" class="btn sm" id="lt-cancel">✕</button>
+      </div>
+      <div class="lt-grid">
+        <label class="field"><span class="fl">Date</span><input type="date" id="lt-date"></label>
+        <label class="field"><span class="fl">Entry time</span><input type="time" id="lt-time"></label>
+        <label class="field"><span class="fl">Instrument</span><select id="lt-inst"></select></label>
+        <label class="field"><span class="fl">Direction</span><select id="lt-dir"><option>LONG</option><option>SHORT</option></select></label>
+        <label class="field"><span class="fl">Entry price</span><input type="number" step="any" id="lt-entry"></label>
+        <label class="field"><span class="fl">Stop level</span><input type="number" step="any" id="lt-stop"></label>
+        <label class="field"><span class="fl">Target</span><input type="number" step="any" id="lt-target"></label>
+        <label class="field"><span class="fl">Exit price</span><input type="number" step="any" id="lt-exit"></label>
+        <label class="field"><span class="fl">Contracts</span><input type="number" step="any" id="lt-contracts"></label>
+        <label class="field"><span class="fl">R result</span><input type="number" step="any" id="lt-rr" placeholder="auto"></label>
+        <label class="field"><span class="fl">$ PnL (optional)</span><input type="number" step="any" id="lt-dollar"></label>
+        <label class="field"><span class="fl">Outcome</span><select id="lt-outcome"><option value="">auto</option><option value="win">win</option><option value="loss">loss</option><option value="be">break-even</option></select></label>
+        <label class="field" style="grid-column:span 3"><span class="fl">Model / setup</span><input type="text" id="lt-model" placeholder="e.g. RDR M7B, box reversal…"></label>
+        <label class="field" style="grid-column:span 3"><span class="fl">Notes</span><input type="text" id="lt-notes"></label>
+      </div>
+      <div class="q-hint" id="lt-preview" style="margin-top:10px"></div>
+      <div class="lt-actions">
+        <button type="button" class="btn pri" id="lt-save">Save trade</button>
+        <button type="button" class="btn" id="lt-cancel2">Cancel</button>
+        <a class="btn" href="trades.html" style="margin-left:auto">Edit / add charts on Trades page →</a>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=3"></script>
   <script src="../js/supabase-client.js?v=7"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=31"></script>
+  <script src="../js/stats.js?v=5"></script>
+  <script src="../js/daily.js?v=32"></script>
 </body>
 </html>
