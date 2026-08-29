@@ -144,6 +144,7 @@ function exportCSV() {
 $('btnSave').onclick = save;
 $('btnClear').onclick = clearForm;
 $('btnExport').onclick = exportCSV;
+document.querySelectorAll('.sec-head').forEach(h => h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
 Auth.ready.then(refresh);
 
 // ─── Charts & screenshots attached to the specific trade in the form ─────────
