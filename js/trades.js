@@ -84,8 +84,9 @@ async function refresh() {
     `<div class="stat"><div class="lbl">Green / Red / BE days</div><div class="val"><span class="pos">${s.greenDays}</span> · <span class="neg">${s.redDays}</span> · <span class="neu">${s.beDays}</span></div></div>`,
   ].join('');
 
-  // Daily table
-  const dayRows = [...s.days].reverse();
+  // Daily table — show only the last 5 trading days here (full history in All trades)
+  const allDays = [...s.days].reverse();
+  const dayRows = allDays.slice(0, 5);
   $('dayTable').innerHTML = `
     <thead><tr><th>Date</th><th>Trades</th><th>Day R</th><th>Day $</th><th>Result</th><th>Running R</th></tr></thead>
     <tbody>${dayRows.length ? dayRows.map(d => `
@@ -97,6 +98,16 @@ async function refresh() {
         <td><span class="tag-pill ${d.result === 'plus' ? 'pill-win' : d.result === 'minus' ? 'pill-loss' : 'pill-be'}">${d.result === 'plus' ? 'PLUS' : d.result === 'minus' ? 'MINUS' : 'B/E'}</span></td>
         <td class="mono ${cls(d.cumR)}">${fmtR(d.cumR)}</td>
       </tr>`).join('') : '<tr><td colspan="6"><div class="empty">No trades yet.</div></td></tr>'}</tbody>`;
+  $('dayNote').textContent = allDays.length > 5 ? `Showing last 5 of ${allDays.length} trading days — full history in “All trades”.` : '';
+
+  // Recent form — last 10 individual trades as green/red/BE dots (oldest → newest)
+  const recent = s.rows.slice(-10);
+  $('recentForm').innerHTML = recent.length
+    ? `<span class="rf-cap">Last ${recent.length} trades</span>` + recent.map(t => {
+        const k = t._outcome === 'win' ? 'win' : t._outcome === 'loss' ? 'loss' : 'be';
+        return `<span class="rf-dot ${k}" title="${t.date}${t.entry_time ? ' ' + t.entry_time : ''} · ${fmtR(t._rr)}"></span>`;
+      }).join('')
+    : '';
 
   // All trades table (newest first)
   const rows = [...s.rows].reverse();
