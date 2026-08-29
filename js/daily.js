@@ -10,7 +10,8 @@ const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra
 const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
   'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
-  'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8'];
+  'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8',
+  'pm-db1', 'pm-db2', 'pm-db3', 'pm-db4'];
 
 // ── Mental Game: button groups, 1–10 scale, contextual alerts ────────────────
 function groupValue(id) { const b = $(id) && $(id).querySelector('.tog.active'); return b ? b.dataset.val : ''; }
@@ -137,6 +138,15 @@ function fillJournal(p) {
     BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = (p && p[s.attr + '-model-' + k]) || ''; });
     updateBoxSummary(s.attr, s.summary);
   });
+  updateDebrief();
+}
+
+// Trade debrief progress bar (Post-market — Daily result)
+function updateDebrief() {
+  const ids = ['pm-db1', 'pm-db2', 'pm-db3', 'pm-db4'];
+  const done = ids.filter(id => { const el = $(id); return el && el.checked; }).length;
+  const fill = $('pb-debrief'); if (fill) fill.style.width = (done / ids.length * 100) + '%';
+  const ctr = $('debrief-counter'); if (ctr) ctr.textContent = done + '/' + ids.length;
 }
 
 // Ronin-style directional items (Pre-trade prep)
@@ -418,7 +428,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 document.querySelectorAll('.sec-head').forEach(h =>
   h.addEventListener('click', () => h.closest('.jsection').classList.toggle('collapsed')));
 document.querySelectorAll('.chk-row input[type=checkbox]').forEach(cb =>
-  cb.addEventListener('change', () => cb.closest('.chk-row').classList.toggle('on', cb.checked)));
+  cb.addEventListener('change', () => { cb.closest('.chk-row').classList.toggle('on', cb.checked); updateDebrief(); }));
 
 // Single-select toggle button groups (emotion, game) with contextual alerts
 [['grp-emotion', emotionAlert], ['grp-game', gameAlert]].forEach(([gid, alertFn]) => {
