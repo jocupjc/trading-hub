@@ -12,6 +12,13 @@
     .jsection.collapsed .chev { transform:rotate(-90deg); }
     .jsection.collapsed .sec-body { display:none; }
     .jsection.collapsed .pill-green { margin-bottom:0; }
+    .dr-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .recent-form { display:inline-flex; gap:5px; align-items:center; margin:0 0 12px; }
+    .rf-cap { font-size:9.5px; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); margin-right:4px; font-family:var(--mono); }
+    .rf-dot { width:12px; height:12px; border-radius:50%; display:inline-block; border:.5px solid rgba(255,255,255,.12); }
+    .rf-dot.win { background:var(--gr); }
+    .rf-dot.loss { background:var(--co); }
+    .rf-dot.be { background:var(--mu); }
   </style>
 </head>
 <body>
@@ -84,10 +91,14 @@
 
       <!-- Daily running overview -->
       <div class="card" style="margin-top:14px">
-        <div class="pill-green">Daily result &amp; running cumulative (R)</div>
+        <div class="dr-head">
+          <span class="pill-green">Daily result &amp; running cumulative (R)</span>
+          <span class="recent-form" id="recentForm"></span>
+        </div>
         <div style="overflow-x:auto">
           <table class="data" id="dayTable"></table>
         </div>
+        <div class="mono" id="dayNote" style="font-size:10px;color:var(--mu);margin-top:8px"></div>
       </div>
 
       <!-- All trades -->
@@ -108,6 +119,6 @@
   <script src="../js/stats.js?v=5"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/trades.js?v=7"></script>
+  <script src="../js/trades.js?v=8"></script>
 </body>
 </html>
