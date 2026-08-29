@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trades & PnL · Trading Hub</title>
   <link rel="stylesheet" href="../css/styles.css?v=5">
+  <style>
+    .pill-green { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gr); background:var(--grg); border:.5px solid rgba(52,211,153,.3); padding:3px 10px; border-radius:20px; margin:0 0 12px; }
+    .sec-head { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+    .sec-head .chev { color:var(--mu); font-size:12px; transition:transform .15s; }
+    .jsection.collapsed .chev { transform:rotate(-90deg); }
+    .jsection.collapsed .sec-body { display:none; }
+    .jsection.collapsed .pill-green { margin-bottom:0; }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -25,7 +33,7 @@
 
       <!-- Entry form -->
       <div class="card" style="margin-top:14px">
-        <div class="card-label">New / edit trade</div>
+        <div class="pill-green">New / edit trade</div>
         <input type="hidden" id="f-id">
         <div class="grid g4" style="gap:12px">
           <label class="field"><span class="fl">Date</span><input type="date" id="f-date"></label>
@@ -76,17 +84,19 @@
 
       <!-- Daily running overview -->
       <div class="card" style="margin-top:14px">
-        <div class="card-label">Daily result &amp; running cumulative (R)</div>
+        <div class="pill-green">Daily result &amp; running cumulative (R)</div>
         <div style="overflow-x:auto">
           <table class="data" id="dayTable"></table>
         </div>
       </div>
 
       <!-- All trades -->
-      <div class="card" style="margin-top:14px">
-        <div class="card-label">All trades</div>
-        <div style="overflow-x:auto">
-          <table class="data" id="tradeTable"></table>
+      <div class="card jsection" style="margin-top:14px">
+        <div class="sec-head"><span class="pill-green">All trades</span><span class="chev">▾</span></div>
+        <div class="sec-body">
+          <div style="overflow-x:auto">
+            <table class="data" id="tradeTable"></table>
+          </div>
         </div>
       </div>
     </main>
@@ -98,6 +108,6 @@
   <script src="../js/stats.js?v=5"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/trades.js?v=6"></script>
+  <script src="../js/trades.js?v=7"></script>
 </body>
 </html>
