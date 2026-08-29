@@ -27,6 +27,12 @@
     .ab.on-TRAIL { background:var(--grg); border-color:var(--gr); color:var(--gr); }
     .ab.on-STOP { background:var(--cog); border-color:var(--co); color:var(--co); }
     .col-t { width:96px; } .col-a { width:120px; } .col-b { width:120px; } .col-m { width:110px; } .col-act { width:250px; }
+    .col-dir { width:56px; text-align:center; }
+    table.ooda td.col-dir { text-align:center; }
+    .ob-dir { font-family:var(--mono); font-size:11px; min-width:30px; padding:4px 8px; border-radius:6px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; }
+    .ob-dir.U { background:var(--grg); border-color:var(--gr); color:var(--gr); }
+    .ob-dir.D { background:var(--cog); border-color:var(--co); color:var(--co); }
+    .ob-dir.N { background:rgba(139,143,154,.14); border-color:var(--mu); color:var(--tx); }
     .section-tag { font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--ac); background:var(--acg); border:.5px solid rgba(79,142,247,.3); padding:3px 10px; border-radius:20px; }
     .sec-head { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin-bottom:12px; }
     .page-head { position:sticky; top:0; z-index:40; background:var(--bg); padding-top:12px; }
@@ -429,7 +435,8 @@
           <table class="ooda">
             <thead><tr>
               <th class="col-t">Time</th><th>Observe / Orient</th>
-              <th class="col-a">Algo Structure</th><th class="col-act">Action (Decide)</th>
+              <th class="col-dir">Market state</th><th class="col-dir">VWAP</th><th class="col-dir">Seq</th><th class="col-dir">DDR seq</th>
+              <th class="col-act">Action (Decide)</th>
               <th class="col-b">Body</th><th class="col-m">Mind</th>
             </tr></thead>
             <tbody id="obody"></tbody>
@@ -687,6 +694,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=28"></script>
+  <script src="../js/daily.js?v=29"></script>
 </body>
 </html>
