@@ -39,6 +39,8 @@
     .chk-row input { width:15px; height:15px; accent-color:var(--am); flex:none; }
     .chk-row.on { color:var(--gr); background:var(--grg); }
     .chk-row.on input { accent-color:var(--gr); }
+    .progress-wrap { height:5px; background:var(--bh); border-radius:99px; overflow:hidden; margin:4px 0 10px; }
+    .progress-fill { height:100%; width:0; background:var(--gr); border-radius:99px; transition:width .3s; }
     .field-label { font-size:11px; color:var(--mu); margin:14px 0 6px; font-family:var(--mono); letter-spacing:.3px; }
     .insight { padding:10px 13px; border-radius:8px; font-size:12px; line-height:1.6; color:var(--mu); background:rgba(255,255,255,0.03); border:.5px solid var(--b); margin-bottom:10px; }
     .insight strong { color:var(--tx); font-weight:600; }
@@ -450,6 +452,16 @@
           <!-- Daily Reflection ported 1:1 from tools/reflection.html — stepped wizard -->
           <div class="pm-step" data-step="0">
           <div class="sub-label" style="margin-top:0">Daily result</div>
+          <div class="field-label" style="display:flex; justify-content:space-between; align-items:center; margin-top:0">
+            <span>Trade debrief</span><span id="debrief-counter" style="color:var(--mu)">0/4</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" id="pb-debrief"></div></div>
+          <div class="chk-grid">
+            <label class="chk-row"><input type="checkbox" id="pm-db1"> Alle Trades dokumentiert (Entry, Exit, Begründung)</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db2"> Tages-Limit eingehalten?</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db3"> Emotionale Momente identifiziert und notiert</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db4"> Regelbrüche notiert (neutral betrachtet, nicht verurteilt)</label>
+          </div>
           <div class="field-label">Did you hit daily max loss limit (2R)?</div>
           <div class="btn-group" id="grp-maxloss" data-theme="coral">
             <button type="button" class="tog" data-val="yes">Yes</button>
@@ -622,6 +634,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=22"></script>
+  <script src="../js/daily.js?v=23"></script>
 </body>
 </html>
