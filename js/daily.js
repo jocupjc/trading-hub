@@ -314,11 +314,12 @@ function renderTable(data) {
   const byIdx = {}; (data.rows || []).forEach(r => byIdx[r.i] = r);
   $('obody').innerHTML = ROWS.map(r => {
     const d = byIdx[r.i] || {};
-    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="6"></td></tr>' : '';
+    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="9"></td></tr>' : '';
+    const dir = (f) => `<td class="col-dir"><button type="button" class="ob-dir ${d[f] || ''}" data-dir="${f}" data-i="${r.i}" data-state="${d[f] || ''}">${d[f] || '·'}</button></td>`;
     return `${sep}<tr data-i="${r.i}" data-time="${r.time}">
       <td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>
       <td><textarea data-f="obs" data-i="${r.i}" placeholder="Observe / Orient…">${esc([d.obs, d.ori].filter(Boolean).join('\n'))}</textarea></td>
-      <td class="col-a"><select data-f="algo" data-i="${r.i}">${opt(ALGO, d.algo || '')}</select></td>
+      ${dir('marketState')}${dir('vwap')}${dir('seq')}${dir('ddrseq')}
       <td class="col-act"><div class="ag">${ACTIONS.map(a =>
         `<button class="ab ${(d.acts || []).includes(a) ? 'on-' + a : ''}" data-act="${a}" data-i="${r.i}">${a}</button>`).join('')}</div></td>
       <td class="col-b"><select data-f="body" data-i="${r.i}">${opt(BODY, d.body || '')}</select></td>
@@ -327,6 +328,11 @@ function renderTable(data) {
   }).join('');
 
   document.querySelectorAll('#obody textarea[data-f]').forEach(t => { autoGrow(t); t.addEventListener('input', () => autoGrow(t)); });
+  document.querySelectorAll('#obody .ob-dir[data-dir]').forEach(b => b.onclick = () => {
+    const cur = b.dataset.state || '';
+    const next = cur === '' ? 'U' : cur === 'U' ? 'D' : cur === 'D' ? 'N' : '';
+    b.dataset.state = next; b.className = 'ob-dir ' + next; b.textContent = next || '·';
+  });
   document.querySelectorAll('#obody .ab[data-act]').forEach(b => b.onclick = () => {
     const wasOn = b.classList.contains('on-' + b.dataset.act);
     document.querySelectorAll(`#obody .ab[data-i="${b.dataset.i}"]`).forEach(x => x.className = 'ab');
@@ -342,9 +348,11 @@ function collectOoda() {
   document.querySelectorAll('#obody tr[data-i]').forEach(tr => {
     const i = +tr.dataset.i;
     const g = (f) => tr.querySelector(`[data-f="${f}"]`)?.value || '';
+    const dir = (f) => tr.querySelector(`.ob-dir[data-dir="${f}"]`)?.dataset.state || '';
     const acts = [...tr.querySelectorAll('.ab')].filter(b => b.classList.contains('on-' + b.dataset.act)).map(b => b.dataset.act);
-    const obs = g('obs'), ori = g('ori'), algo = g('algo'), body = g('body'), mind = g('mind');
-    if (obs || ori || algo || body || mind || acts.length) rows.push({ i, obs, ori, algo, body, mind, acts });
+    const obs = g('obs'), body = g('body'), mind = g('mind');
+    const marketState = dir('marketState'), vwap = dir('vwap'), seq = dir('seq'), ddrseq = dir('ddrseq');
+    if (obs || body || mind || marketState || vwap || seq || ddrseq || acts.length) rows.push({ i, obs, marketState, vwap, seq, ddrseq, body, mind, acts });
   });
   return { rows };
 }
@@ -450,7 +458,7 @@ $('j-date').addEventListener('change', async () => {
 const mainEl = document.querySelector('main');
 mainEl.addEventListener('input', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
 mainEl.addEventListener('change', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
-mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .cl-item, .rf-item')) scheduleAutosave(); });
+mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .ob-dir, .cl-item, .rf-item')) scheduleAutosave(); });
 window.addEventListener('pagehide', () => { const d = $('j-date').value; if (d) writeDrafts(d); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistDate($('j-date').value, true); });
 document.querySelectorAll('.sec-head').forEach(h =>
