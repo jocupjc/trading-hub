@@ -190,7 +190,7 @@
 
       <!-- ═══ PRE-MARKET (top) ═══ -->
       <div class="card jsection">
-        <div class="sec-head"><span class="section-tag">Pre-market — the plan</span><span class="chev">▾</span></div>
+        <div class="sec-head"><span class="section-tag">Pre-market — the plan</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm sec-reset" data-reset="pre">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
           <div class="sub-label" style="margin-top:0">Check-in</div>
           <div class="chk-grid chk-inline">
@@ -268,6 +268,7 @@
           <span class="section-tag">Pre-trade prep</span>
           <span style="display:flex;align-items:center;gap:10px">
             <span class="cl-summary" id="prep-summary"></span>
+            <button type="button" class="btn sm sec-reset" data-reset="prep">Reset</button>
             <span class="chev">▾</span>
           </span>
         </div>
@@ -425,7 +426,7 @@
 
       <!-- ═══ OODA LIVE (middle) ═══ -->
       <div class="card jsection collapsed" style="margin-top:14px">
-        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span class="chev">▾</span></div>
+        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
         <div class="ooda-boxsum">
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0230 – 0400 ODR</span><span class="cl-summary" id="box2-summary-ooda"></span></div>
@@ -447,7 +448,7 @@
 
       <!-- ═══ POST-MARKET (bottom) ═══ -->
       <div class="card jsection collapsed" style="margin-top:14px">
-        <div class="sec-head"><span class="section-tag">Post-market — the review</span><span class="chev">▾</span></div>
+        <div class="sec-head"><span class="section-tag">Post-market — the review</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm sec-reset" data-reset="post">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
           <div class="pm-stepbar">
             <div class="pm-pip active" data-pip="0"></div>
@@ -691,9 +692,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=3"></script>
-  <script src="../js/supabase-client.js?v=6"></script>
+  <script src="../js/supabase-client.js?v=7"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=29"></script>
+  <script src="../js/daily.js?v=30"></script>
 </body>
 </html>
