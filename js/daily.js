@@ -429,6 +429,7 @@ async function renderArchive() {
 }
 
 $('btnSave').onclick = saveDay;
+const _btnSaveFull = $('btnSaveFull'); if (_btnSaveFull) _btnSaveFull.onclick = saveDay;
 $('jExpand').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.remove('collapsed')));
 $('jCollapse').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.add('collapsed')));
 // Post-market reflection wizard steps
