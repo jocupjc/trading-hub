@@ -411,6 +411,39 @@ async function persistDate(date, silent) {
 }
 function saveDay() { return persistDate($('j-date').value, false); }
 
+// Reset a single section back to default; the cleared section is autosaved (edits the day).
+function resetSection(key) {
+  if (key === 'pre') {
+    ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra'].forEach(f => { const el = $(f); if (el) el.value = ''; });
+    ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity', 'pre-w1', 'pre-w2', 'pre-w3', 'pre-w4', 'pre-w5', 'pre-w6', 'pre-w7', 'pre-w8']
+      .forEach(f => { const el = $(f); if (el) { el.checked = false; const row = el.closest('.chk-row'); if (row) row.classList.remove('on'); } });
+    setGroupValue('grp-emotion', '', emotionAlert);
+    setGroupValue('grp-game', '', gameAlert);
+    setScaleValue('scale-intensity', '', intensityAlert);
+  } else if (key === 'prep') {
+    RF_KEYS.forEach(k => setRf(k, false));
+    rfNewsTags = []; renderNewsTags(); updateRfBadges();
+    BOX_SETS.forEach(s => {
+      BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
+      BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = ''; });
+      updateBoxSummary(s.attr, s.summary);
+    });
+  } else if (key === 'ooda') {
+    renderTable({});
+  } else if (key === 'post') {
+    ['txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
+      'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'].forEach(f => { const el = $(f); if (el) el.value = ''; });
+    ['pm-db1', 'pm-db2', 'pm-db3', 'pm-db4', 'pm-cl1', 'pm-cl2', 'pm-cl3', 'pm-cl4']
+      .forEach(f => { const el = $(f); if (el) { el.checked = false; const row = el.closest('.chk-row'); if (row) row.classList.remove('on'); } });
+    POST_GROUPS.forEach(g => setGroupValue(g, '', () => {}));
+    setMultiGroup('grp-rd-emotion', []);
+    setGroupValue('grp-post-emotion', '', postEmotionAlert);
+    setPerfScale('scale-perf', ''); setPerfScale('scale-process', ''); setPerfScale('scale-emoctrl', '');
+    updateDebrief(); updateClose(); renderPostInsights();
+  }
+  if ($('j-date').value) scheduleAutosave();
+}
+
 function scheduleAutosave() {
   const date = $('j-date').value;
   if (date) writeDrafts(date);      // instant, synchronous safety net
@@ -427,16 +460,32 @@ async function renderArchive() {
         <tr><td class="mono">${e.date}</td>
         <td class="mono">${oodaDates.has(e.date) ? '✓' : '—'}</td>
         <td class="mono" style="color:var(--mu)">${(e.updated_at || '').slice(0, 16).replace('T', ' ')}</td>
-        <td><button class="btn sm" data-load="${e.date}">open</button></td></tr>`).join('')}</tbody></table>`
+        <td><button class="btn sm" data-load="${e.date}">open</button> <button class="btn sm" data-del="${e.date}">delete</button></td></tr>`).join('')}</tbody></table>`
     : '<div class="empty">No days saved yet.</div>';
   document.querySelectorAll('[data-load]').forEach(b => b.onclick = async () => {
     if (loadedDate && loadedDate !== b.dataset.load) await persistDate(loadedDate, true);
     $('j-date').value = b.dataset.load; load(b.dataset.load); window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    const d = b.dataset.del;
+    if (!confirm(`Delete all data for ${d}? This cannot be undone.`)) return;
+    try { await DB.deleteJournal(d); } catch (e) { console.error(e); Shell.toast('Delete failed'); return; }
+    clearDrafts(d);
+    if ($('j-date').value === d) { fillJournal({}); renderTable({}); }
+    Shell.toast('Deleted ' + d);
+    await renderArchive();
+  });
 }
 
 $('btnSave').onclick = saveDay;
 const _btnSaveFull = $('btnSaveFull'); if (_btnSaveFull) _btnSaveFull.onclick = saveDay;
+const _SEC_NAMES = { pre: 'Pre-market', prep: 'Pre-trade prep', ooda: 'OODA live', post: 'Post-market' };
+document.querySelectorAll('.sec-reset').forEach(b => b.addEventListener('click', e => {
+  e.stopPropagation();
+  const key = b.dataset.reset;
+  if (!confirm(`Reset the "${_SEC_NAMES[key] || key}" section? Its entries will be cleared.`)) return;
+  resetSection(key);
+}));
 $('jExpand').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.remove('collapsed')));
 $('jCollapse').addEventListener('click', () => document.querySelectorAll('.jsection').forEach(s => s.classList.add('collapsed')));
 // Post-market reflection wizard steps

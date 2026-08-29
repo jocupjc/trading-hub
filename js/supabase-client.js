@@ -215,12 +215,24 @@ const DB = (() => {
     LS.set(K.journalIndex, idx);
   }
 
+  async function deleteJournal(date, type) {
+    if (sb) {
+      let q = sb.from('journal_entries').delete().eq('date', date);
+      if (type) q = q.eq('type', type);
+      const { error } = await q; if (error) throw error; return;
+    }
+    const types = type ? [type] : ['daily', 'ooda'];
+    types.forEach(t => { try { localStorage.removeItem(K.journal(date, t)); } catch (e) {} });
+    const idx = LS.get(K.journalIndex, []).filter(e => !(e.date === date && (!type || e.type === type)));
+    LS.set(K.journalIndex, idx);
+  }
+
   return {
     initSupabase, active,
     getTrades, saveTrade, deleteTrade,
     getTradingDays, getTradingDay, saveTradingDay,
     getLinks, getTradeLinks, saveLink, deleteLink, uploadScreenshot,
-    getJournal, listJournal, saveJournal,
+    getJournal, listJournal, saveJournal, deleteJournal,
   };
 })();
 
