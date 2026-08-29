@@ -650,6 +650,16 @@
             <button type="button" class="tog" data-val="unsure">Unsure</button>
           </div>
 
+          <div class="field-label" style="display:flex; justify-content:space-between; align-items:center"><span>Abschlussritual</span><span id="close-counter" style="color:var(--mu)">0/4</span></div>
+          <div class="insight"><strong>Warum ein Ritual?</strong> Das Gehirn braucht ein klares Signal, dass der Handelstag beendet ist. Loss-Hangover ist die häufigste Ursache für Revenge-Trading am Folgemorgen.</div>
+          <div class="progress-wrap"><div class="progress-fill" id="pb-close"></div></div>
+          <div class="chk-grid">
+            <label class="chk-row"><input type="checkbox" id="pm-cl1"> Journal vollständig ausgefüllt &amp; gespeichert</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl2"> Charts &amp; Terminal geschlossen — kein „nochmal reinschauen"</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl3"> Körperliches Reset: Stretching, Spaziergang oder Atemübung</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl4"> Ergebnis akzeptiert — Morgen ist ein neuer Tag</label>
+          </div>
+
           <div class="sub-label">Insights &amp; patterns</div>
           <div id="post-insights"></div>
           <div class="pm-nav"><button type="button" class="btn" data-pmprev="2">← Back</button></div>
@@ -683,6 +693,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/daily.js?v=25"></script>
+  <script src="../js/daily.js?v=26"></script>
 </body>
 </html>
