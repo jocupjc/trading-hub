@@ -40,15 +40,16 @@ async function render() {
   ].join('');
 
   // Secondary tiles
+  const acr = `across ${s.count} trade${s.count === 1 ? '' : 's'}`;
   document.getElementById('tiles2').innerHTML = [
-    tile('Avg Winner', fmtR(s.avgWinnerR), 'in R', 'pos'),
-    tile('Avg Loser', fmtR(s.avgLoserR), 'target ≈ -1R', 'neg'),
-    tile('Best Winner', fmtR(s.bestWinnerR), 'open R (max)', 'pos'),
-    tile('Largest Loss', fmtR(s.largestLossR), 'should ≈ -1R', 'neg'),
-    tile('Profit Factor', s.profitFactor === Infinity ? '∞' : s.profitFactor, 'wins ÷ losses', s.profitFactor >= 1 ? 'pos' : 'neg'),
-    tile('Avg Contracts', s.avgContracts || '—', 'size per trade'),
-    tile('Avg Points', s.avgPoints || '—', 'per trade'),
-    tile('Max Drawdown', fmtR(s.maxDD), 'peak-to-trough', 'neg'),
+    tile('Avg Winner', fmtR(s.avgWinnerR), acr, 'pos'),
+    tile('Avg Loser', fmtR(s.avgLoserR), `≈ -1R · ${acr}`, 'neg'),
+    tile('Best Winner', fmtR(s.bestWinnerR), acr, 'pos'),
+    tile('Largest Loss', fmtR(s.largestLossR), `≈ -1R · ${acr}`, 'neg'),
+    tile('Profit Factor', s.profitFactor === Infinity ? '∞' : s.profitFactor, acr, s.profitFactor >= 1 ? 'pos' : 'neg'),
+    tile('Avg Contracts', s.avgContracts || '—', acr),
+    tile('Avg Points', s.avgPoints || '—', acr),
+    tile('Max Drawdown', fmtR(s.maxDD), acr, 'neg'),
     tile('Days Green', String(s.greenDays), 'plus days', 'pos'),
     tile('Days Red', String(s.redDays), 'minus days', 'neg'),
     tile('Days B/E', String(s.beDays), 'break-even', 'neu'),
