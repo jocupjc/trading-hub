@@ -80,6 +80,7 @@
       <button class="cal-month-head" data-monthtoggle="${m}"><span>${MONTHS[m]} ${y}</span><span class="cal-chev">▾</span></button>
       <div class="cal-month-body">
         <div class="cal-grid">${head}${body}</div>
+        <div class="cal-month-foot"><button class="cal-month-reset" data-monthreset="${m}">Reset month</button></div>
         <div class="cal-summary" data-m="${m}">${summary(y, m)}</div>
       </div>
     </div>`;
@@ -90,7 +91,23 @@
     $('cal-root').innerHTML = MONTHS.map((_, m) => renderMonth(year, m)).join('');
   }
 
+  function resetMonth(m) {
+    const dim = new Date(year, m + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) delete data[key(year, m, d)];
+    const monthEl = document.querySelector(`.cal-month[data-month="${m}"]`);
+    if (monthEl) monthEl.querySelectorAll('.cal-day').forEach((b) => { b.className = 'cal-day'; });
+    const sm = document.querySelector(`.cal-summary[data-m="${m}"]`);
+    if (sm) sm.textContent = summary(year, m);
+    scheduleSave();
+  }
+
   function onClick(e) {
+    const reset = e.target.closest('.cal-month-reset');
+    if (reset) {
+      const m = parseInt(reset.dataset.monthreset, 10);
+      if (confirm(`Reset all day states for ${MONTHS[m]} ${year}?`)) resetMonth(m);
+      return;
+    }
     const head = e.target.closest('.cal-month-head');
     if (head) { head.closest('.cal-month').classList.toggle('collapsed'); return; }
     const btn = e.target.closest('.cal-day');
