@@ -37,6 +37,9 @@
     .cal-day.state-contained { background:#6b7280; color:#0f1114; border-color:#6b7280; font-weight:700; }
     .cal-day.state-nodata { background:repeating-linear-gradient(45deg,#3a3d44,#3a3d44 4px,#22242a 4px,#22242a 8px); color:var(--tx); border-color:#3a3d44; }
     .cal-summary { margin-top:10px; font-family:var(--mono); font-size:10px; line-height:1.5; color:var(--mu); }
+    .cal-month-foot { display:flex; justify-content:flex-end; margin-top:10px; }
+    .cal-month-reset { font-family:var(--mono); font-size:10px; letter-spacing:.5px; text-transform:uppercase; padding:4px 10px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .12s; }
+    .cal-month-reset:hover { border-color:#e8402f; color:#e8402f; background:rgba(232,64,47,.08); }
   </style>
 </head>
 <body>
@@ -75,6 +78,6 @@
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/shell.js?v=18"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/calendar.js?v=2"></script>
+  <script src="../js/calendar.js?v=3"></script>
 </body>
 </html>
