@@ -20,14 +20,28 @@ function filterByRange(trades, range) {
   const now = new Date();
   if (range === '30') { const c = new Date(now); c.setDate(c.getDate() - 30); const cs = c.toISOString().slice(0, 10); return trades.filter(t => t.date >= cs); }
   if (range === 'ytd' || range === ' y') { const y = now.getFullYear() + '-01-01'; return trades.filter(t => t.date >= y); }
+  if (/^\d{4}$/.test(range)) return trades.filter(t => t.date && t.date.slice(0, 4) === range);
   return trades;
 }
 
+// Add year options (2026-2028) to the range dropdown, but only for years that have logged trades.
+function syncYearOptions(all) {
+  const sel = document.getElementById('range');
+  if (!sel) return;
+  const candidates = [2026, 2027, 2028];
+  const present = candidates.filter(y => all.some(t => t.date && t.date.slice(0, 4) === String(y)));
+  const prev = sel.value;
+  [...sel.querySelectorAll('option')].forEach(o => { if (/^\d{4}$/.test(o.value)) o.remove(); });
+  present.forEach(y => { const o = document.createElement('option'); o.value = String(y); o.textContent = String(y); sel.appendChild(o); });
+  sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
+}
+
 async function render() {
-  const range = document.getElementById('range').value;
   let all;
   try { all = await DB.getTrades(); }
   catch (e) { console.error(e); Shell.toast('Load failed — check Supabase config'); all = []; }
+  syncYearOptions(all);
+  const range = document.getElementById('range').value;
   const trades = filterByRange(all, range);
   const s = Stats.compute(trades);
 
