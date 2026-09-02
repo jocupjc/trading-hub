@@ -145,9 +145,10 @@ const Shell = {
   mountBanner(rel = '') {
     if (document.getElementById('cos-banner')) return;
     const tips = COMMITTEE.map(a => `<li><b style="color:${a.color}">${a.name.replace('The ', '')}</b> — ${a.essence.split(/[.—]/)[0].trim()}.</li>`).join('');
+    const names = COMMITTEE.map(a => `<b style="color:${a.color}">${a.name.replace('The ', '')}</b>`).join('<span class="cos-sep">·</span>');
     const banner = `<div class="cos-banner" id="cos-banner" role="button" tabindex="0" aria-haspopup="dialog" title="Committee of Self — click for details">
       <span class="cos-ic">⚖</span><span class="cos-title">Committee of Self</span>
-      <span class="cos-tag">Six voices sit at every trade — is the Ruler in the chair?</span>
+      <span class="cos-names">${names}</span>
       <span class="cos-hint">hover · click</span>
       <div class="cos-tip"><div class="cos-tip-head">Six voices at every trade</div><ul>${tips}</ul><div class="cos-tip-foot">Click for the full council →</div></div>
     </div>`;
@@ -181,6 +182,9 @@ const Shell = {
       .cos-ic { font-size:15px; line-height:1; }
       .cos-title { font-weight:600; letter-spacing:.3px; white-space:nowrap; }
       .cos-tag { color:var(--mu); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .cos-names { display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--serif,inherit); white-space:nowrap; overflow:hidden; }
+      .cos-names b { font-weight:700; letter-spacing:.2px; }
+      .cos-sep { color:var(--mu); opacity:.55; }
       .cos-hint { margin-left:auto; color:var(--mu); font-size:9px; letter-spacing:.6px; text-transform:uppercase; opacity:.8; white-space:nowrap; }
       .cos-tip { position:absolute; top:34px; left:8px; width:min(480px,94vw); background:var(--card); border:.5px solid var(--bh); border-top:none; border-radius:0 0 10px 10px; box-shadow:0 14px 34px rgba(0,0,0,.45); padding:12px 14px; display:none; cursor:default; }
       .cos-banner:hover .cos-tip { display:block; }
