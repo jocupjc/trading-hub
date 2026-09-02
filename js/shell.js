@@ -28,12 +28,24 @@ const NAV = [
 
 // The six archetypes of the Trading Committee of Self (from tools/committee-of-self.html)
 const COMMITTEE = [
-  { name: 'The Ruler', color: '#AD7C2E', essence: "Calm authority, grounded in discipline. The executive function of the committee — it doesn't do every job, it decides who does." },
-  { name: 'The Sage', color: '#66765A', essence: "Impartial analysis. The willingness to see what's actually on the chart instead of what you need to be there." },
-  { name: 'The Magician', color: '#6C4E82', essence: "Expansive possibility. Sees the shape of what the market could become before it's obvious." },
-  { name: 'The Warrior', color: '#A8452E', essence: "The courage to act — and to face your self-limiting beliefs about your capacity to trade. Not aggression. Willingness." },
-  { name: 'The Caregiver', color: '#C17A63', essence: "Compassion for what can't yet care for itself. Builds the structure — stops, checklists, a written plan — that protects the Orphan." },
-  { name: 'The Orphan', color: '#6E7FA0', essence: "Fear of losing, of pulling the trigger, of missing out. When it chairs the committee, you trade NOT to lose." },
+  { name: 'The Ruler', color: '#AD7C2E', essence: "Calm authority, grounded in discipline. The executive function of the committee — it doesn't do every job, it decides who does.",
+    unchecked: ["No trading plan, or one that gets abandoned the moment it's tested", "Over-trades because no one is in charge of saying 'no'", "Swings to the other extreme: rigid, punitive control that leaves no room for the Magician's read of the market", "Delegates nothing — tries to be Sage, Warrior and Caregiver at once, and burns out"],
+    integrated: ["Writes the plan before the session and enforces it without negotiating mid-trade", "Knows which archetype is needed for which task, and hands it the floor", "Sets the risk boundaries (position size, daily loss limit) and holds them under pressure", "Ends the day by chairing the debrief rather than avoiding it"] },
+  { name: 'The Sage', color: '#66765A', essence: "Impartial analysis. The willingness to see what's actually on the chart instead of what you need to be there.",
+    unchecked: ["Analysis paralysis: one more indicator, one more timeframe, never a decision", "Uses 'staying objective' to avoid pulling the trigger — impartiality as a hiding place", "Rationalizes a bad trade after the fact instead of reading it plainly", "Confuses complexity with rigor"],
+    integrated: ["Reads price action and structure without needing the trade to go a certain way", "Can say 'this setup is not what I thought it was' mid-trade and mean it", "Separates what happened from what it means about you", "Feeds the Ruler a clean, unbiased read to decide from"] },
+  { name: 'The Magician', color: '#6C4E82', essence: "Expansive possibility. Sees the shape of what the market could become before it's obvious.",
+    unchecked: ["Grandiosity: sees a setup 'everywhere', chases every possible move", "Magical thinking — 'this one will work because I need it to'", "Ignores probability and base rates in favor of a good story", "Only shows up chasing, never during the quiet, structured review it's actually built for"],
+    integrated: ["Spots emerging structure and new setups the Sage hasn't classified yet", "Reframes a loss as information rather than a verdict on you", "Brings genuine curiosity to the chart instead of dread or hunger", "Does its best work in the pre-market and post-market review, not live in a position"] },
+  { name: 'The Warrior', color: '#A8452E', essence: "The courage to act — and to face your self-limiting beliefs about your capacity to trade. Not aggression. Willingness.",
+    unchecked: ["Mistakes recklessness for courage — revenge trades, oversized positions, 'proving' something", "Uses bravado to override the Ruler's risk limits", "Avoids the real fight (facing the belief) by picking an easier one (forcing a trade)", "Goes quiet entirely, letting the Orphan's fear pass for realism"],
+    integrated: ["Takes the A+ setup despite the fear, because it faced the fear rather than denied it", "Cuts a losing trade cleanly, even when ego wants to be 'right'", "Sits out a low-quality setup — courage includes the courage to do nothing", "Names the limiting belief out loud instead of trading around it"] },
+  { name: 'The Caregiver', color: '#C17A63', essence: "Compassion for what can't yet care for itself. Builds the structure — stops, checklists, a written plan — that protects the Orphan.",
+    unchecked: ["Nurtures the losing trade instead of the trader — holds too long, hoping it recovers", "Over-mentors others or over-manages the market, while its own process gets no attention", "Confuses comfort with care — soothes the fear instead of addressing it", "Neglects the boring caretaking: journaling, sleep, review, the checklist"],
+    integrated: ["Builds the systems that actually take care of the Orphan — stop-losses, checklists, a written plan", "Notices when the Orphan is scared and responds with structure, not just reassurance", "Tends to the trader's state between sessions, not just the account balance", "Extends the same compassion to a losing day that it would to a struggling friend"] },
+  { name: 'The Orphan', color: '#6E7FA0', essence: "Fear of losing, of pulling the trigger, of missing out. When it chairs the committee, you trade NOT to lose.",
+    unchecked: ["Hesitates on the entry until the setup is gone", "Cuts winners early to make the fear stop, not because the trade is done", "Revenge trades to undo the feeling of loss rather than to take a good setup", "Freezes, or chases, driven by FOMO rather than by the plan"],
+    integrated: ["Once heard rather than silenced, gives honest, early signal of real risk", "Its fear of imperfection, redirected, becomes attention to process", "Its need for safety is exactly what the Ruler's rules and the Caregiver's structure are for", "Named out loud, it stops running the trade from the shadows"] },
 ];
 
 const Shell = {
@@ -145,12 +157,18 @@ const Shell = {
   mountBanner(rel = '') {
     if (document.getElementById('cos-banner')) return;
     const tips = COMMITTEE.map(a => `<li><b style="color:${a.color}">${a.name.replace('The ', '')}</b> — ${a.essence.split(/[.—]/)[0].trim()}.</li>`).join('');
-    const names = COMMITTEE.map(a => `<b style="color:${a.color}">${a.name.replace('The ', '')}</b>`).join('<span class="cos-sep">·</span>');
+    const names = COMMITTEE.map(a => {
+      const un = a.unchecked.map(x => `<li>${x}</li>`).join('');
+      const ing = a.integrated.map(x => `<li>${x}</li>`).join('');
+      return `<span class="cos-name"><b style="color:${a.color}">${a.name.replace('The ', '')}</b><div class="cos-nametip"><div class="cos-nt-name" style="color:${a.color}">${a.name}</div><div class="cos-nt-h">When it runs the trade unchecked</div><ul>${un}</ul><div class="cos-nt-h">When it's integrated</div><ul>${ing}</ul></div></span>`;
+    }).join('<span class="cos-sep">·</span>');
     const banner = `<div class="cos-banner" id="cos-banner" role="button" tabindex="0" aria-haspopup="dialog" title="Committee of Self — click for details">
-      <span class="cos-ic">⚖</span><span class="cos-title">Committee of Self</span>
+      <span class="cos-ic">⚖</span>
+      <span class="cos-head"><span class="cos-title">Committee of Self</span>
+        <div class="cos-tip"><div class="cos-tip-head">Six voices at every trade</div><ul>${tips}</ul><div class="cos-tip-foot">Click for the full council →</div></div>
+      </span>
       <span class="cos-names">${names}</span>
       <span class="cos-hint">hover · click</span>
-      <div class="cos-tip"><div class="cos-tip-head">Six voices at every trade</div><ul>${tips}</ul><div class="cos-tip-foot">Click for the full council →</div></div>
     </div>`;
     const cards = COMMITTEE.map(a => `<div class="cos-card" style="border-left-color:${a.color}"><h4 style="color:${a.color}">${a.name}</h4><p>${a.essence}</p></div>`).join('');
     const modal = `<div class="cos-modal" id="cos-modal"><div class="cos-modal-card">
@@ -182,12 +200,20 @@ const Shell = {
       .cos-ic { font-size:15px; line-height:1; }
       .cos-title { font-weight:600; letter-spacing:.3px; white-space:nowrap; }
       .cos-tag { color:var(--mu); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      .cos-names { display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--serif,inherit); white-space:nowrap; overflow:hidden; }
-      .cos-names b { font-weight:700; letter-spacing:.2px; }
+      .cos-head { position:relative; }
+      .cos-names { display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--serif,inherit); white-space:nowrap; }
+      .cos-name { position:relative; cursor:default; }
+      .cos-name b { font-weight:700; letter-spacing:.2px; }
       .cos-sep { color:var(--mu); opacity:.55; }
       .cos-hint { margin-left:auto; color:var(--mu); font-size:9px; letter-spacing:.6px; text-transform:uppercase; opacity:.8; white-space:nowrap; }
-      .cos-tip { position:absolute; top:34px; left:8px; width:min(480px,94vw); background:var(--card); border:.5px solid var(--bh); border-top:none; border-radius:0 0 10px 10px; box-shadow:0 14px 34px rgba(0,0,0,.45); padding:12px 14px; display:none; cursor:default; }
-      .cos-banner:hover .cos-tip { display:block; }
+      .cos-tip { position:absolute; top:calc(100% + 10px); left:0; width:min(480px,94vw); background:var(--card); border:.5px solid var(--bh); border-radius:10px; box-shadow:0 14px 34px rgba(0,0,0,.45); padding:12px 14px; display:none; cursor:default; z-index:1; }
+      .cos-head:hover .cos-tip { display:block; }
+      .cos-nametip { position:absolute; top:calc(100% + 12px); left:0; width:min(360px,90vw); background:var(--card); border:.5px solid var(--bh); border-radius:10px; box-shadow:0 14px 34px rgba(0,0,0,.45); padding:12px 14px; display:none; cursor:default; z-index:1; white-space:normal; text-align:left; }
+      .cos-name:hover .cos-nametip { display:block; }
+      .cos-nt-name { font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.3px; }
+      .cos-nt-h { font-size:9px; letter-spacing:.6px; text-transform:uppercase; color:var(--mu); margin:11px 0 5px; }
+      .cos-nametip ul { list-style:disc; margin:0 0 0 15px; padding:0; display:flex; flex-direction:column; gap:4px; }
+      .cos-nametip li { font-size:11.5px; color:var(--tx); line-height:1.4; }
       .cos-tip-head { font-size:9.5px; letter-spacing:.7px; text-transform:uppercase; color:var(--mu); margin-bottom:8px; }
       .cos-tip ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px; }
       .cos-tip li { font-size:12px; color:var(--tx); line-height:1.4; }
