@@ -26,6 +26,16 @@ const NAV = [
   { breathe: true, icon: '◯', label: 'Breathe' },
 ];
 
+// The six archetypes of the Trading Committee of Self (from tools/committee-of-self.html)
+const COMMITTEE = [
+  { name: 'The Ruler', color: '#AD7C2E', essence: "Calm authority, grounded in discipline. The executive function of the committee — it doesn't do every job, it decides who does." },
+  { name: 'The Sage', color: '#66765A', essence: "Impartial analysis. The willingness to see what's actually on the chart instead of what you need to be there." },
+  { name: 'The Magician', color: '#6C4E82', essence: "Expansive possibility. Sees the shape of what the market could become before it's obvious." },
+  { name: 'The Warrior', color: '#A8452E', essence: "The courage to act — and to face your self-limiting beliefs about your capacity to trade. Not aggression. Willingness." },
+  { name: 'The Caregiver', color: '#C17A63', essence: "Compassion for what can't yet care for itself. Builds the structure — stops, checklists, a written plan — that protects the Orphan." },
+  { name: 'The Orphan', color: '#6E7FA0', essence: "Fear of losing, of pulling the trigger, of missing out. When it chairs the committee, you trade NOT to lose." },
+];
+
 const Shell = {
   // rel = path prefix back to the trading-hub root ('' for root, '../' for /pages)
   render(activeHref, rel = '') {
@@ -74,6 +84,8 @@ const Shell = {
     const host = document.getElementById('shell');
     if (host) host.innerHTML = this.render(activeHref, rel);
     this.injectNavStyles();
+    this.injectBannerStyles();
+    this.mountBanner(rel);
     this.initNavToggle();
     this.initNavGroups();
     this.initBreathe();
@@ -127,6 +139,76 @@ const Shell = {
     Breathe.injectStyles();
     document.querySelectorAll('[data-breathe]').forEach(el =>
       el.addEventListener('click', e => { e.preventDefault(); Breathe.open(); }));
+  },
+
+  // ── Committee of Self — fixed top banner (hover = essentials, click = popup) ──
+  mountBanner(rel = '') {
+    if (document.getElementById('cos-banner')) return;
+    const tips = COMMITTEE.map(a => `<li><b style="color:${a.color}">${a.name.replace('The ', '')}</b> — ${a.essence.split(/[.—]/)[0].trim()}.</li>`).join('');
+    const banner = `<div class="cos-banner" id="cos-banner" role="button" tabindex="0" aria-haspopup="dialog" title="Committee of Self — click for details">
+      <span class="cos-ic">⚖</span><span class="cos-title">Committee of Self</span>
+      <span class="cos-tag">Six voices sit at every trade — is the Ruler in the chair?</span>
+      <span class="cos-hint">hover · click</span>
+      <div class="cos-tip"><div class="cos-tip-head">Six voices at every trade</div><ul>${tips}</ul><div class="cos-tip-foot">Click for the full council →</div></div>
+    </div>`;
+    const cards = COMMITTEE.map(a => `<div class="cos-card" style="border-left-color:${a.color}"><h4 style="color:${a.color}">${a.name}</h4><p>${a.essence}</p></div>`).join('');
+    const modal = `<div class="cos-modal" id="cos-modal"><div class="cos-modal-card">
+      <div class="cos-modal-head"><span>⚖ The Trading Committee of Self</span><button class="cos-close" id="cos-close" aria-label="Close">✕</button></div>
+      <p class="cos-lede">Every trade has already been through a meeting. The Orphan raises the fear, the Caregiver tends what's unprotected, the Warrior supplies courage, the Sage reads the chart without needing an outcome, the Magician sees what's possible, and the Ruler decides who speaks. Fear-based trading isn't a character flaw — it's an org-chart problem. Put the Ruler back in the chair.</p>
+      <div class="cos-grid">${cards}</div>
+      <a class="cos-open-full" href="${rel}pages/embed.html?tool=committee-of-self&title=Committee%20of%20Self">Open the full workbook →</a>
+    </div></div>`;
+    document.body.insertAdjacentHTML('afterbegin', banner);
+    document.body.insertAdjacentHTML('beforeend', modal);
+    const b = document.getElementById('cos-banner');
+    const m = document.getElementById('cos-modal');
+    const open = () => m.classList.add('show');
+    const close = () => m.classList.remove('show');
+    b.addEventListener('click', (e) => { if (!e.target.closest('a')) open(); });
+    b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    document.getElementById('cos-close').addEventListener('click', close);
+    m.addEventListener('click', (e) => { if (e.target === m) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && m.classList.contains('show')) close(); });
+  },
+
+  injectBannerStyles() {
+    if (document.getElementById('cos-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'cos-styles';
+    s.textContent = `
+      .cos-banner { position:fixed; top:0; left:0; right:0; height:34px; z-index:200; display:flex; align-items:center; gap:12px; padding:0 16px; background:var(--card2); border-bottom:.5px solid var(--bh); font-family:var(--mono); font-size:12px; color:var(--tx); cursor:pointer; user-select:none; }
+      .cos-banner:hover { background:var(--card); }
+      .cos-ic { font-size:15px; line-height:1; }
+      .cos-title { font-weight:600; letter-spacing:.3px; white-space:nowrap; }
+      .cos-tag { color:var(--mu); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .cos-hint { margin-left:auto; color:var(--mu); font-size:9px; letter-spacing:.6px; text-transform:uppercase; opacity:.8; white-space:nowrap; }
+      .cos-tip { position:absolute; top:34px; left:8px; width:min(480px,94vw); background:var(--card); border:.5px solid var(--bh); border-top:none; border-radius:0 0 10px 10px; box-shadow:0 14px 34px rgba(0,0,0,.45); padding:12px 14px; display:none; cursor:default; }
+      .cos-banner:hover .cos-tip { display:block; }
+      .cos-tip-head { font-size:9.5px; letter-spacing:.7px; text-transform:uppercase; color:var(--mu); margin-bottom:8px; }
+      .cos-tip ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px; }
+      .cos-tip li { font-size:12px; color:var(--tx); line-height:1.4; }
+      .cos-tip-foot { margin-top:10px; font-size:10.5px; color:var(--ac); }
+      /* offsets so the fixed banner never covers content */
+      .app { margin-top:34px; }
+      .page-head { top:34px; }
+      .nav-open { top:48px; }
+      @media (min-width:901px){ .sidebar { top:34px; height:calc(100vh - 34px); } }
+      /* popup */
+      .cos-modal { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:400; display:none; align-items:flex-start; justify-content:center; padding:52px 16px; overflow:auto; }
+      .cos-modal.show { display:flex; }
+      .cos-modal-card { background:var(--card); border:.5px solid var(--bh); border-radius:14px; width:100%; max-width:820px; padding:22px 24px; }
+      .cos-modal-head { display:flex; align-items:center; justify-content:space-between; gap:10px; font-family:var(--serif,serif); font-size:20px; margin-bottom:8px; }
+      .cos-close { background:none; border:.5px solid var(--bh); color:var(--mu); border-radius:8px; width:30px; height:30px; cursor:pointer; flex:none; }
+      .cos-close:hover { border-color:var(--ac); color:var(--ac); }
+      .cos-lede { color:var(--mu); font-size:13px; line-height:1.65; margin:0 0 16px; }
+      .cos-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      @media (max-width:640px){ .cos-grid { grid-template-columns:1fr; } }
+      .cos-card { border:.5px solid var(--b); border-left-width:3px; border-radius:8px; padding:10px 12px; background:var(--card2); }
+      .cos-card h4 { margin:0 0 4px; font-family:var(--mono); font-size:12px; letter-spacing:.5px; }
+      .cos-card p { margin:0; font-size:12px; color:var(--mu); line-height:1.55; }
+      .cos-open-full { display:inline-block; margin-top:16px; font-family:var(--mono); font-size:12px; color:var(--ac); text-decoration:none; }
+      .cos-open-full:hover { text-decoration:underline; }`;
+    document.head.appendChild(s);
   },
 
   toast(msg) {
