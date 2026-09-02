@@ -93,7 +93,7 @@ function catOptions(fmt, meta) {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false }, tooltip: { callbacks: {
       title: (items) => (meta[items[0].dataIndex] && meta[items[0].dataIndex].label) || '',
-      label: (item) => fmt(item.parsed.y),
+      label: (item) => fmt(meta[item.dataIndex] && meta[item.dataIndex].y !== undefined ? meta[item.dataIndex].y : item.parsed.y),
     } } },
     scales: {
       x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b7280', font: { family: 'IBM Plex Mono', size: 9 }, maxTicksLimit: 12 } },
@@ -117,11 +117,14 @@ function drawLine(id, data, fmt, color) {
 
 function drawBars(id, data, fmt) {
   const ctx = document.getElementById(id); if (charts[id]) charts[id].destroy();
+  // Break-even (y===0) has no bar height — plot a slight orange stub so it stays visible
+  const mag = Math.max(...data.map(d => Math.abs(d.y)), 1);
+  const beStub = mag * 0.08;
   charts[id] = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: data.map(d => d.x),
-      datasets: [{ data: data.map(d => d.y),
+      datasets: [{ data: data.map(d => d.y === 0 ? beStub : d.y),
         backgroundColor: data.map(d => d.y > 0 ? '#34d399' : d.y < 0 ? '#f87171' : '#f59e0b'),
         borderWidth: 0 }],
     },
