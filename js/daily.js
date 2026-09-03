@@ -5,6 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra', 'prep-adr-midline',
+  'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle',
   'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
   'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
@@ -423,7 +424,7 @@ function resetSection(key) {
   } else if (key === 'prep') {
     RF_KEYS.forEach(k => setRf(k, false));
     rfNewsTags = []; renderNewsTags(); updateRfBadges();
-    { const el = $('prep-adr-midline'); if (el) el.value = ''; }
+    ['prep-adr-midline', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle'].forEach(f => { const el = $(f); if (el) el.value = ''; });
     BOX_SETS.forEach(s => {
       BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
       BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = ''; });
