@@ -106,6 +106,7 @@
     .cl-bias { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.5px; padding:2px 8px; border-radius:20px; }
     .cl-bias-U { color:#0f1a14; background:var(--gr); }
     .cl-bias-D { color:#1a0f0f; background:var(--co); }
+    .cl-bias-N { color:var(--tx); background:var(--b); border:.5px solid var(--bh); }
     .cl-u-count { color:var(--gr); background:var(--grg); border:.5px solid rgba(52,211,153,.3); padding:1px 7px; border-radius:20px; }
     .cl-d-count { color:var(--co); background:var(--cog); border:.5px solid rgba(248,113,113,.3); padding:1px 7px; border-radius:20px; }
     .cl-n-count { color:var(--mu); background:rgba(139,143,154,.1); border:.5px solid rgba(139,143,154,.3); padding:1px 7px; border-radius:20px; }
@@ -335,19 +336,6 @@
           <div class="cl-block" style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">
             <div class="cl-head">
               <div>
-                <div class="cl-title">ADR position rel. to WDRRB</div>
-                <div class="cl-sub" style="font-style:italic">pre-market · weekly range context</div>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px">
-              <label class="field"><span class="fl">ADR position rel. to WDRRB</span>
-                <select id="prep-adr-wdrrb"><option value="">—</option><option>Above WDRRB midline (0,5)</option><option>Below WDRRB midline (0,5)</option></select></label>
-            </div>
-          </div>
-
-          <div class="cl-block" style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">
-            <div class="cl-head">
-              <div>
                 <div class="cl-title">Weekly model extremes</div>
                 <div class="cl-sub" style="font-style:italic">pre-market · weekly cycle read</div>
               </div>
@@ -359,6 +347,20 @@
                 <select id="prep-wk-low"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
               <label class="field"><span class="fl">Current day weekly cycle</span>
                 <select id="prep-wk-cycle"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
+            </div>
+          </div>
+
+          <div class="cl-block" style="margin-top:18px;padding-top:16px;border-top:.5px solid var(--b)">
+            <div class="cl-head">
+              <div>
+                <div class="cl-title">ADR position rel. to WDRRB</div>
+                <div class="cl-sub" style="font-style:italic">pre-market · weekly range context → directional bias</div>
+              </div>
+              <div class="cl-summary" id="adrwdrrb-summary"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px">
+              <label class="field"><span class="fl">ADR position rel. to WDRRB</span>
+                <select id="prep-adr-wdrrb"><option value="">—</option><option>Above WDRRB midline (0,5)</option><option>Below WDRRB midline (0,5)</option><option>Spanning across WDRRB midline (0,5)</option></select></label>
             </div>
           </div>
 
@@ -474,6 +476,7 @@
         <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm" id="lt-open">＋ Log trade</button><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
         <div class="ooda-boxsum">
+          <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">ADR pos. rel. WDRRB</span><span class="cl-summary" id="adrwdrrb-summary-ooda"></span></div>
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0230 – 0400 ODR</span><span class="cl-summary" id="box2-summary-ooda"></span></div>
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0930 – 1030 RDR</span><span class="cl-summary" id="box-summary-ooda"></span></div>
         </div>
@@ -773,6 +776,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=35"></script>
+  <script src="../js/daily.js?v=36"></script>
 </body>
 </html>
