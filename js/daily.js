@@ -150,6 +150,7 @@ function fillJournal(p) {
   renderPostInsights();
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   updatePrepSummary();
+  updateAdrWdrrbSummary();
   RF_KEYS.forEach(k => setRf(k, p && p['rf-' + k]));
   rfNewsTags = (p && Array.isArray(p['rf-news-tags'])) ? p['rf-news-tags'].slice() : [];
   renderNewsTags();
@@ -283,6 +284,18 @@ function updateBoxSummary(attr, summaryId) {
   }
   if (el) el.innerHTML = html;
   if (el2) el2.innerHTML = html;
+}
+
+// ADR position rel. to WDRRB → directional bias (Above=Up, Below=Down, Spanning=Neutral)
+function updateAdrWdrrbSummary() {
+  const sel = $('prep-adr-wdrrb');
+  const v = sel ? sel.value : '';
+  const bias = /^Above/i.test(v) ? 'U' : /^Below/i.test(v) ? 'D' : /^Spanning/i.test(v) ? 'N' : '';
+  const html = bias === 'U' ? '<span class="cl-bias cl-bias-U">▲ UP BIAS</span>'
+    : bias === 'D' ? '<span class="cl-bias cl-bias-D">▼ DOWN BIAS</span>'
+    : bias === 'N' ? '<span class="cl-bias cl-bias-N">◆ NEUTRAL BIAS</span>' : '';
+  const el = $('adrwdrrb-summary'); if (el) el.innerHTML = html;
+  const el2 = $('adrwdrrb-summary-ooda'); if (el2) el2.innerHTML = html;
 }
 
 
@@ -425,6 +438,7 @@ function resetSection(key) {
     RF_KEYS.forEach(k => setRf(k, false));
     rfNewsTags = []; renderNewsTags(); updateRfBadges();
     ['prep-adr-midline', 'prep-adr-wdrrb', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle'].forEach(f => { const el = $(f); if (el) el.value = ''; });
+    updateAdrWdrrbSummary();
     BOX_SETS.forEach(s => {
       BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
       BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = ''; });
@@ -648,6 +662,10 @@ BOX_SETS.forEach(s => document.querySelectorAll(`.cl-item[data-${s.attr}]`).forE
   setBoxState(item, next);
   updateBoxSummary(s.attr, s.summary);
 })));
+
+// ADR position rel. to WDRRB select — mirror its directional bias into the overview
+const _adrWdrrbSel = $('prep-adr-wdrrb');
+if (_adrWdrrbSel) _adrWdrrbSel.addEventListener('change', updateAdrWdrrbSummary);
 
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
