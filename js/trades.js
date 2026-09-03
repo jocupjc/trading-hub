@@ -75,6 +75,7 @@ async function refresh() {
   let trades;
   try { trades = await DB.getTrades(); } catch { trades = []; }
   const s = Stats.compute(trades);
+  window.dispatchEvent(new Event('th:trades-changed'));
 
   // Totals
   $('totals').innerHTML = [

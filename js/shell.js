@@ -98,6 +98,7 @@ const Shell = {
     this.injectNavStyles();
     this.injectBannerStyles();
     this.mountBanner(rel);
+    this.mountLossLimit(rel);
     this.initNavToggle();
     this.initNavGroups();
     this.initBreathe();
@@ -238,6 +239,116 @@ const Shell = {
       .cos-card p { margin:0; font-size:12px; color:var(--mu); line-height:1.55; }
       .cos-open-full { display:inline-block; margin-top:16px; font-family:var(--mono); font-size:12px; color:var(--ac); text-decoration:none; }
       .cos-open-full:hover { text-decoration:underline; }`;
+    document.head.appendChild(s);
+  },
+
+  // ── Session loss-limit warnings (global, resets 23:00 Europe/Berlin) ─────────
+  mountLossLimit(rel = '') {
+    this._llRel = rel;
+    this.injectLossLimitStyles();
+    const run = () => this.evaluateLossLimit();
+    if (window.Auth && Auth.ready && Auth.ready.then) Auth.ready.then(run); else run();
+    window.addEventListener('th:trades-changed', run);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) run(); });
+    // periodic re-check so the day rolls over at 23:00 Berlin without a manual reload
+    clearInterval(this._llTimer);
+    this._llTimer = setInterval(run, 60000);
+  },
+
+  // Realised R for a trade — derived from prices when present, else the stored rr
+  _deriveR(t) {
+    const num = (v) => (v === '' || v === null || v === undefined || isNaN(+v) ? null : +v);
+    const entry = num(t.entry_price), stop = num(t.stop_price), exit = num(t.exit_price);
+    const dir = (t.direction || 'LONG').toUpperCase();
+    let rr = num(t.rr);
+    if (entry !== null && stop !== null && exit !== null) {
+      const risk = Math.abs(entry - stop);
+      if (risk > 0) rr = (dir === 'SHORT' ? (entry - exit) : (exit - entry)) / risk;
+    }
+    return rr === null ? 0 : rr;
+  },
+
+  // Current trading-day key (Europe/Berlin), rolling over at 23:00 = reset time
+  _tradingDayKey() {
+    const berlin = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+    const d = new Date(berlin.getFullYear(), berlin.getMonth(), berlin.getDate());
+    if (berlin.getHours() >= 23) d.setDate(d.getDate() + 1);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  },
+
+  async evaluateLossLimit() {
+    let trades = [];
+    try { trades = await DB.getTrades(); } catch { return; }
+    const day = this._tradingDayKey();
+    const today = trades
+      .filter(t => t.date === day)
+      .sort((a, b) => ((a.entry_time || '') + '').localeCompare((b.entry_time || '') + ''));
+    let cumR = 0, lossCount = 0, streak = 0, maxStreak = 0;
+    today.forEach(t => {
+      const r = this._deriveR(t);
+      cumR += r;
+      if (r < -0.05) { lossCount++; streak++; if (streak > maxStreak) maxStreak = streak; }
+      else if (r > 0.05) { streak = 0; }
+    });
+    const rR = Math.round(cumR * 100) / 100;
+    let level = null;
+    if (lossCount >= 3 || rR <= -3) level = 'red';
+    else if (maxStreak >= 2 || lossCount >= 2 || rR <= -2) level = 'yellow';
+    this.renderLossLimit(level);
+  },
+
+  renderLossLimit(level) {
+    const rel = this._llRel || '';
+    document.body.classList.toggle('th-warn-yellow', level === 'yellow');
+    document.body.classList.toggle('th-warn-red', level === 'red');
+    let el = document.getElementById('th-loss-warn');
+    if (!level) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('div'); el.id = 'th-loss-warn'; el.setAttribute('role', 'alert'); document.body.appendChild(el); }
+    if (level === 'yellow') {
+      el.className = 'th-warn th-warn-y';
+      el.innerHTML = '<span class="thw-ic">⚠</span><span class="thw-msg">Session loss limit reached — <b>1 bullet left</b> for the day.</span>';
+    } else {
+      el.className = 'th-warn th-warn-r';
+      el.innerHTML = '<span class="thw-ic">⛔</span>'
+        + '<span class="thw-r-txt"><span class="thw-r-title">Max daily loss limit reached</span>'
+        + '<span class="thw-r-sub">Move to the Post-market review, review the day, and close up.</span></span>'
+        + `<a class="thw-r-btn" href="${rel}pages/journal.html">Post-market review →</a>`;
+    }
+  },
+
+  injectLossLimitStyles() {
+    if (document.getElementById('th-warn-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'th-warn-styles';
+    s.textContent = `
+      .th-warn { position:fixed; left:0; right:0; top:34px; z-index:190; display:flex; align-items:center; gap:12px; padding:0 16px; font-family:var(--mono); box-sizing:border-box; }
+      .th-warn-y { height:30px; background:#3a2f10; border-bottom:.5px solid #a9821f; color:#f4cf6a; font-size:12px; letter-spacing:.3px; }
+      .th-warn-y .thw-ic { font-size:14px; line-height:1; }
+      .th-warn-y .thw-msg b { color:#ffd873; }
+      .th-warn-r { min-height:84px; padding:12px 20px; background:linear-gradient(180deg,#4a1210,#6b1a15); border-bottom:2px solid #ff5a4d; color:#ffe3df; box-shadow:0 6px 24px rgba(120,10,5,.5); }
+      .th-warn-r .thw-ic { font-size:30px; line-height:1; }
+      .th-warn-r .thw-r-txt { display:flex; flex-direction:column; gap:3px; }
+      .th-warn-r .thw-r-title { font-size:19px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:#fff; }
+      .th-warn-r .thw-r-sub { font-size:13px; color:#ffd0c9; }
+      .th-warn-r .thw-r-btn { margin-left:auto; background:#fff; color:#6b1a15; font-weight:700; font-size:13px; text-decoration:none; padding:10px 16px; border-radius:9px; white-space:nowrap; }
+      .th-warn-r .thw-r-btn:hover { background:#ffe3df; }
+      /* push content below the committee banner (34px) + the active warning */
+      body.th-warn-yellow .app { margin-top:64px; }
+      body.th-warn-yellow .page-head { top:64px; }
+      body.th-warn-yellow .nav-open { top:78px; }
+      @media (min-width:901px){ body.th-warn-yellow .sidebar { top:64px; height:calc(100vh - 64px); } }
+      body.th-warn-red .app { margin-top:120px; }
+      body.th-warn-red .page-head { top:120px; }
+      body.th-warn-red .nav-open { top:134px; }
+      @media (min-width:901px){ body.th-warn-red .sidebar { top:120px; height:calc(100vh - 120px); } }
+      @media (max-width:640px){
+        .th-warn-r { flex-wrap:wrap; }
+        .th-warn-r .thw-r-btn { margin-left:0; margin-top:4px; }
+        body.th-warn-red .app { margin-top:158px; }
+        body.th-warn-red .page-head { top:158px; }
+        body.th-warn-red .nav-open { top:172px; }
+      }`;
     document.head.appendChild(s);
   },
 
