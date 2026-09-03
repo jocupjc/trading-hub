@@ -187,7 +187,26 @@ const Stats = (() => {
     return `<div class="rcal">${head}${body}</div>`;
   }
 
-  return { compute, insights, deriveTrade, monthGridHTML };
+  // ── Post-market review score averages from daily-journal payloads ───────────
+  // entries: [{ date, payload }]. Scores are 1–10; empty/unset are ignored.
+  function reviewAverages(entries) {
+    const KEYS = { perf: 'post-perf', process: 'scale-process', emoctrl: 'scale-emoctrl' };
+    const sum = { perf: 0, process: 0, emoctrl: 0 };
+    const n = { perf: 0, process: 0, emoctrl: 0 };
+    (entries || []).forEach((e) => {
+      const p = e && e.payload; if (!p) return;
+      for (const k in KEYS) {
+        const raw = p[KEYS[k]];
+        const v = +raw;
+        if (raw !== '' && raw != null && !isNaN(v) && v > 0) { sum[k] += v; n[k]++; }
+      }
+    });
+    const avg = (k) => (n[k] ? +(sum[k] / n[k]).toFixed(1) : null);
+    return { perf: avg('perf'), process: avg('process'), emoctrl: avg('emoctrl'),
+      perfN: n.perf, processN: n.process, emoctrlN: n.emoctrl };
+  }
+
+  return { compute, insights, deriveTrade, monthGridHTML, reviewAverages };
 })();
 
 window.Stats = Stats;

@@ -11,9 +11,18 @@ const CHART_DEFAULTS = {
   },
 };
 let charts = {};
+let allReviews = null; // cached daily-journal payloads for review-score averages
 
 function tile(lbl, val, sub, valClass) {
   return `<div class="stat"><div class="lbl">${lbl}</div><div class="val ${valClass || ''}">${val}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+}
+
+// 1–10 review score → colour (higher is better)
+const scoreCls = (v) => (v == null ? '' : v >= 7 ? 'pos' : v >= 4 ? 'neu' : 'neg');
+async function getReviews() {
+  if (allReviews) return allReviews;
+  try { allReviews = await DB.getJournalPayloads('daily'); } catch (e) { console.error(e); allReviews = []; }
+  return allReviews;
 }
 
 function filterByRange(trades, range) {
@@ -69,6 +78,19 @@ async function render() {
     tile('Days B/E', String(s.beDays), 'break-even', 'neu'),
     tile('Best / Worst Day', s.bestDay ? `${fmtR(s.bestDay.r)} / ${fmtR(s.worstDay.r)}` : '—', 'performance score'),
   ].join('');
+
+  // Post-market review — score averages (from the daily journal, respecting the range)
+  const rv = Stats.reviewAverages(filterByRange(await getReviews(), range));
+  const reviewEl = document.getElementById('reviewTiles');
+  if (reviewEl) {
+    const scoreVal = (v) => (v == null ? '—' : v.toFixed(1));
+    const dayN = (n) => `avg · ${n} day${n === 1 ? '' : 's'}`;
+    reviewEl.innerHTML = [
+      tile('Performance self score', scoreVal(rv.perf), dayN(rv.perfN), scoreCls(rv.perf)),
+      tile('Prozessqualität', scoreVal(rv.process), dayN(rv.processN), scoreCls(rv.process)),
+      tile('Emotionale Kontrolle', scoreVal(rv.emoctrl), dayN(rv.emoctrlN), scoreCls(rv.emoctrl)),
+    ].join('');
+  }
 
   // Charts — each trade is its own point/bar
   drawLine('chartEqR', [{ x: 0, y: 0, label: 'Start' }].concat(s.equityR), fmtR, '#4f8ef7');

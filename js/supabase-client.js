@@ -199,6 +199,20 @@ const DB = (() => {
     return idx.sort((a, b) => b.date.localeCompare(a.date));
   }
 
+  // Full payloads for a journal type (used for aggregate stats like review-score averages)
+  async function getJournalPayloads(type) {
+    if (sb) {
+      let q = sb.from('journal_entries').select('date,payload').order('date', { ascending: true });
+      if (type) q = q.eq('type', type);
+      const { data, error } = await q; if (error) throw error; return data || [];
+    }
+    let idx = LS.get(K.journalIndex, []);
+    if (type) idx = idx.filter(e => e.type === type);
+    return idx
+      .map(e => ({ date: e.date, payload: LS.get(K.journal(e.date, e.type), null) }))
+      .filter(x => x.payload);
+  }
+
   async function saveJournal(date, type, payload) {
     if (sb) {
       const row = { date, type, payload, updated_at: new Date().toISOString() };
@@ -232,7 +246,7 @@ const DB = (() => {
     getTrades, saveTrade, deleteTrade,
     getTradingDays, getTradingDay, saveTradingDay,
     getLinks, getTradeLinks, saveLink, deleteLink, uploadScreenshot,
-    getJournal, listJournal, saveJournal, deleteJournal,
+    getJournal, listJournal, getJournalPayloads, saveJournal, deleteJournal,
   };
 })();
 

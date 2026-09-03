@@ -32,7 +32,7 @@ function drawLine(id, points, color) {
   });
 }
 
-function monthCard(key, s) {
+function monthCard(key, s, rv) {
   const [y, m] = key.split('-');
   const name = `${MONTHS[+m - 1]} ${y}`;
   const headline = [
@@ -59,6 +59,15 @@ function monthCard(key, s) {
   ].join('');
   const insights = Stats.insights(s).map((i) => `<div class="insight ${i.type}">${i.text}</div>`).join('');
 
+  const scoreCls = (v) => (v == null ? '' : v >= 7 ? 'pos' : v >= 4 ? 'neu' : 'neg');
+  const scoreVal = (v) => (v == null ? '—' : v.toFixed(1));
+  const dayN = (n) => `avg · ${n} day${n === 1 ? '' : 's'}`;
+  const reviewRow = [
+    tile('Performance self score', scoreVal(rv.perf), dayN(rv.perfN), scoreCls(rv.perf)),
+    tile('Prozessqualität', scoreVal(rv.process), dayN(rv.processN), scoreCls(rv.process)),
+    tile('Emotionale Kontrolle', scoreVal(rv.emoctrl), dayN(rv.emoctrlN), scoreCls(rv.emoctrl)),
+  ].join('');
+
   return `<div class="mo-card" data-month="${key}">
     <button class="mo-head">
       <span class="mo-title">${name}</span>
@@ -71,17 +80,24 @@ function monthCard(key, s) {
         <div class="card mo-eqcard"><div class="card-label">Equity Curve — cumulative R</div><div class="chart-box"><canvas id="eq-${key}"></canvas></div><div class="grid g2 mo-daystats">${dayStats}</div></div>
       </div>
       <div class="grid g4" style="margin-top:14px">${secondary}</div>
+      <div class="card" style="margin-top:14px"><div class="card-label">Post-market review — score averages</div><div class="grid g3">${reviewRow}</div></div>
       <div class="card" style="margin-top:14px"><div class="card-label">Automatic support — what the numbers are telling you</div>${insights}</div>
     </div>
   </div>`;
 }
 
-function render(trades) {
+function render(trades, reviews) {
   const byMonth = {};
   (trades || []).forEach((t) => {
     const k = (t.date || '').slice(0, 7);
     if (!/^\d{4}-\d{2}$/.test(k)) return;
     (byMonth[k] = byMonth[k] || []).push(t);
+  });
+  const reviewsByMonth = {};
+  (reviews || []).forEach((e) => {
+    const k = (e.date || '').slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(k)) return;
+    (reviewsByMonth[k] = reviewsByMonth[k] || []).push(e);
   });
   const keys = Object.keys(byMonth).sort((a, b) => b.localeCompare(a)); // newest month first
   const root = document.getElementById('mo-root');
@@ -89,15 +105,17 @@ function render(trades) {
 
   const statsByKey = {};
   keys.forEach((k) => { statsByKey[k] = Stats.compute(byMonth[k]); });
-  root.innerHTML = keys.map((k) => monthCard(k, statsByKey[k])).join('');
+  root.innerHTML = keys.map((k) => monthCard(k, statsByKey[k], Stats.reviewAverages(reviewsByMonth[k]))).join('');
   keys.forEach((k) => drawLine('eq-' + k, [{ x: 0, y: 0, label: 'Start' }].concat(statsByKey[k].equityR), '#4f8ef7'));
 }
 
 async function load() {
-  let trades;
+  let trades, reviews;
   try { trades = await DB.getTrades(); }
   catch (e) { console.error(e); Shell.toast('Load failed — check Supabase config'); trades = []; }
-  render(trades);
+  try { reviews = await DB.getJournalPayloads('daily'); }
+  catch (e) { console.error(e); reviews = []; }
+  render(trades, reviews);
 }
 
 document.getElementById('mo-root').addEventListener('click', (e) => {
