@@ -477,7 +477,7 @@
     </div>
     <div class="score-card">
       <div class="score-val" id="disp-streak">0</div>
-      <div class="score-lbl">Streak (Tage)</div>
+      <div class="score-lbl">Streak (days)</div>
     </div>
   </div>
 
@@ -485,7 +485,7 @@
   <div class="phase-nav">
     <button class="phase-btn active" onclick="switchPhase('pre')">PRE-TRADING</button>
     <button class="phase-btn" onclick="switchPhase('post')">POST-TRADING</button>
-    <button class="phase-btn" onclick="switchPhase('ref')">REFERENZ</button>
+    <button class="phase-btn" onclick="switchPhase('ref')">REFERENCE</button>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════ PRE-TRADING -->
@@ -496,24 +496,24 @@
       <div class="card-label">Header</div>
       <div class="head-grid">
         <div>
-          <div class="field-label">Trading Tag</div>
+          <div class="field-label">Trading day</div>
           <input type="date" id="trade-date">
         </div>
         <div class="check-list">
           <label class="check-row" onclick="toggleCheck(this)">
             <input type="checkbox" id="chk-sleep">
             <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span>Mindestens 7h geschlafen?</span>
+            <span>Slept at least 7h?</span>
           </label>
           <label class="check-row" onclick="toggleCheck(this)">
             <input type="checkbox" id="chk-food">
             <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span>Gegessen &amp; getrunken?</span>
+            <span>Ate &amp; drank?</span>
           </label>
           <label class="check-row" onclick="toggleCheck(this)">
             <input type="checkbox" id="chk-activity">
             <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span>Körperliche Aktivität erledigt?</span>
+            <span>Physical activity done?</span>
           </label>
         </div>
       </div>
@@ -522,18 +522,18 @@
     <!-- Mental State -->
     <div class="card">
       <div class="card-label">Mental State Check</div>
-      <div class="insight"><strong>Tendler:</strong> Das Ziel ist nicht, perfekt gestimmt zu sein – sondern ehrlich zu wissen, wo du stehst. Emotionaler Zustand bestimmt, welches Game du heute spielen kannst.</div>
-      <div class="field-label">Aktueller Zustand</div>
+      <div class="insight"><strong>Tendler:</strong> The goal is not to be in a perfect mood – but to honestly know where you stand. Your emotional state determines which game you can play today.</div>
+      <div class="field-label">Current state</div>
       <div class="btn-group" id="grp-emotion" data-theme="blue">
-        <button class="tog" data-val="Neutral / Ruhig" onclick="onEmotionSelect('neutral')">Neutral / Ruhig</button>
-        <button class="tog" data-val="Zuversicht / Fokus" onclick="onEmotionSelect('conf')">Zuversicht / Fokus</button>
-        <button class="tog" data-val="Angst / Nervosität" onclick="onEmotionSelect('fear')">Angst / Nervosität</button>
+        <button class="tog" data-val="Neutral / Calm" onclick="onEmotionSelect('neutral')">Neutral / Calm</button>
+        <button class="tog" data-val="Confidence / Focus" onclick="onEmotionSelect('conf')">Confidence / Focus</button>
+        <button class="tog" data-val="Fear / Nervousness" onclick="onEmotionSelect('fear')">Fear / Nervousness</button>
         <button class="tog" data-val="Tilt / Frustration" onclick="onEmotionSelect('tilt')">Tilt / Frustration</button>
-        <button class="tog" data-val="Euphorie / Winner-Tilt" onclick="onEmotionSelect('euphoria')">Euphorie / Winner-Tilt</button>
+        <button class="tog" data-val="Euphoria / Winner's tilt" onclick="onEmotionSelect('euphoria')">Euphoria / Winner's tilt</button>
       </div>
       <div class="alert-box" id="alert-emotion"></div>
 
-      <div class="field-label" style="margin-top:.85rem;">Intensität (1 = kaum spürbar → 10 = überwältigend)</div>
+      <div class="field-label" style="margin-top:.85rem;">Intensity (1 = barely noticeable → 10 = overwhelming)</div>
       <div class="scale-row" id="scale-intensity">
         <button class="scale-btn" data-v="1" onclick="selectScale('intensity',this)">1</button>
         <button class="scale-btn" data-v="2" onclick="selectScale('intensity',this)">2</button>
@@ -548,93 +548,93 @@
       </div>
       <div class="alert-box" id="alert-intensity"></div>
 
-      <div class="field-label" style="margin-top:.85rem;">Auslöser (optional)</div>
-      <textarea id="txt-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen..."></textarea>
+      <div class="field-label" style="margin-top:.85rem;">Trigger (optional)</div>
+      <textarea id="txt-trigger" placeholder="e.g. Poor sleep, yesterday's losses, a stressful morning..."></textarea>
     </div>
 
     <!-- A/B/C Game -->
     <div class="card">
-      <div class="card-label">A / B / C — Game Einschätzung</div>
-      <div class="insight"><strong>Tendlers Kernprinzip:</strong> C-Game zu eliminieren ist wichtiger als A-Game zu spielen. Ein solides B-Game jeden Tag schlägt A/C-Game-Wechsel langfristig.</div>
-      <div class="field-label">Welches Game kannst du heute realistisch spielen?</div>
+      <div class="card-label">A / B / C — game assessment</div>
+      <div class="insight"><strong>Tendler's core principle:</strong> Eliminating your C-Game matters more than playing your A-Game. A solid B-Game every day beats A/C-Game swings over the long run.</div>
+      <div class="field-label">Which game can you realistically play today?</div>
       <div class="btn-group" id="grp-game" data-theme="green">
         <button class="tog" data-val="A-Game" onclick="onGameSelect('A')">A-Game</button>
         <button class="tog" data-val="B-Game" onclick="onGameSelect('B')">B-Game</button>
         <button class="tog" data-val="C-Game" onclick="onGameSelect('C')">C-Game</button>
       </div>
       <div class="alert-box" id="alert-game"></div>
-      <div class="field-label" style="margin-top:.85rem;">Meine typischen C-Game Fehler</div>
-      <textarea id="txt-cgame" placeholder="1. Revenge-Trading nach Verlust&#10;2. FOMO-Einstieg ohne Setup&#10;3. Stop-Loss verschieben..."></textarea>
+      <div class="field-label" style="margin-top:.85rem;">My typical C-Game mistakes</div>
+      <textarea id="txt-cgame" placeholder="1. Revenge trading after a loss&#10;2. FOMO entry without a setup&#10;3. Moving the stop-loss..."></textarea>
     </div>
 
     <!-- Warm-up Checklist -->
     <div class="card">
-      <div class="card-label">Warm-up Checkliste <span id="warmup-counter" style="color:var(--muted)">0/8</span></div>
+      <div class="card-label">Warm-up checklist <span id="warmup-counter" style="color:var(--muted)">0/8</span></div>
       <div class="progress-wrap"><div class="progress-fill" id="pb-warmup" style="width:0%"></div></div>
       <div class="check-list">
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w1">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Gestern-Bias überprüft: Gibt es unverarbeitete Verluste / Gewinne?</span>
+          <span>Checked yesterday-bias: any unprocessed losses / gains?</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w2">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Marktkontext gelesen (News, Gaps, Volatilität)</span>
+          <span>Read market context (news, gaps, volatility)</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w3">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Tages-Verlustlimit definiert und akzeptiert</span>
+          <span>Daily loss limit defined and accepted</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w4">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Max. Anzahl Positionen / Trades festgelegt</span>
+          <span>Max. number of positions / trades set</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w5">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Stop-Loss Strategie ist klar und unwiderruflich</span>
+          <span>Stop-loss strategy is clear and irreversible</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w6">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Persönliches Tilt-Warnsignal bewusst aktiviert</span>
+          <span>Personal tilt warning signal consciously activated</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w7">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Setup-Kriterien für heute klar definiert</span>
+          <span>Setup criteria for today clearly defined</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'warmup',8,'pb-warmup','warmup-counter')">
           <input type="checkbox" id="chk-w8">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Abbruchkriterien für heute definiert (wann höre ich auf?)</span>
+          <span>Stop criteria for today defined (when do I stop?)</span>
         </label>
       </div>
     </div>
 
     <!-- Tagesintention -->
     <div class="card">
-      <div class="card-label">Tagesintention &amp; Fokus</div>
-      <div class="insight"><strong>Tendler:</strong> Das Gehirn lernt durch Wiederholung. Täglich bewusst formulierte Intentionen bauen neue neuronale Pfade und ersetzen automatische Reaktionsmuster.</div>
-      <div class="field-label">Mein Prozess-Ziel heute (kein P&amp;L-Ziel)</div>
-      <textarea id="txt-process-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld heraus..."></textarea>
-      <div class="field-label" style="margin-top:.75rem;">Mein größtes mentales Risiko heute</div>
-      <textarea id="txt-mental-risk" placeholder="z.B. Nach einem Verlust sofort wieder einsteigen wollen..."></textarea>
-      <div class="field-label" style="margin-top:.75rem;">Mantra / Anker für heute</div>
-      <textarea id="txt-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis." style="min-height:50px;"></textarea>
+      <div class="card-label">Daily intention &amp; focus</div>
+      <div class="insight"><strong>Tendler:</strong> The brain learns through repetition. Consciously formulated intentions each day build new neural pathways and replace automatic reaction patterns.</div>
+      <div class="field-label">My process goal today (not a P&amp;L goal)</div>
+      <textarea id="txt-process-goal" placeholder="e.g. I wait for confirmed setups and don't act out of impatience..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">My biggest mental risk today</div>
+      <textarea id="txt-mental-risk" placeholder="e.g. Wanting to re-enter immediately after a loss..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">Mantra / anchor for today</div>
+      <textarea id="txt-mantra" placeholder="e.g. I trade the process, not the outcome." style="min-height:50px;"></textarea>
     </div>
 
     <!-- Action bar PRE -->
     <div class="action-bar">
-      <button class="btn-action btn-calc" onclick="calcPreScore()">Score berechnen</button>
-      <button class="btn-action btn-save" onclick="saveEntry()">Speichern</button>
+      <button class="btn-action btn-calc" onclick="calcPreScore()">Calculate score</button>
+      <button class="btn-action btn-save" onclick="saveEntry()">Save</button>
       <button class="btn-action" onclick="exportCSV()">Export CSV</button>
-      <button class="btn-action" onclick="exportImage()">Export als Bild</button>
-      <button class="btn-action" onclick="toggleArchive()">Archiv</button>
-      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">Neu</button>
+      <button class="btn-action" onclick="exportImage()">Export as image</button>
+      <button class="btn-action" onclick="toggleArchive()">Archive</button>
+      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">New</button>
     </div>
     <div class="alert-box" id="alert-pre-score" style="margin-top:.75rem;"></div>
 
@@ -646,72 +646,62 @@
 
     <!-- Trade Debrief -->
     <div class="card">
-      <div class="card-label">Trade Debrief <span id="debrief-counter" style="color:var(--muted)">0/6</span></div>
+      <div class="card-label">Trade Debrief <span id="debrief-counter" style="color:var(--muted)">0/4</span></div>
       <div class="progress-wrap"><div class="progress-fill" id="pb-debrief" style="width:0%"></div></div>
       <div class="check-list">
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',4,'pb-debrief','debrief-counter')">
           <input type="checkbox" id="chk-d1">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Alle Trades dokumentiert (Entry, Exit, Begründung)</span>
+          <span>All trades documented (entry, exit, rationale)</span>
         </label>
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',4,'pb-debrief','debrief-counter')">
           <input type="checkbox" id="chk-d2">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Tages-Limit eingehalten?</span>
+          <span>Daily limit respected?</span>
         </label>
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
-          <input type="checkbox" id="chk-d3">
-          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Prozess-Ziel von heute erreicht?</span>
-        </label>
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',4,'pb-debrief','debrief-counter')">
           <input type="checkbox" id="chk-d4">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Emotionale Momente identifiziert und notiert</span>
+          <span>Emotional moments identified and noted</span>
         </label>
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
+        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',4,'pb-debrief','debrief-counter')">
           <input type="checkbox" id="chk-d5">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Regelbrüche notiert (neutral betrachtet, nicht verurteilt)</span>
-        </label>
-        <label class="check-row" onclick="toggleCheckGroup(this,'debrief',6,'pb-debrief','debrief-counter')">
-          <input type="checkbox" id="chk-d6">
-          <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Mindestens 1 positiver Aspekt des heutigen Handelns notiert</span>
+          <span>Rule breaks noted (observed neutrally, not judged)</span>
         </label>
       </div>
     </div>
 
     <!-- Emotionsanalyse -->
     <div class="card">
-      <div class="card-label">Emotionsanalyse</div>
-      <div class="insight"><strong>Tendler:</strong> Emotionen sind Informationen über ungelöste Lernbereiche — keine Schwäche. Die Frage ist nicht "warum werde ich emotional?" sondern "was zeigt mir diese Emotion?"</div>
-      <div class="field-label">Dominante Emotion heute</div>
+      <div class="card-label">Emotion analysis</div>
+      <div class="insight"><strong>Tendler:</strong> Emotions are information about unresolved learning areas — not a weakness. The question isn't "why am I getting emotional?" but "what is this emotion showing me?"</div>
+      <div class="field-label">Dominant emotion today</div>
       <div class="btn-group" id="grp-post-emotion" data-theme="purple">
         <button class="tog" data-val="Tilt / Frustration" onclick="onPostEmotionSelect('tilt')">Tilt / Frustration</button>
-        <button class="tog" data-val="Angst" onclick="onPostEmotionSelect('fear')">Angst</button>
-        <button class="tog" data-val="Gier / FOMO" onclick="onPostEmotionSelect('greed')">Gier / FOMO</button>
-        <button class="tog" data-val="Arroganz / Winner-Tilt" onclick="onPostEmotionSelect('euphoria')">Arroganz / Winner-Tilt</button>
-        <button class="tog" data-val="Selbstvertrauen" onclick="onPostEmotionSelect('conf')">Selbstvertrauen</button>
+        <button class="tog" data-val="Fear" onclick="onPostEmotionSelect('fear')">Fear</button>
+        <button class="tog" data-val="Greed / FOMO" onclick="onPostEmotionSelect('greed')">Greed / FOMO</button>
+        <button class="tog" data-val="Arrogance / Winner's tilt" onclick="onPostEmotionSelect('euphoria')">Arrogance / Winner's tilt</button>
+        <button class="tog" data-val="Confidence" onclick="onPostEmotionSelect('conf')">Confidence</button>
       </div>
       <div class="alert-box" id="alert-post-emotion"></div>
 
-      <div class="field-label" style="margin-top:.85rem;">Was hat diese Emotion konkret ausgelöst?</div>
-      <textarea id="txt-emo-trigger" placeholder="So konkret wie möglich: welcher Trade, welcher Moment, welcher Gedanke..."></textarea>
+      <div class="field-label" style="margin-top:.85rem;">What specifically triggered this emotion?</div>
+      <textarea id="txt-emo-trigger" placeholder="As concrete as possible: which trade, which moment, which thought..."></textarea>
 
-      <div class="field-label" style="margin-top:.75rem;">Welche irrationale Überzeugung steckt dahinter?</div>
-      <textarea id="txt-irr-belief" placeholder="z.B. 'Ich muss diesen Verlust sofort zurückgewinnen' / 'Wenn ich diesen Trade verpasse bin ich ein Verlierer'..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">Which irrational belief is behind it?</div>
+      <textarea id="txt-irr-belief" placeholder="e.g. 'I must win this loss back immediately' / 'If I miss this trade I'm a loser'..."></textarea>
 
-      <div class="field-label" style="margin-top:.75rem;">Die rationale Gegenperspektive (Reframing)</div>
-      <textarea id="txt-reframe" placeholder="z.B. 'Einzelne Trades definieren meine Performance nicht. Edge entfaltet sich über hunderte Trades.'..."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">The rational counter-perspective (reframing)</div>
+      <textarea id="txt-reframe" placeholder="e.g. 'Individual trades don't define my performance. Edge plays out over hundreds of trades.'..."></textarea>
     </div>
 
     <!-- Performance-Bewertung -->
     <div class="card">
-      <div class="card-label">Performance-Bewertung</div>
-      <div class="insight"><strong>Wichtig:</strong> Bewerte Prozessqualität und emotionale Kontrolle getrennt vom P&amp;L. Ein verlustreicher Tag mit perfektem Prozess ist ein 9/10 Tag.</div>
+      <div class="card-label">Performance rating</div>
+      <div class="insight"><strong>Important:</strong> Rate process quality and emotional control separately from P&amp;L. A losing day with a perfect process is a 9/10 day.</div>
 
-      <div class="field-label">Prozessqualität heute (1–10)</div>
+      <div class="field-label">Process quality today (1–10)</div>
       <div class="scale-row" id="scale-process">
         <button class="scale-btn" data-v="1" onclick="selectScale('process',this)">1</button>
         <button class="scale-btn" data-v="2" onclick="selectScale('process',this)">2</button>
@@ -725,7 +715,7 @@
         <button class="scale-btn" data-v="10" onclick="selectScale('process',this)">10</button>
       </div>
 
-      <div class="field-label" style="margin-top:.85rem;">Emotionale Kontrolle heute (1–10)</div>
+      <div class="field-label" style="margin-top:.85rem;">Emotional control today (1–10)</div>
       <div class="scale-row" id="scale-emoctrl">
         <button class="scale-btn" data-v="1" onclick="selectScale('emoctrl',this)">1</button>
         <button class="scale-btn" data-v="2" onclick="selectScale('emoctrl',this)">2</button>
@@ -739,56 +729,56 @@
         <button class="scale-btn" data-v="10" onclick="selectScale('emoctrl',this)">10</button>
       </div>
 
-      <div class="field-label" style="margin-top:.85rem;">Größter Lernmoment heute</div>
-      <textarea id="txt-learning" placeholder="Formuliere als Lernerkenntnis: 'Ich habe heute gelernt, dass ich bei großen Gaps dazu neige zu...'"></textarea>
+      <div class="field-label" style="margin-top:.85rem;">Biggest learning moment today</div>
+      <textarea id="txt-learning" placeholder="Phrase it as a lesson: 'Today I learned that with large gaps I tend to...'"></textarea>
 
-      <div class="field-label" style="margin-top:.75rem;">Was mache ich morgen konkret anders?</div>
-      <textarea id="txt-tmrw" placeholder="Konkret und umsetzbar. Keine vagen Vorsätze."></textarea>
+      <div class="field-label" style="margin-top:.75rem;">What will I do differently tomorrow, concretely?</div>
+      <textarea id="txt-tmrw" placeholder="Concrete and actionable. No vague resolutions."></textarea>
     </div>
 
     <!-- Abschlussritual -->
     <div class="card">
-      <div class="card-label">Abschlussritual <span id="close-counter" style="color:var(--muted)">0/4</span></div>
-      <div class="insight"><strong>Warum ein Ritual?</strong> Das Gehirn braucht ein klares Signal, dass der Handelstag beendet ist. Loss-Hangover ist die häufigste Ursache für Revenge-Trading am Folgemorgen.</div>
+      <div class="card-label">Closing ritual <span id="close-counter" style="color:var(--muted)">0/4</span></div>
+      <div class="insight"><strong>Why a ritual?</strong> The brain needs a clear signal that the trading day is over. A loss hangover is the most common cause of revenge trading the next morning.</div>
       <div class="progress-wrap"><div class="progress-fill" id="pb-close" style="width:0%"></div></div>
       <div class="check-list">
         <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
           <input type="checkbox" id="chk-c1">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Journal vollständig ausgefüllt &amp; gespeichert</span>
+          <span>Journal fully completed &amp; saved</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
           <input type="checkbox" id="chk-c2">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Charts &amp; Terminal geschlossen — kein „nochmal reinschauen"</span>
+          <span>Charts &amp; terminal closed — no „one more look“</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
           <input type="checkbox" id="chk-c3">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Körperliches Reset: Stretching, Spaziergang oder Atemübung</span>
+          <span>Physical reset: stretching, a walk or a breathing exercise</span>
         </label>
         <label class="check-row" onclick="toggleCheckGroup(this,'close',4,'pb-close','close-counter')">
           <input type="checkbox" id="chk-c4">
           <span class="check-box"><svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="#0d0f14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span>Ergebnis akzeptiert — Morgen ist ein neuer Tag</span>
+          <span>Result accepted — tomorrow is a new day</span>
         </label>
       </div>
     </div>
 
     <!-- Notes -->
     <div class="card">
-      <div class="card-label">Notizen</div>
-      <textarea id="txt-post-notes" placeholder="Weitere Beobachtungen, Muster, Erkenntnisse..." style="min-height:80px;"></textarea>
+      <div class="card-label">Notes</div>
+      <textarea id="txt-post-notes" placeholder="Further observations, patterns, insights..." style="min-height:80px;"></textarea>
     </div>
 
     <!-- Action bar POST -->
     <div class="action-bar">
-      <button class="btn-action btn-calc" onclick="calcPostScore()">Score berechnen</button>
-      <button class="btn-action btn-save" onclick="saveEntry()">Speichern</button>
+      <button class="btn-action btn-calc" onclick="calcPostScore()">Calculate score</button>
+      <button class="btn-action btn-save" onclick="saveEntry()">Save</button>
       <button class="btn-action" onclick="exportCSV()">Export CSV</button>
-      <button class="btn-action" onclick="exportImage()">Export als Bild</button>
-      <button class="btn-action" onclick="toggleArchive()">Archiv</button>
-      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">Neu</button>
+      <button class="btn-action" onclick="exportImage()">Export as image</button>
+      <button class="btn-action" onclick="toggleArchive()">Archive</button>
+      <button class="btn-action" onclick="resetForm()" style="margin-left:auto">New</button>
     </div>
     <div class="alert-box" id="alert-post-score" style="margin-top:.75rem;"></div>
 
@@ -799,72 +789,72 @@
   <div class="phase-panel" id="panel-ref">
 
     <div class="card">
-      <div class="card-label">Tilt-Sofortprotokoll</div>
-      <div class="insight">Körperliche Signale: Erhöhte HF · Kieferspannung · Beschleunigtes Tippen · Gedankliches Rechtfertigen eines schlechten Trades · Ungeduld beim Warten auf Setup</div>
+      <div class="card-label">Tilt emergency protocol</div>
+      <div class="insight">Physical signals: Elevated HR · Jaw tension · Faster typing · Mentally justifying a bad trade · Impatience while waiting for a setup</div>
       <div style="margin-top:.75rem; display:flex; flex-direction:column; gap:5px;">
         <div class="ref-item">
           <div class="ref-item-title">01 · STOP</div>
-          <div class="ref-item-body">Keine neuen Positionen öffnen. Hände vom Keyboard.</div>
+          <div class="ref-item-body">Open no new positions. Hands off the keyboard.</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">02 · Atemübung</div>
-          <div class="ref-item-body">4-7-8: 4s einatmen, 7s halten, 8s ausatmen. 3 Runden. Kortisol-Abbau aktivieren.</div>
+          <div class="ref-item-title">02 · Breathing exercise</div>
+          <div class="ref-item-body">4-7-8: inhale 4s, hold 7s, exhale 8s. 3 rounds. Activate cortisol reduction.</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">03 · Realitätscheck</div>
-          <div class="ref-item-body">"Würde ich diesen Trade in normalem Zustand eingehen?" — Wenn nein: Nicht handeln.</div>
+          <div class="ref-item-title">03 · Reality check</div>
+          <div class="ref-item-body">"Would I take this trade in a normal state?" — If no: don't trade.</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">04 · 15 Minuten Pause</div>
-          <div class="ref-item-body">Bildschirm verlassen. Kurze Bewegung. Kein "noch kurz reinschauen".</div>
+          <div class="ref-item-title">04 · 15-minute break</div>
+          <div class="ref-item-body">Leave the screen. A short walk. No "just a quick look".</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">05 · Dokumentieren</div>
-          <div class="ref-item-body">Tilt-Trigger sofort im Journal notieren. Daten für spätere Musteranalyse.</div>
+          <div class="ref-item-title">05 · Document</div>
+          <div class="ref-item-body">Note the tilt trigger in the journal immediately. Data for later pattern analysis.</div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-label">Tendlers 5 emotionale Kernprobleme</div>
+      <div class="card-label">Tendler's 5 core emotional problems</div>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <div class="ref-item" style="border-color:rgba(248,113,113,0.3); background:rgba(248,113,113,0.05);">
           <div class="ref-item-title" style="color:var(--coral)">Tilt / Anger</div>
-          <div class="ref-item-body">Ursache: Erwartung verletzt. Kern: "Das darf nicht passieren." → Revenge-Trading, Over-Sizing, SL-Verschieben.</div>
+          <div class="ref-item-body">Cause: expectation violated. Core: "This must not happen." → Revenge trading, over-sizing, moving the SL.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05);">
-          <div class="ref-item-title" style="color:var(--amber)">Angst / Fear</div>
-          <div class="ref-item-body">Ursache: Verlust-Konsequenzen überschätzt. Kern: "Ich kann das nicht verkraften." → Zu kleines Sizing, frühes Aussteigen, Zögern.</div>
+          <div class="ref-item-title" style="color:var(--amber)">Fear</div>
+          <div class="ref-item-body">Cause: loss consequences overestimated. Core: "I can't handle this." → Undersizing, exiting early, hesitation.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05);">
-          <div class="ref-item-title" style="color:var(--amber)">Gier / FOMO</div>
-          <div class="ref-item-body">Ursache: Kurzfristige Belohnungssucht. Kern: "Ich verpasse etwas." → Over-Trading, Chasing, zu frühes Einsteigen.</div>
+          <div class="ref-item-title" style="color:var(--amber)">Greed / FOMO</div>
+          <div class="ref-item-body">Cause: short-term reward craving. Core: "I'm missing out." → Over-trading, chasing, entering too early.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(79,142,247,0.3); background:rgba(79,142,247,0.05);">
-          <div class="ref-item-title" style="color:var(--accent)">Selbstvertrauen-Probleme</div>
-          <div class="ref-item-body">Ursache: Identifikation mit Trades. Kern: "Ich bin ein schlechter Trader." → Paralysis, Überanalyse, häufige Strategiewechsel.</div>
+          <div class="ref-item-title" style="color:var(--accent)">Confidence problems</div>
+          <div class="ref-item-body">Cause: identifying with trades. Core: "I'm a bad trader." → Paralysis, over-analysis, frequent strategy switching.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(52,211,153,0.3); background:rgba(52,211,153,0.05);">
-          <div class="ref-item-title" style="color:var(--green)">Arroganz / Winner-Tilt</div>
-          <div class="ref-item-body">Ursache: Gewinn-Streak erzeugt Unbesiegbarkeitsgefühl. Kern: "Ich kann aktuell nichts falsch machen." → Over-Sizing, Regelbrüche, SL ignorieren.</div>
+          <div class="ref-item-title" style="color:var(--green)">Arrogance / Winner's tilt</div>
+          <div class="ref-item-body">Cause: a winning streak creates a feeling of invincibility. Core: "I can't do anything wrong right now." → Over-sizing, rule breaks, ignoring the SL.</div>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-label">Tendlers 3 Schlüsselprinzipien</div>
+      <div class="card-label">Tendler's 3 key principles</div>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <div class="ref-item">
-          <div class="ref-item-title">Emotionen sind Symptome, nicht das Problem</div>
-          <div class="ref-item-body">Die wahre Ursache ist immer eine Überzeugung oder Erwartung. Arbeit an der Emotion ohne Arbeit an der Überzeugung ist reine Symptombehandlung.</div>
+          <div class="ref-item-title">Emotions are symptoms, not the problem</div>
+          <div class="ref-item-body">The true cause is always a belief or expectation. Working on the emotion without working on the belief is treating symptoms only.</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">Varianz ist real — akzeptiere sie strukturell</div>
-          <div class="ref-item-body">Edge zeigt sich erst über 100+ Trades. Einzelne Ergebnisse sind statistisches Rauschen. Trainiere das Gehirn, Verluste als Teil der Verteilung zu sehen.</div>
+          <div class="ref-item-title">Variance is real — accept it structurally</div>
+          <div class="ref-item-body">Edge only shows over 100+ trades. Individual results are statistical noise. Train the brain to see losses as part of the distribution.</div>
         </div>
         <div class="ref-item">
-          <div class="ref-item-title">Mentale Performance ist ein Skill, kein Talent</div>
-          <div class="ref-item-body">Tägliches Journaling ist das Trainingsinstrument. Konsequenz über 90 Tage erzeugt messbare Veränderung der emotionalen Baseline.</div>
+          <div class="ref-item-title">Mental performance is a skill, not a talent</div>
+          <div class="ref-item-body">Daily journaling is the training tool. Consistency over 90 days produces a measurable change in the emotional baseline.</div>
         </div>
       </div>
     </div>
@@ -873,20 +863,20 @@
       <div class="card-label">Conscious Competence Ladder</div>
       <div style="display:flex; flex-direction:column; gap:5px;">
         <div class="ref-item" style="border-color:rgba(248,113,113,0.3);">
-          <div class="ref-item-title" style="color:var(--coral)">Stufe 1 · Unbewusst inkompetent</div>
-          <div class="ref-item-body">Du weißt nicht, was du nicht weißt. Fehler passieren, aber du erkennst sie nicht als solche.</div>
+          <div class="ref-item-title" style="color:var(--coral)">Stage 1 · Unconsciously incompetent</div>
+          <div class="ref-item-body">You don't know what you don't know. Mistakes happen, but you don't recognize them as such.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(245,158,11,0.3);">
-          <div class="ref-item-title" style="color:var(--amber)">Stufe 2 · Bewusst inkompetent</div>
-          <div class="ref-item-body">Du erkennst deine Fehler, kannst sie aber noch nicht verhindern. Journaling beginnt hier zu wirken.</div>
+          <div class="ref-item-title" style="color:var(--amber)">Stage 2 · Consciously incompetent</div>
+          <div class="ref-item-body">You recognize your mistakes but can't prevent them yet. Journaling starts to work here.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(79,142,247,0.3);">
-          <div class="ref-item-title" style="color:var(--accent)">Stufe 3 · Bewusst kompetent</div>
-          <div class="ref-item-body">Du kannst richtig handeln, aber es erfordert bewusste Anstrengung. Pre-Trading Routine stabilisiert diese Stufe.</div>
+          <div class="ref-item-title" style="color:var(--accent)">Stage 3 · Consciously competent</div>
+          <div class="ref-item-body">You can act correctly, but it requires conscious effort. The pre-trading routine stabilizes this stage.</div>
         </div>
         <div class="ref-item" style="border-color:rgba(52,211,153,0.3);">
-          <div class="ref-item-title" style="color:var(--green)">Stufe 4 · Unbewusst kompetent</div>
-          <div class="ref-item-body">Richtiges Handeln wird automatisch. Das Ziel: C-Game auf Stufe 3 bringen, A-Game auf Stufe 4.</div>
+          <div class="ref-item-title" style="color:var(--green)">Stage 4 · Unconsciously competent</div>
+          <div class="ref-item-body">Correct action becomes automatic. The goal: bring the C-Game to stage 3, the A-Game to stage 4.</div>
         </div>
       </div>
     </div>
@@ -985,13 +975,13 @@ function showIntensityAlert(v){
   const el = document.getElementById('alert-intensity');
   el.classList.remove('show','ok','warn','bad');
   if(v >= 8){
-    el.innerHTML = '<strong>Intensität '+v+'/10</strong> — Erwäge, heute nicht zu handeln oder das Sizing auf 25% zu reduzieren. Hohes emotionales Arousal korreliert stark mit schlechteren Entscheidungen.';
+    el.innerHTML = '<strong>Intensity '+v+'/10</strong> — Consider not trading today or reducing sizing to 25%. High emotional arousal correlates strongly with worse decisions.';
     el.classList.add('show','bad');
   } else if(v >= 5){
-    el.innerHTML = '<strong>Mittlere Intensität '+v+'/10</strong> — Bleibe wachsam. Sizing reduzieren, extra Pausen einplanen.';
+    el.innerHTML = '<strong>Medium intensity '+v+'/10</strong> — Stay vigilant. Reduce sizing, plan extra breaks.';
     el.classList.add('show','warn');
   } else {
-    el.innerHTML = '<strong>Niedrige Intensität '+v+'/10</strong> — Gute Voraussetzungen für regelkonformes Trading.';
+    el.innerHTML = '<strong>Low intensity '+v+'/10</strong> — Good conditions for rule-based trading.';
     el.classList.add('show','ok');
   }
 }
@@ -1001,11 +991,11 @@ function onEmotionSelect(type){
   const el = document.getElementById('alert-emotion');
   el.classList.remove('show','ok','warn','bad');
   const msgs = {
-    neutral: {cls:'ok', msg:'<strong>Neutraler Zustand.</strong> Optimal für objektives Trading. Halte diesen Zustand durch Selbstbeobachtung aktiv.'},
-    conf:    {cls:'ok', msg:'<strong>Zuversicht erkannt.</strong> Produktiv — aber achte auf Winner\'s Tilt bei einer guten Streak. Bleib diszipliniert.'},
-    fear:    {cls:'warn', msg:'<strong>Angst erkannt.</strong> Achte auf zu kleines Sizing und frühzeitiges Aussteigen bei intaktem Setup. Vertraue dem Prozess.'},
-    tilt:    {cls:'bad', msg:'<strong>Tilt erkannt.</strong> Sei heute besonders wachsam. Überprüfe dein Tages-Limit doppelt und definiere deinen Abbruch-Punkt im Voraus.'},
-    euphoria:{cls:'warn', msg:'<strong>Euphorie / Winner-Tilt erkannt.</strong> Gefährlichster Zustand für Over-Sizing und Regelbrüche. Setze dich explizit an dein normales Sizing.'}
+    neutral: {cls:'ok', msg:'<strong>Neutral state.</strong> Optimal for objective trading. Keep this state active through self-observation.'},
+    conf:    {cls:'ok', msg:'<strong>Confidence detected.</strong> Productive — but watch for winner\'s tilt on a good streak. Stay disciplined.'},
+    fear:    {cls:'warn', msg:'<strong>Fear detected.</strong> Watch for undersizing and exiting too early on an intact setup. Trust the process.'},
+    tilt:    {cls:'bad', msg:'<strong>Tilt detected.</strong> Be especially vigilant today. Double-check your daily limit and define your stop point in advance.'},
+    euphoria:{cls:'warn', msg:'<strong>Euphoria / winner\'s tilt detected.</strong> The most dangerous state for over-sizing and rule breaks. Deliberately set yourself to your normal sizing.'}
   };
   const m = msgs[type];
   if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
@@ -1015,9 +1005,9 @@ function onGameSelect(game){
   const el = document.getElementById('alert-game');
   el.classList.remove('show','ok','warn','bad');
   const msgs = {
-    A: {cls:'ok',   msg:'<strong>A-Game bereit.</strong> Normales Sizing. Voller Plan. Volle Konzentration.'},
-    B: {cls:'warn', msg:'<strong>B-Game.</strong> Sizing um 25–50% reduzieren. Engere Regeln. Fokus auf Prozess, nicht P&L.'},
-    C: {cls:'bad',  msg:'<strong>C-Game erkannt.</strong> Erwäge, heute nicht zu handeln oder auf Paper-Trading zu wechseln. C-Game kostet langfristig mehr als es bringt.'}
+    A: {cls:'ok',   msg:'<strong>A-Game ready.</strong> Normal sizing. Full plan. Full focus.'},
+    B: {cls:'warn', msg:'<strong>B-Game.</strong> Reduce sizing by 25–50%. Tighter rules. Focus on process, not P&L.'},
+    C: {cls:'bad',  msg:'<strong>C-Game detected.</strong> Consider not trading today or switching to paper trading. C-Game costs more long-term than it gives.'}
   };
   const m = msgs[game];
   if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
@@ -1027,11 +1017,11 @@ function onPostEmotionSelect(type){
   const el = document.getElementById('alert-post-emotion');
   el.classList.remove('show','ok','warn','bad');
   const msgs = {
-    tilt:    {cls:'bad',  msg:'<strong>Tilt-Nachbearbeitung:</strong> Welche Erwartung wurde verletzt? Welche implizite Regel hattest du im Kopf, die der Markt gebrochen hat? Diese Erwartung ist das Problem, nicht der Trade.'},
-    fear:    {cls:'warn', msg:'<strong>Angst-Nachbearbeitung:</strong> Was ist das schlimmste reale Szenario? Ist es wirklich so katastrophal wie es sich anfühlt? Meist überschätzen wir Konsequenzen massiv.'},
-    greed:   {cls:'warn', msg:'<strong>FOMO-Nachbearbeitung:</strong> Hätte der verpasste Trade deinem Setup entsprochen? Wenn ja: Notiere die Regel. Wenn nein: Es war kein deiner Trades.'},
-    euphoria:{cls:'warn', msg:'<strong>Winner-Tilt Nachbearbeitung:</strong> Zähle alle Regelbrüche heute. Waren die Gewinne Können oder Glück? Kalibriere ehrlich neu.'},
-    conf:    {cls:'ok',   msg:'<strong>Selbstvertrauen stärken:</strong> Notiere, was heute gut lief und warum. Das Gehirn neigt dazu, Erfolge zu vergessen und Fehler zu speichern — aktiv gegensteuern.'}
+    tilt:    {cls:'bad',  msg:'<strong>Tilt debrief:</strong> Which expectation was violated? What implicit rule did you have in mind that the market broke? That expectation is the problem, not the trade.'},
+    fear:    {cls:'warn', msg:'<strong>Fear debrief:</strong> What is the worst real scenario? Is it truly as catastrophic as it feels? We usually overestimate consequences massively.'},
+    greed:   {cls:'warn', msg:'<strong>FOMO debrief:</strong> Would the missed trade have matched your setup? If yes: note the rule. If no: it was not one of your trades.'},
+    euphoria:{cls:'warn', msg:'<strong>Winner\'s-tilt debrief:</strong> Count all rule breaks today. Were the wins skill or luck? Recalibrate honestly.'},
+    conf:    {cls:'ok',   msg:'<strong>Reinforce confidence:</strong> Note what went well today and why. The brain tends to forget successes and store mistakes — actively counteract this.'}
   };
   const m = msgs[type];
   if(m){ el.innerHTML = m.msg; el.classList.add('show', m.cls); }
@@ -1058,9 +1048,9 @@ function calcPreScore(){
   const el = document.getElementById('alert-pre-score');
   el.classList.remove('show','ok','warn','bad');
   let cls, msg;
-  if(total >= 70){ cls='ok'; msg='<strong>Pre-Score: '+total+'%</strong> — Guter Ausgangszustand. Voll handeln nach Plan.'; }
-  else if(total >= 50){ cls='warn'; msg='<strong>Pre-Score: '+total+'%</strong> — Moderater Zustand. Sizing reduzieren, extra wachsam sein.'; }
-  else { cls='bad'; msg='<strong>Pre-Score: '+total+'%</strong> — Schlechter Zustand. Erwäge Pause oder Paper-Trading heute.'; }
+  if(total >= 70){ cls='ok'; msg='<strong>Pre-Score: '+total+'%</strong> — Good starting state. Trade fully to plan.'; }
+  else if(total >= 50){ cls='warn'; msg='<strong>Pre-Score: '+total+'%</strong> — Moderate state. Reduce sizing, be extra vigilant.'; }
+  else { cls='bad'; msg='<strong>Pre-Score: '+total+'%</strong> — Poor state. Consider a break or paper trading today.'; }
   el.innerHTML = msg;
   el.classList.add('show', cls);
   showToast('Pre-Score: '+total+'%');
@@ -1078,9 +1068,9 @@ function calcPostScore(){
   const el = document.getElementById('alert-post-score');
   el.classList.remove('show','ok','warn','bad');
   let cls, msg;
-  if(score >= 70){ cls='ok'; msg='<strong>Post-Score: '+score+'%</strong> — Starkes Debriefing. Du lernst systematisch — das ist der Kompoundzins des mentalen Spiels.'; }
-  else if(score >= 50){ cls='warn'; msg='<strong>Post-Score: '+score+'%</strong> — Solides Debriefing. Gehe bei der Emotionsanalyse noch tiefer.'; }
-  else { cls='bad'; msg='<strong>Post-Score: '+score+'%</strong> — Unvollständiges Debriefing. Investiere morgen mehr Zeit in die Nachbereitung.'; }
+  if(score >= 70){ cls='ok'; msg='<strong>Post-Score: '+score+'%</strong> — Strong debrief. You\'re learning systematically — that\'s the compound interest of the mental game.'; }
+  else if(score >= 50){ cls='warn'; msg='<strong>Post-Score: '+score+'%</strong> — Solid debrief. Go even deeper in the emotion analysis.'; }
+  else { cls='bad'; msg='<strong>Post-Score: '+score+'%</strong> — Incomplete debrief. Invest more time in the review tomorrow.'; }
   el.innerHTML = msg;
   el.classList.add('show', cls);
 
@@ -1152,13 +1142,13 @@ function setArchive(a){ try{ localStorage.setItem('mg-archive', JSON.stringify(a
 
 function saveEntry(){
   const s = getState();
-  if(!s.date){ showToast('Bitte Datum wählen.'); return; }
+  if(!s.date){ showToast('Please select a date.'); return; }
   const a = getArchive();
   const i = a.findIndex(e => e.date === s.date);
   if(i>=0) a[i]=s; else a.unshift(s);
   setArchive(a);
   renderArchive();
-  showToast('Gespeichert: '+s.date);
+  showToast('Saved: '+s.date);
 }
 
 function resetForm(){
@@ -1167,7 +1157,7 @@ function resetForm(){
   document.querySelectorAll('.check-row').forEach(r => { r.classList.remove('checked'); const cb=r.querySelector('input'); if(cb) cb.checked=false; });
   document.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
   ['pb-warmup','pb-debrief','pb-close'].forEach(id => { const el=document.getElementById(id); if(el) el.style.width='0%'; });
-  ['warmup-counter','debrief-counter','close-counter'].forEach((id,i) => { const el=document.getElementById(id); if(el) el.textContent='0/'+[8,6,4][i]; });
+  ['warmup-counter','debrief-counter','close-counter'].forEach((id,i) => { const el=document.getElementById(id); if(el) el.textContent='0/'+[8,4,4][i]; });
   document.querySelectorAll('textarea').forEach(t => t.value='');
   ['alert-emotion','alert-intensity','alert-game','alert-post-emotion','alert-pre-score','alert-post-score'].forEach(id => {
     const el=document.getElementById(id); if(el) el.classList.remove('show');
@@ -1187,7 +1177,7 @@ function toggleArchive(){
 function renderArchive(){
   const a = getArchive();
   const el = document.getElementById('archive-list');
-  if(!a.length){ el.innerHTML='<div class="empty-msg">Noch keine Einträge gespeichert.</div>'; return; }
+  if(!a.length){ el.innerHTML='<div class="empty-msg">No entries saved yet.</div>'; return; }
   el.innerHTML = a.map((e,i) => {
     const game = (e['grp-game']||[]).join(' ');
     const emo  = (e['grp-emotion']||[]).slice(0,1).join('');
@@ -1197,8 +1187,8 @@ function renderArchive(){
         <div class="entry-meta">${game ? 'Game: '+game : '—'}${emo ? ' · '+emo : ''}</div>
       </div>
       <div class="entry-actions">
-        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Laden</button>
-        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Löschen</button>
+        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Load</button>
+        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -1206,7 +1196,7 @@ function renderArchive(){
 
 function loadArchiveEntry(i){
   const a = getArchive();
-  if(a[i]){ loadState(a[i]); showToast('Geladen: '+a[i].date); }
+  if(a[i]){ loadState(a[i]); showToast('Loaded: '+a[i].date); }
 }
 
 function deleteArchiveEntry(i){
@@ -1215,18 +1205,18 @@ function deleteArchiveEntry(i){
   a.splice(i,1);
   setArchive(a);
   renderArchive();
-  showToast('Gelöscht: '+date);
+  showToast('Deleted: '+date);
 }
 
 // ── CSV Export ────────────────────────────────────────────────────────────────
-const CSV_HEAD = '"Datum","Geschlafen","Gegessen","Aktivität","Zustand","Game","Intensität","Prozess-Ziel","Mentales Risiko","Prozess-Score","Emotions-Kontrolle","Lernmoment","Morgen","Notizen"';
+const CSV_HEAD = '"Date","Slept","Ate","Activity","State","Game","Intensity","Process goal","Mental risk","Process score","Emotional control","Learning moment","Tomorrow","Notes"';
 
 function toRow(s){
   return [
     s.date,
-    s.chk_sleep    ? 'Ja' : 'Nein',
-    s.chk_food     ? 'Ja' : 'Nein',
-    s.chk_activity ? 'Ja' : 'Nein',
+    s.chk_sleep    ? 'Yes' : 'No',
+    s.chk_food     ? 'Yes' : 'No',
+    s.chk_activity ? 'Yes' : 'No',
     (s['grp-emotion']||[]).join('; '),
     (s['grp-game']||[]).join('; '),
     s.intensity||'',
@@ -1252,27 +1242,27 @@ function dlFile(content, name, mime){
 function exportCSV(){
   const s = getState();
   dlFile(CSV_HEAD+'\n'+toRow(s), 'mental-game-'+s.date+'.csv', 'text/csv;charset=utf-8;');
-  showToast('CSV exportiert.');
+  showToast('CSV exported.');
 }
 
 function exportAllCSV(){
   const a = getArchive();
-  if(!a.length){ showToast('Archiv ist leer.'); return; }
-  dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'mental-game-alle.csv', 'text/csv;charset=utf-8;');
-  showToast('Alle Einträge exportiert.');
+  if(!a.length){ showToast('Archive is empty.'); return; }
+  dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'mental-game-all.csv', 'text/csv;charset=utf-8;');
+  showToast('All entries exported.');
 }
 
 // ── Image Export ──────────────────────────────────────────────────────────────
 function exportImage(){
-  showToast('Bild wird erstellt…');
+  showToast('Generating image…');
   const el = document.getElementById('main');
   html2canvas(el, {scale:2, backgroundColor:'#0d0f14', useCORS:true}).then(canvas => {
     const a = document.createElement('a');
     a.download = 'mental-game-'+getState().date+'.png';
     a.href = canvas.toDataURL('image/png');
     a.click();
-    showToast('Bild gespeichert.');
-  }).catch(() => showToast('Export fehlgeschlagen.'));
+    showToast('Image saved.');
+  }).catch(() => showToast('Export failed.'));
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────

@@ -450,7 +450,7 @@
       </div>
       <div class="q-block">
         <div class="q-label">Did you stop immediately after reaching the limit?</div>
-        <div class="btn-group" id="grp-stopp" data-theme="green">
+        <div class="btn-group" id="grp-stop" data-theme="green">
           <button class="tog" data-val="yes-immediately">Yes, immediately</button>
           <button class="tog" data-val="hesitant">Hesitantly</button>
           <button class="tog" data-val="no">No, kept trading</button>
@@ -464,7 +464,7 @@
       <div class="card-label">Overall Feeling</div>
       <div class="q-block">
         <div class="q-label">How do you feel about today's result?</div>
-        <div class="btn-group" id="grp-gefuehl" data-theme="blue">
+        <div class="btn-group" id="grp-feeling" data-theme="blue">
           <button class="tog" data-val="very-satisfied">Very satisfied</button>
           <button class="tog" data-val="okay">Okay</button>
           <button class="tog" data-val="unsatisfied">Unsatisfied</button>
@@ -473,7 +473,7 @@
       </div>
       <div class="q-block">
         <div class="q-label">Was today a rule-compliant trading day?</div>
-        <div class="btn-group" id="grp-regelkonform" data-theme="green">
+        <div class="btn-group" id="grp-rulecompliant" data-theme="green">
           <button class="tog" data-val="yes">Yes, fully</button>
           <button class="tog" data-val="mostly">Mostly</button>
           <button class="tog" data-val="no">No</button>
@@ -505,7 +505,7 @@
       </div>
       <div class="q-block">
         <div class="q-label">Was there a revenge trade impulse?</div>
-        <div class="btn-group" id="grp-rache" data-theme="coral">
+        <div class="btn-group" id="grp-revenge" data-theme="coral">
           <button class="tog" data-val="no">No</button>
           <button class="tog" data-val="impulse-resisted">Impulse, resisted</button>
           <button class="tog" data-val="yes">Yes, executed</button>
@@ -580,7 +580,7 @@
       <div class="card-label">Patience & Waiting</div>
       <div class="q-block">
         <div class="q-label">Did you wait for your setup or force entries?</div>
-        <div class="btn-group" id="grp-geduld" data-theme="amber">
+        <div class="btn-group" id="grp-patience" data-theme="amber">
           <button class="tog" data-val="waited">Waited</button>
           <button class="tog" data-val="partially">Partially</button>
           <button class="tog" data-val="forced">Forced</button>
@@ -602,7 +602,7 @@
       <div class="q-block">
         <div class="q-label">What is the one concrete thing you will do differently tomorrow?</div>
         <div class="q-hint">Specific and actionable — not 'I will be better'</div>
-        <textarea id="txt-eine-sache" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup..."></textarea>
+        <textarea id="txt-one-thing" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup..."></textarea>
       </div>
     </div>
 
@@ -615,7 +615,7 @@
       <div class="card">
         <div class="card-label">Daily target tomorrow (€)</div>
         <div class="q-hint">Stop when reached</div>
-        <textarea id="txt-tagesziel" placeholder="e.g. +200€" style="min-height:48px;"></textarea>
+        <textarea id="txt-daily-target" placeholder="e.g. +200€" style="min-height:48px;"></textarea>
       </div>
     </div>
 
@@ -623,7 +623,7 @@
       <div class="card-label">Mental Preparation</div>
       <div class="q-block">
         <div class="q-label">How will you prepare mentally before market open tomorrow?</div>
-        <div class="btn-group" id="grp-vorbereitung" data-theme="teal">
+        <div class="btn-group" id="grp-preparation" data-theme="teal">
           <button class="tog" data-val="meditation">Meditation</button>
           <button class="tog" data-val="journaling">Journaling</button>
           <button class="tog" data-val="chart-analysis">Chart analysis</button>
@@ -705,7 +705,7 @@ function goStep(n){
 }
 
 // Single-select toggle groups
-const SINGLE_SELECT = ['grp-losses','grp-stopp','grp-gefuehl','grp-regelkonform','grp-rache','grp-mental','grp-setup-qual','grp-sl','grp-geduld','grp-commitment','grp-emotion'];
+const SINGLE_SELECT = ['grp-losses','grp-stop','grp-feeling','grp-rulecompliant','grp-revenge','grp-mental','grp-setup-qual','grp-sl','grp-patience','grp-commitment','grp-emotion'];
 
 document.querySelectorAll('.btn-group .tog').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -732,51 +732,51 @@ function updateMetrics(){
   const losses = getGroupVal('grp-losses');
   const lossEl = document.getElementById('loss-metric');
   lossEl.textContent = losses || '—';
-  lossEl.className = 'metric-value' + (losses === '3 — Limit' || losses === '4+ — Übertreten' ? ' coral' : losses === '2' ? ' amber' : losses === '0' || losses === '1' ? ' green' : '');
+  lossEl.className = 'metric-value' + (losses === '3' || losses === '4+' ? ' coral' : losses === '2' ? ' amber' : losses === '0' || losses === '1' ? ' green' : '');
 }
 
 function getInsights(){
   const insights = [];
   const losses = getGroupVal('grp-losses');
-  const stopp = getGroupVal('grp-stopp');
-  const rache = getGroupVal('grp-rache');
+  const stop = getGroupVal('grp-stop');
+  const revenge = getGroupVal('grp-revenge');
   const emotion = getGroupVal('grp-emotion');
   const sl = getGroupVal('grp-sl');
   const setupQual = getGroupVal('grp-setup-qual');
   const commitment = getGroupVal('grp-commitment');
-  const eineSache = document.getElementById('txt-eine-sache').value;
+  const oneThing = document.getElementById('txt-one-thing').value;
 
-  if(losses === '4+ — Übertreten'){
-    insights.push({type:'coral', text:'Du hast das 3-Trade-Limit übertreten. Das ist das kritischste Signal des Tages — analysiere genau, was dich dazu gebracht hat.'});
-  } else if(losses === '3 — Limit' && stopp === 'ja-sofort'){
-    insights.push({type:'ok', text:'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.'});
-  } else if(losses === '3 — Limit' && stopp === 'nein'){
-    insights.push({type:'coral', text:'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.'});
+  if(losses === '4+'){
+    insights.push({type:'coral', text:'You exceeded the 3-trade limit. This is the most critical signal of the day — analyze exactly what led you there.'});
+  } else if(losses === '3' && stop === 'yes-immediately'){
+    insights.push({type:'ok', text:'Limit reached, stopped immediately — that is discipline. This is exactly how the system is meant to work.'});
+  } else if(losses === '3' && stop === 'no'){
+    insights.push({type:'coral', text:'Trading stop ignored. The most expensive moment in trading begins right here — trading on emotionally after the limit.'});
   }
-  if(rache === 'ja'){
-    insights.push({type:'coral', text:'Rache-Trade ausgeführt: häufigstes Muster hinter großen Verlusttagen. Was hat den Impuls ausgelöst?'});
-  } else if(rache === 'impuls-widerstanden'){
-    insights.push({type:'ok', text:'Rache-Impuls erkannt und widerstanden — das ist mentale Stärke. Diese Fähigkeit schützt dein Konto.'});
+  if(revenge === 'yes'){
+    insights.push({type:'coral', text:'Revenge trade executed: the most common pattern behind big losing days. What triggered the impulse?'});
+  } else if(revenge === 'impulse-resisted'){
+    insights.push({type:'ok', text:'Revenge impulse recognized and resisted — that is mental strength. This skill protects your account.'});
   }
-  if(emotion === 'fomo' || emotion === 'gier'){
-    insights.push({type:'warn', text:'FOMO / Gier ist ein Signal, kein Handelsgrund. Morgen: Warte auf das Setup, nicht auf das Gefühl.'});
+  if(emotion === 'fomo' || emotion === 'greed'){
+    insights.push({type:'warn', text:'FOMO / greed is a signal, not a reason to trade. Tomorrow: wait for the setup, not the feeling.'});
   }
-  if(sl === 'ignoriert'){
-    insights.push({type:'coral', text:'Stop-Loss nicht gesetzt oder ignoriert. Das ist die teuerste Gewohnheit im Trading — keine Ausnahmen, nie.'});
-  } else if(sl === 'einmal-bewegt'){
-    insights.push({type:'warn', text:'Stop-Loss nachgezogen oder bewegt. Jede Ausnahme trainiert das Gehirn, Regeln als optional zu sehen.'});
+  if(sl === 'ignored'){
+    insights.push({type:'coral', text:'Stop-loss not set or ignored. This is the most expensive habit in trading — no exceptions, ever.'});
+  } else if(sl === 'moved-once'){
+    insights.push({type:'warn', text:'Stop-loss trailed or moved. Every exception trains the brain to treat rules as optional.'});
   }
-  if(setupQual === 'impulsiv'){
-    insights.push({type:'warn', text:'Impulsive Entries entstehen aus Langeweile oder dem Druck, dabei sein zu müssen. Kein Setup = kein Trade.'});
+  if(setupQual === 'impulsive'){
+    insights.push({type:'warn', text:'Impulsive entries come from boredom or the pressure to be in. No setup = no trade.'});
   }
   if(commitment === '100'){
-    insights.push({type:'ok', text:'Starkes Commitment für morgen. Schreibe deine eine Verbesserung sichtbar auf — Post-it am Monitor.'});
+    insights.push({type:'ok', text:'Strong commitment for tomorrow. Write your one improvement somewhere visible — a sticky note on the monitor.'});
   }
-  if(eineSache && eineSache.trim().length > 10){
-    insights.push({type:'info', text:'Vorsatz: "' + eineSache.trim().substring(0,90) + (eineSache.length > 90 ? '...' : '') + '"'});
+  if(oneThing && oneThing.trim().length > 10){
+    insights.push({type:'info', text:'Intention: "' + oneThing.trim().substring(0,90) + (oneThing.length > 90 ? '...' : '') + '"'});
   }
   if(insights.length === 0){
-    insights.push({type:'info', text:'Reflexion abgeschlossen. Regelmäßiges Journaling ist einer der stärksten Hebel für Trading-Disziplin.'});
+    insights.push({type:'info', text:'Reflection complete. Regular journaling is one of the strongest levers for trading discipline.'});
   }
   return insights;
 }
@@ -789,20 +789,20 @@ function finalizeReflection(){
   il.innerHTML = insights.map(i => `<div class="insight ${i.type}">${i.text}</div>`).join('');
 
   const rows = [
-    ['Datum', document.getElementById('trade-date').value || '—'],
-    ['Verlusttrades', getGroupVal('grp-losses') || '—'],
-    ['Handelsstopp', getGroupVal('grp-stopp') || '—'],
-    ['Gefühl', getGroupVal('grp-gefuehl') || '—'],
-    ['Regelkonform', getGroupVal('grp-regelkonform') || '—'],
+    ['Date', document.getElementById('trade-date').value || '—'],
+    ['Loss trades', getGroupVal('grp-losses') || '—'],
+    ['Trading stop', getGroupVal('grp-stop') || '—'],
+    ['Feeling', getGroupVal('grp-feeling') || '—'],
+    ['Rule-compliant', getGroupVal('grp-rulecompliant') || '—'],
     ['Emotion', getGroupVal('grp-emotion') || '—'],
-    ['Rache-Impuls', getGroupVal('grp-rache') || '—'],
-    ['Mental. Zustand', getGroupVal('grp-mental') || '—'],
-    ['Setup-Qualität', getGroupVal('grp-setup-qual') || '—'],
-    ['Stop-Loss', getGroupVal('grp-sl') || '—'],
-    ['Geduld', getGroupVal('grp-geduld') || '—'],
-    ['Max. Verlust', document.getElementById('txt-max-loss').value || '—'],
-    ['Tagesziel', document.getElementById('txt-tagesziel').value || '—'],
-    ['Vorbereitung', getGroupVal('grp-vorbereitung') || '—'],
+    ['Revenge impulse', getGroupVal('grp-revenge') || '—'],
+    ['Mental state', getGroupVal('grp-mental') || '—'],
+    ['Setup quality', getGroupVal('grp-setup-qual') || '—'],
+    ['Stop-loss', getGroupVal('grp-sl') || '—'],
+    ['Patience', getGroupVal('grp-patience') || '—'],
+    ['Max. loss', document.getElementById('txt-max-loss').value || '—'],
+    ['Daily target', document.getElementById('txt-daily-target').value || '—'],
+    ['Preparation', getGroupVal('grp-preparation') || '—'],
     ['Commitment', getGroupVal('grp-commitment') || '—'],
   ];
   document.getElementById('sum-table').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
@@ -816,22 +816,22 @@ function getState(){
   return {
     date: document.getElementById('trade-date').value,
     losses: getGroupVal('grp-losses'),
-    stopp: getGroupVal('grp-stopp'),
-    gefuehl: getGroupVal('grp-gefuehl'),
-    regelkonform: getGroupVal('grp-regelkonform'),
+    stop: getGroupVal('grp-stop'),
+    feeling: getGroupVal('grp-feeling'),
+    rulecompliant: getGroupVal('grp-rulecompliant'),
     emotion: getGroupVal('grp-emotion'),
-    rache: getGroupVal('grp-rache'),
+    revenge: getGroupVal('grp-revenge'),
     mental: getGroupVal('grp-mental'),
     setupQual: getGroupVal('grp-setup-qual'),
     sl: getGroupVal('grp-sl'),
-    geduld: getGroupVal('grp-geduld'),
+    patience: getGroupVal('grp-patience'),
     emotionMoment: document.getElementById('txt-emotion-moment').value,
     bestTrade: document.getElementById('txt-best-trade').value,
     worstTrade: document.getElementById('txt-worst-trade').value,
-    eineSache: document.getElementById('txt-eine-sache').value,
+    oneThing: document.getElementById('txt-one-thing').value,
     maxLoss: document.getElementById('txt-max-loss').value,
-    tagesziel: document.getElementById('txt-tagesziel').value,
-    vorbereitung: getGroupVal('grp-vorbereitung'),
+    dailyTarget: document.getElementById('txt-daily-target').value,
+    preparation: getGroupVal('grp-preparation'),
     commitment: getGroupVal('grp-commitment'),
   };
 }
@@ -841,26 +841,26 @@ function setArchive(a){ try{ localStorage.setItem('trf-archive', JSON.stringify(
 
 function saveEntry(){
   const s = getState();
-  if(!s.date){ showToast('Bitte Datum auswählen.'); return; }
+  if(!s.date){ showToast('Please select a date.'); return; }
   const a = getArchive();
   const i = a.findIndex(e => e.date === s.date);
   if(i >= 0) a[i] = s; else a.unshift(s);
   setArchive(a);
   renderArchive();
-  showToast('Gespeichert: ' + s.date);
+  showToast('Saved: ' + s.date);
 }
 
 function resetForm(){
   document.getElementById('trade-date').value = todayStr;
   updateHeaderDate();
   document.querySelectorAll('.tog').forEach(b => b.classList.remove('active'));
-  ['txt-emotion-moment','txt-best-trade','txt-worst-trade','txt-eine-sache','txt-max-loss','txt-tagesziel'].forEach(id => {
+  ['txt-emotion-moment','txt-best-trade','txt-worst-trade','txt-one-thing','txt-max-loss','txt-daily-target'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('insights-card').style.display = 'none';
   document.getElementById('summary-card').style.display = 'none';
   goStep(0);
-  showToast('Neue Reflexion gestartet.');
+  showToast('New reflection started.');
 }
 
 function toggleArchive(){
@@ -873,14 +873,14 @@ function toggleArchive(){
 function renderArchive(){
   const a = getArchive();
   const el = document.getElementById('archive-list');
-  if(!a.length){ el.innerHTML = '<div class="empty-msg">Noch keine Einträge gespeichert.</div>'; return; }
+  if(!a.length){ el.innerHTML = '<div class="empty-msg">No entries saved yet.</div>'; return; }
   el.innerHTML = a.map((e,i) => {
     const tags = [e.losses, e.emotion, e.commitment].filter(Boolean).slice(0,3).map(t => `<span class="etag">${t}</span>`).join('');
     return `<div class="archive-entry">
       <div><div class="entry-date">${e.date}</div><div class="entry-tags">${tags}</div></div>
       <div class="entry-actions">
-        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Laden</button>
-        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Löschen</button>
+        <button class="entry-btn" onclick="loadArchiveEntry(${i})">Load</button>
+        <button class="entry-btn del" onclick="deleteArchiveEntry(${i})">Delete</button>
       </div>
     </div>`;
   }).join('');
@@ -893,10 +893,10 @@ function loadArchiveEntry(i){
   document.getElementById('trade-date').value = s.date || '';
   updateHeaderDate();
   const groupMap = {
-    'grp-losses': s.losses, 'grp-stopp': s.stopp, 'grp-gefuehl': s.gefuehl,
-    'grp-regelkonform': s.regelkonform, 'grp-emotion': s.emotion, 'grp-rache': s.rache,
+    'grp-losses': s.losses, 'grp-stop': s.stop, 'grp-feeling': s.feeling,
+    'grp-rulecompliant': s.rulecompliant, 'grp-emotion': s.emotion, 'grp-revenge': s.revenge,
     'grp-mental': s.mental, 'grp-setup-qual': s.setupQual, 'grp-sl': s.sl,
-    'grp-geduld': s.geduld, 'grp-vorbereitung': s.vorbereitung, 'grp-commitment': s.commitment,
+    'grp-patience': s.patience, 'grp-preparation': s.preparation, 'grp-commitment': s.commitment,
   };
   Object.entries(groupMap).forEach(([grpId, val]) => {
     const g = document.getElementById(grpId);
@@ -904,12 +904,12 @@ function loadArchiveEntry(i){
     const vals = val.split(', ');
     g.querySelectorAll('.tog').forEach(b => b.classList.toggle('active', vals.includes(b.dataset.val)));
   });
-  ['emotionMoment','bestTrade','worstTrade','eineSache','maxLoss','tagesziel'].forEach(k => {
-    const idMap = {emotionMoment:'txt-emotion-moment',bestTrade:'txt-best-trade',worstTrade:'txt-worst-trade',eineSache:'txt-eine-sache',maxLoss:'txt-max-loss',tagesziel:'txt-tagesziel'};
+  ['emotionMoment','bestTrade','worstTrade','oneThing','maxLoss','dailyTarget'].forEach(k => {
+    const idMap = {emotionMoment:'txt-emotion-moment',bestTrade:'txt-best-trade',worstTrade:'txt-worst-trade',oneThing:'txt-one-thing',maxLoss:'txt-max-loss',dailyTarget:'txt-daily-target'};
     document.getElementById(idMap[k]).value = s[k] || '';
   });
   goStep(0);
-  showToast('Geladen: ' + s.date);
+  showToast('Loaded: ' + s.date);
 }
 
 function deleteArchiveEntry(i){
@@ -918,16 +918,16 @@ function deleteArchiveEntry(i){
   a.splice(i,1);
   setArchive(a);
   renderArchive();
-  showToast('Gelöscht: ' + date);
+  showToast('Deleted: ' + date);
 }
 
 // ── CSV Export ────────────────────────────────────────────────────────
-const CSV_HEAD = '"Datum","Verlusttrades","Handelsstopp","Gefühl","Regelkonform","Emotion","Rache","Mental","Setup-Qualität","Stop-Loss","Geduld","Emotion-Moment","Bester Trade","Schlechtester Trade","Eine Sache","Max. Verlust","Tagesziel","Vorbereitung","Commitment"';
+const CSV_HEAD = '"Date","Loss trades","Trading stop","Feeling","Rule-compliant","Emotion","Revenge","Mental","Setup quality","Stop-loss","Patience","Emotion moment","Best trade","Worst trade","One thing","Max. loss","Daily target","Preparation","Commitment"';
 
 function toRow(s){
-  return [s.date,s.losses,s.stopp,s.gefuehl,s.regelkonform,s.emotion,s.rache,s.mental,s.setupQual,s.sl,s.geduld,
+  return [s.date,s.losses,s.stop,s.feeling,s.rulecompliant,s.emotion,s.revenge,s.mental,s.setupQual,s.sl,s.patience,
     (s.emotionMoment||'').replace(/"/g,'""'),(s.bestTrade||'').replace(/"/g,'""'),(s.worstTrade||'').replace(/"/g,'""'),
-    (s.eineSache||'').replace(/"/g,'""'),s.maxLoss,s.tagesziel,s.vorbereitung,s.commitment
+    (s.oneThing||'').replace(/"/g,'""'),s.maxLoss,s.dailyTarget,s.preparation,s.commitment
   ].map(c => '"'+(c||'')+'"').join(',');
 }
 
@@ -943,14 +943,14 @@ function dlFile(content, name, mime){
 function exportCSV(){
   const s = getState();
   dlFile(CSV_HEAD+'\n'+toRow(s), 'reflection-'+s.date+'.csv', 'text/csv;charset=utf-8;');
-  showToast('CSV exportiert.');
+  showToast('CSV exported.');
 }
 
 function exportAllCSV(){
   const a = getArchive();
-  if(!a.length){ showToast('Archiv ist leer.'); return; }
+  if(!a.length){ showToast('Archive is empty.'); return; }
   dlFile(CSV_HEAD+'\n'+a.map(toRow).join('\n'), 'reflection-all.csv', 'text/csv;charset=utf-8;');
-  showToast('Alle Einträge exportiert.');
+  showToast('All entries exported.');
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────
