@@ -6,11 +6,11 @@ const $ = (id) => document.getElementById(id);
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra', 'prep-adr-midline',
   'prep-adr-wdrrb', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle',
-  'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
+  'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-one-thing', 'txt-max-loss', 'txt-daily-target',
   'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
-const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stopp', 'grp-gefuehl', 'grp-regelkonform', 'grp-rache',
-  'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-geduld', 'grp-vorbereitung', 'grp-commitment'];
+const POST_GROUPS = ['grp-maxloss', 'grp-losses', 'grp-stop', 'grp-feeling', 'grp-rulecompliant', 'grp-revenge',
+  'grp-mental', 'grp-setup-qual', 'grp-sl', 'grp-patience', 'grp-preparation', 'grp-commitment'];
 const CHECK_FIELDS = ['pre-chk-sleep', 'pre-chk-food', 'pre-chk-activity',
   'pre-w1', 'pre-w3', 'pre-w5', 'pre-w6', 'pre-w8',
   'pm-db1', 'pm-db2', 'pm-db3', 'pm-db4',
@@ -41,11 +41,11 @@ function emotionAlert(btn) {
   const el = $('alert-emotion'); if (!el) return; el.className = 'alert-box';
   if (!btn) return;
   const msgs = {
-    neutral: { c: 'ok', m: '<strong>Neutraler Zustand.</strong> Optimal für objektives Trading. Halte diesen Zustand durch Selbstbeobachtung aktiv.' },
-    conf: { c: 'ok', m: '<strong>Zuversicht erkannt.</strong> Produktiv — aber achte auf Winner\'s Tilt bei einer guten Streak. Bleib diszipliniert.' },
-    fear: { c: 'warn', m: '<strong>Angst erkannt.</strong> Achte auf zu kleines Sizing und frühzeitiges Aussteigen bei intaktem Setup. Vertraue dem Prozess.' },
-    tilt: { c: 'bad', m: '<strong>Tilt erkannt.</strong> Sei heute besonders wachsam. Überprüfe dein Tages-Limit doppelt und definiere deinen Abbruch-Punkt im Voraus.' },
-    euphoria: { c: 'warn', m: '<strong>Euphorie / Winner-Tilt erkannt.</strong> Gefährlichster Zustand für Over-Sizing und Regelbrüche. Setze dich explizit an dein normales Sizing.' }
+    neutral: { c: 'ok', m: '<strong>Neutral state.</strong> Optimal for objective trading. Keep this state active through self-observation.' },
+    conf: { c: 'ok', m: '<strong>Confidence detected.</strong> Productive — but watch for winner\'s tilt on a good streak. Stay disciplined.' },
+    fear: { c: 'warn', m: '<strong>Fear detected.</strong> Watch for undersizing and exiting too early on an intact setup. Trust the process.' },
+    tilt: { c: 'bad', m: '<strong>Tilt detected.</strong> Be especially vigilant today. Double-check your daily limit and define your stop point in advance.' },
+    euphoria: { c: 'warn', m: '<strong>Euphoria / winner\'s tilt detected.</strong> The most dangerous state for over-sizing and rule breaks. Deliberately set yourself to your normal sizing.' }
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
@@ -53,9 +53,9 @@ function gameAlert(btn) {
   const el = $('alert-game'); if (!el) return; el.className = 'alert-box';
   if (!btn) return;
   const msgs = {
-    A: { c: 'ok', m: '<strong>A-Game bereit.</strong> Normales Sizing. Voller Plan. Volle Konzentration.' },
-    B: { c: 'warn', m: '<strong>B-Game.</strong> Sizing um 25–50% reduzieren. Engere Regeln. Fokus auf Prozess, nicht P&L.' },
-    C: { c: 'bad', m: '<strong>C-Game erkannt.</strong> Erwäge, heute nicht zu handeln oder auf Paper-Trading zu wechseln. C-Game kostet langfristig mehr als es bringt.' }
+    A: { c: 'ok', m: '<strong>A-Game ready.</strong> Normal sizing. Full plan. Full focus.' },
+    B: { c: 'warn', m: '<strong>B-Game.</strong> Reduce sizing by 25–50%. Tighter rules. Focus on process, not P&L.' },
+    C: { c: 'bad', m: '<strong>C-Game detected.</strong> Consider not trading today or switching to paper trading. C-Game costs more long-term than it gives.' }
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
@@ -63,11 +63,11 @@ function postEmotionAlert(btn) {
   const el = $('alert-post-emotion'); if (!el) return; el.className = 'alert-box';
   if (!btn) return;
   const msgs = {
-    tilt: { c: 'bad', m: '<strong>Tilt-Nachbearbeitung:</strong> Welche Erwartung wurde verletzt? Welche implizite Regel hattest du im Kopf, die der Markt gebrochen hat? Diese Erwartung ist das Problem, nicht der Trade.' },
-    fear: { c: 'warn', m: '<strong>Angst-Nachbearbeitung:</strong> Was ist das schlimmste reale Szenario? Ist es wirklich so katastrophal wie es sich anfühlt? Meist überschätzen wir Konsequenzen massiv.' },
-    greed: { c: 'warn', m: '<strong>FOMO-Nachbearbeitung:</strong> Hätte der verpasste Trade deinem Setup entsprochen? Wenn ja: Notiere die Regel. Wenn nein: Es war kein deiner Trades.' },
-    euphoria: { c: 'warn', m: '<strong>Winner-Tilt Nachbearbeitung:</strong> Zähle alle Regelbrüche heute. Waren die Gewinne Können oder Glück? Kalibriere ehrlich neu.' },
-    conf: { c: 'ok', m: '<strong>Selbstvertrauen stärken:</strong> Notiere, was heute gut lief und warum. Das Gehirn neigt dazu, Erfolge zu vergessen und Fehler zu speichern — aktiv gegensteuern.' }
+    tilt: { c: 'bad', m: '<strong>Tilt debrief:</strong> Which expectation was violated? What implicit rule did you have in mind that the market broke? That expectation is the problem, not the trade.' },
+    fear: { c: 'warn', m: '<strong>Fear debrief:</strong> What is the worst real scenario? Is it truly as catastrophic as it feels? We usually overestimate consequences massively.' },
+    greed: { c: 'warn', m: '<strong>FOMO debrief:</strong> Would the missed trade have matched your setup? If yes: note the rule. If no: it was not one of your trades.' },
+    euphoria: { c: 'warn', m: '<strong>Winner\'s-tilt debrief:</strong> Count all rule breaks today. Were the wins skill or luck? Recalibrate honestly.' },
+    conf: { c: 'ok', m: '<strong>Reinforce confidence:</strong> Note what went well today and why. The brain tends to forget successes and store mistakes — actively counteract this.' }
   };
   const m = msgs[btn.dataset.key]; if (m) { el.innerHTML = m.m; el.classList.add('show', m.c); }
 }
@@ -77,25 +77,25 @@ function setMultiGroup(id, vals) { const g = $(id); if (!g) return; const set = 
 function postInsights() {
   const out = [];
   const losses = groupValue('grp-losses');
-  const stopp = groupValue('grp-stopp');
-  const rache = groupValue('grp-rache');
+  const stop = groupValue('grp-stop');
+  const revenge = groupValue('grp-revenge');
   const emotion = multiGroupValue('grp-rd-emotion');
   const sl = groupValue('grp-sl');
   const setupQual = groupValue('grp-setup-qual');
   const commitment = groupValue('grp-commitment');
-  const eineSache = ($('txt-eine-sache') || {}).value || '';
-  if (losses === '4+') out.push({ type: 'bad', text: 'Du hast das 3-Trade-Limit übertreten. Das ist das kritischste Signal des Tages — analysiere genau, was dich dazu gebracht hat.' });
-  else if (losses === '3' && stopp === 'yes-immediately') out.push({ type: 'good', text: 'Limit erreicht, sofort gestoppt — das ist Disziplin. Genau so funktioniert das System.' });
-  else if (losses === '3' && stopp === 'no') out.push({ type: 'bad', text: 'Handelsstopp ignoriert. Der teuerste Moment im Trading beginnt genau hier — emotionales Weitertraden nach dem Limit.' });
-  if (rache === 'yes') out.push({ type: 'bad', text: 'Rache-Trade ausgeführt: häufigstes Muster hinter großen Verlusttagen. Was hat den Impuls ausgelöst?' });
-  else if (rache === 'impulse-resisted') out.push({ type: 'good', text: 'Rache-Impuls erkannt und widerstanden — das ist mentale Stärke. Diese Fähigkeit schützt dein Konto.' });
-  if (emotion.includes('fomo') || emotion.includes('greed')) out.push({ type: 'warn', text: 'FOMO / Gier ist ein Signal, kein Handelsgrund. Morgen: Warte auf das Setup, nicht auf das Gefühl.' });
-  if (sl === 'ignored') out.push({ type: 'bad', text: 'Stop-Loss nicht gesetzt oder ignoriert. Das ist die teuerste Gewohnheit im Trading — keine Ausnahmen, nie.' });
-  else if (sl === 'moved-once') out.push({ type: 'warn', text: 'Stop-Loss nachgezogen oder bewegt. Jede Ausnahme trainiert das Gehirn, Regeln als optional zu sehen.' });
-  if (setupQual === 'impulsive') out.push({ type: 'warn', text: 'Impulsive Entries entstehen aus Langeweile oder dem Druck, dabei sein zu müssen. Kein Setup = kein Trade.' });
-  if (commitment === '100') out.push({ type: 'good', text: 'Starkes Commitment für morgen. Schreibe deine eine Verbesserung sichtbar auf — Post-it am Monitor.' });
-  if (eineSache && eineSache.trim().length > 10) out.push({ type: 'info', text: 'Vorsatz: "' + eineSache.trim().substring(0, 90) + (eineSache.length > 90 ? '...' : '') + '"' });
-  if (out.length === 0) out.push({ type: 'info', text: 'Reflexion abgeschlossen. Regelmäßiges Journaling ist einer der stärksten Hebel für Trading-Disziplin.' });
+  const oneThing = ($('txt-one-thing') || {}).value || '';
+  if (losses === '4+') out.push({ type: 'bad', text: 'You exceeded the 3-trade limit. This is the most critical signal of the day — analyze exactly what led you there.' });
+  else if (losses === '3' && stop === 'yes-immediately') out.push({ type: 'good', text: 'Limit reached, stopped immediately — that is discipline. This is exactly how the system is meant to work.' });
+  else if (losses === '3' && stop === 'no') out.push({ type: 'bad', text: 'Trading stop ignored. The most expensive moment in trading begins right here — trading on emotionally after the limit.' });
+  if (revenge === 'yes') out.push({ type: 'bad', text: 'Revenge trade executed: the most common pattern behind big losing days. What triggered the impulse?' });
+  else if (revenge === 'impulse-resisted') out.push({ type: 'good', text: 'Revenge impulse recognized and resisted — that is mental strength. This skill protects your account.' });
+  if (emotion.includes('fomo') || emotion.includes('greed')) out.push({ type: 'warn', text: 'FOMO / greed is a signal, not a reason to trade. Tomorrow: wait for the setup, not the feeling.' });
+  if (sl === 'ignored') out.push({ type: 'bad', text: 'Stop-loss not set or ignored. This is the most expensive habit in trading — no exceptions, ever.' });
+  else if (sl === 'moved-once') out.push({ type: 'warn', text: 'Stop-loss trailed or moved. Every exception trains the brain to treat rules as optional.' });
+  if (setupQual === 'impulsive') out.push({ type: 'warn', text: 'Impulsive entries come from boredom or the pressure to be in. No setup = no trade.' });
+  if (commitment === '100') out.push({ type: 'good', text: 'Strong commitment for tomorrow. Write your one improvement somewhere visible — a sticky note on the monitor.' });
+  if (oneThing && oneThing.trim().length > 10) out.push({ type: 'info', text: 'Intention: "' + oneThing.trim().substring(0, 90) + (oneThing.length > 90 ? '...' : '') + '"' });
+  if (out.length === 0) out.push({ type: 'info', text: 'Reflection complete. Regular journaling is one of the strongest levers for trading discipline.' });
   return out;
 }
 function renderPostInsights() {
@@ -105,9 +105,9 @@ function renderPostInsights() {
 function intensityAlert(v) {
   const el = $('alert-intensity'); if (!el) return; el.className = 'alert-box';
   if (!v) return;
-  if (v >= 8) { el.innerHTML = '<strong>Intensität ' + v + '/10</strong> — Erwäge, heute nicht zu handeln oder das Sizing auf 25% zu reduzieren. Hohes emotionales Arousal korreliert stark mit schlechteren Entscheidungen.'; el.classList.add('show', 'bad'); }
-  else if (v >= 5) { el.innerHTML = '<strong>Mittlere Intensität ' + v + '/10</strong> — Bleibe wachsam. Sizing reduzieren, extra Pausen einplanen.'; el.classList.add('show', 'warn'); }
-  else { el.innerHTML = '<strong>Niedrige Intensität ' + v + '/10</strong> — Gute Voraussetzungen für regelkonformes Trading.'; el.classList.add('show', 'ok'); }
+  if (v >= 8) { el.innerHTML = '<strong>Intensity ' + v + '/10</strong> — Consider not trading today or reducing sizing to 25%. High emotional arousal correlates strongly with worse decisions.'; el.classList.add('show', 'bad'); }
+  else if (v >= 5) { el.innerHTML = '<strong>Medium intensity ' + v + '/10</strong> — Stay vigilant. Reduce sizing, plan extra breaks.'; el.classList.add('show', 'warn'); }
+  else { el.innerHTML = '<strong>Low intensity ' + v + '/10</strong> — Good conditions for rule-based trading.'; el.classList.add('show', 'ok'); }
 }
 
 function readJournal() {
@@ -447,7 +447,7 @@ function resetSection(key) {
   } else if (key === 'ooda') {
     renderTable({});
   } else if (key === 'post') {
-    ['txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-eine-sache', 'txt-max-loss', 'txt-tagesziel',
+    ['txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-one-thing', 'txt-max-loss', 'txt-daily-target',
       'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'].forEach(f => { const el = $(f); if (el) el.value = ''; });
     ['pm-db1', 'pm-db2', 'pm-db3', 'pm-db4', 'pm-cl1', 'pm-cl2', 'pm-cl3', 'pm-cl4']
       .forEach(f => { const el = $(f); if (el) { el.checked = false; const row = el.closest('.chk-row'); if (row) row.classList.remove('on'); } });
@@ -595,8 +595,8 @@ POST_GROUPS.forEach(gid => {
 });
 const _rdEmotion = $('grp-rd-emotion');
 if (_rdEmotion) _rdEmotion.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { b.classList.toggle('active'); renderPostInsights(); }));
-const _eineSache = $('txt-eine-sache');
-if (_eineSache) _eineSache.addEventListener('input', renderPostInsights);
+const _oneThing = $('txt-one-thing');
+if (_oneThing) _oneThing.addEventListener('input', renderPostInsights);
 // Intensity 1–10 scale (click again on the selected number to reset)
 const _si = $('scale-intensity');
 if (_si) _si.querySelectorAll('.scale-btn').forEach(b => b.addEventListener('click', () => {

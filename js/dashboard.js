@@ -87,8 +87,8 @@ async function render() {
     const dayN = (n) => `avg · ${n} day${n === 1 ? '' : 's'}`;
     reviewEl.innerHTML = [
       tile('Performance self score', scoreVal(rv.perf), dayN(rv.perfN), scoreCls(rv.perf)),
-      tile('Prozessqualität', scoreVal(rv.process), dayN(rv.processN), scoreCls(rv.process)),
-      tile('Emotionale Kontrolle', scoreVal(rv.emoctrl), dayN(rv.emoctrlN), scoreCls(rv.emoctrl)),
+      tile('Process quality', scoreVal(rv.process), dayN(rv.processN), scoreCls(rv.process)),
+      tile('Emotional control', scoreVal(rv.emoctrl), dayN(rv.emoctrlN), scoreCls(rv.emoctrl)),
     ].join('');
   }
 
