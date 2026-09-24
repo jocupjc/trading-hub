@@ -202,23 +202,23 @@
         <div class="sec-body">
           <div class="sub-label" style="margin-top:0">Check-in</div>
           <div class="chk-grid chk-inline">
-            <label class="chk-row"><input type="checkbox" id="pre-chk-sleep"> Mindestens 7h geschlafen?</label>
-            <label class="chk-row"><input type="checkbox" id="pre-chk-food"> Gegessen &amp; getrunken?</label>
-            <label class="chk-row"><input type="checkbox" id="pre-chk-activity"> Körperliche Aktivität erledigt?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-chk-sleep"> Slept at least 7h?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-chk-food"> Ate &amp; drank?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-chk-activity"> Physical activity done?</label>
           </div>
 
           <div class="sub-label">Mental State Check</div>
-          <div class="insight"><strong>Tendler:</strong> Das Ziel ist nicht, perfekt gestimmt zu sein – sondern ehrlich zu wissen, wo du stehst. Emotionaler Zustand bestimmt, welches Game du heute spielen kannst.</div>
-          <div class="field-label">Aktueller Zustand</div>
+          <div class="insight"><strong>Tendler:</strong> The goal is not to be in a perfect mood — but to honestly know where you stand. Your emotional state determines which game you can play today.</div>
+          <div class="field-label">Current state</div>
           <div class="btn-group" id="grp-emotion" data-theme="blue">
-            <button type="button" class="tog" data-val="Neutral / Ruhig" data-key="neutral">Neutral / Ruhig</button>
-            <button type="button" class="tog" data-val="Zuversicht / Fokus" data-key="conf">Zuversicht / Fokus</button>
-            <button type="button" class="tog" data-val="Angst / Nervosität" data-key="fear">Angst / Nervosität</button>
+            <button type="button" class="tog" data-val="Neutral / Calm" data-key="neutral">Neutral / Calm</button>
+            <button type="button" class="tog" data-val="Confidence / Focus" data-key="conf">Confidence / Focus</button>
+            <button type="button" class="tog" data-val="Fear / Nervousness" data-key="fear">Fear / Nervousness</button>
             <button type="button" class="tog" data-val="Tilt / Frustration" data-key="tilt">Tilt / Frustration</button>
-            <button type="button" class="tog" data-val="Euphorie / Winner-Tilt" data-key="euphoria">Euphorie / Winner-Tilt</button>
+            <button type="button" class="tog" data-val="Euphoria / Winner's tilt" data-key="euphoria">Euphoria / Winner's tilt</button>
           </div>
           <div class="alert-box" id="alert-emotion"></div>
-          <div class="field-label">Intensität (1 = kaum spürbar → 10 = überwältigend)</div>
+          <div class="field-label">Intensity (1 = barely noticeable → 10 = overwhelming)</div>
           <div class="scale-row" id="scale-intensity">
             <button type="button" class="scale-btn" data-v="1">1</button>
             <button type="button" class="scale-btn" data-v="2">2</button>
@@ -232,38 +232,38 @@
             <button type="button" class="scale-btn" data-v="10">10</button>
           </div>
           <div class="alert-box" id="alert-intensity"></div>
-          <div class="field-label">Auslöser (optional)</div>
-          <textarea id="pre-trigger" placeholder="z.B. Schlechter Schlaf, gestrige Verluste, stressiger Morgen…"></textarea>
+          <div class="field-label">Trigger (optional)</div>
+          <textarea id="pre-trigger" placeholder="e.g. Poor sleep, yesterday's losses, a stressful morning…"></textarea>
 
-          <div class="sub-label">A / B / C — Game Einschätzung</div>
-          <div class="insight"><strong>Tendlers Kernprinzip:</strong> C-Game zu eliminieren ist wichtiger als A-Game zu spielen. Ein solides B-Game jeden Tag schlägt A/C-Game-Wechsel langfristig.</div>
-          <div class="field-label">Welches Game kannst du heute realistisch spielen?</div>
+          <div class="sub-label">A / B / C — game assessment</div>
+          <div class="insight"><strong>Tendler's core principle:</strong> Eliminating your C-Game matters more than playing your A-Game. A solid B-Game every day beats A/C-Game swings over the long run.</div>
+          <div class="field-label">Which game can you realistically play today?</div>
           <div class="btn-group" id="grp-game" data-theme="green">
             <button type="button" class="tog" data-val="A-Game" data-key="A">A-Game</button>
             <button type="button" class="tog" data-val="B-Game" data-key="B">B-Game</button>
             <button type="button" class="tog" data-val="C-Game" data-key="C">C-Game</button>
           </div>
           <div class="alert-box" id="alert-game"></div>
-          <div class="field-label">Meine typischen C-Game Fehler</div>
-          <textarea id="pre-cgame" placeholder="1. Revenge-Trading nach Verlust  2. FOMO-Einstieg ohne Setup  3. Stop-Loss verschieben…"></textarea>
+          <div class="field-label">My typical C-Game mistakes</div>
+          <textarea id="pre-cgame" placeholder="1. Revenge trading after a loss  2. FOMO entry without a setup  3. Moving the stop-loss…"></textarea>
 
-          <div class="sub-label">Warm-up Checkliste</div>
+          <div class="sub-label">Warm-up checklist</div>
           <div class="chk-grid">
-            <label class="chk-row"><input type="checkbox" id="pre-w1"> Gestern-Bias geprüft: unverarbeitete Verluste / Gewinne?</label>
-            <label class="chk-row"><input type="checkbox" id="pre-w3"> Tages-Verlustlimit definiert und akzeptiert</label>
-            <label class="chk-row"><input type="checkbox" id="pre-w5"> Stop-Loss Strategie ist klar und unwiderruflich</label>
-            <label class="chk-row"><input type="checkbox" id="pre-w6"> Persönliches Tilt-Warnsignal bewusst aktiviert</label>
-            <label class="chk-row"><input type="checkbox" id="pre-w8"> Abbruchkriterien für heute definiert (wann höre ich auf?)</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w1"> Checked yesterday-bias: unprocessed losses / gains?</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w3"> Daily loss limit defined and accepted</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w5"> Stop-loss strategy is clear and irreversible</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w6"> Personal tilt warning signal consciously activated</label>
+            <label class="chk-row"><input type="checkbox" id="pre-w8"> Stop criteria for today defined (when do I stop?)</label>
           </div>
 
-          <div class="sub-label">Tagesintention &amp; Fokus</div>
-          <div class="insight"><strong>Tendler:</strong> Das Gehirn lernt durch Wiederholung. Täglich bewusst formulierte Intentionen bauen neue neuronale Pfade und ersetzen automatische Reaktionsmuster.</div>
-          <div class="field-label">Mein Prozess-Ziel heute (kein P&amp;L-Ziel)</div>
-          <textarea id="pre-goal" placeholder="z.B. Ich warte auf bestätigte Setups und handle nicht aus Ungeduld heraus…"></textarea>
-          <div class="field-label">Mein größtes mentales Risiko heute</div>
-          <textarea id="pre-risk" placeholder="z.B. Nach einem Verlust sofort wieder einsteigen wollen…"></textarea>
-          <div class="field-label">Mantra / Anker für heute</div>
-          <textarea id="pre-mantra" placeholder="z.B. Ich handle den Prozess, nicht das Ergebnis." style="min-height:50px"></textarea>
+          <div class="sub-label">Daily intention &amp; focus</div>
+          <div class="insight"><strong>Tendler:</strong> The brain learns through repetition. Consciously formulated intentions each day build new neural pathways and replace automatic reaction patterns.</div>
+          <div class="field-label">My process goal today (not a P&amp;L goal)</div>
+          <textarea id="pre-goal" placeholder="e.g. I wait for confirmed setups and don't act out of impatience…"></textarea>
+          <div class="field-label">My biggest mental risk today</div>
+          <textarea id="pre-risk" placeholder="e.g. Wanting to re-enter immediately after a loss…"></textarea>
+          <div class="field-label">Mantra / anchor for today</div>
+          <textarea id="pre-mantra" placeholder="e.g. I trade the process, not the outcome." style="min-height:50px"></textarea>
         </div>
       </div>
 
@@ -513,10 +513,10 @@
           </div>
           <div class="progress-wrap"><div class="progress-fill" id="pb-debrief"></div></div>
           <div class="chk-grid">
-            <label class="chk-row"><input type="checkbox" id="pm-db1"> Alle Trades dokumentiert (Entry, Exit, Begründung)</label>
-            <label class="chk-row"><input type="checkbox" id="pm-db2"> Tages-Limit eingehalten?</label>
-            <label class="chk-row"><input type="checkbox" id="pm-db3"> Emotionale Momente identifiziert und notiert</label>
-            <label class="chk-row"><input type="checkbox" id="pm-db4"> Regelbrüche notiert (neutral betrachtet, nicht verurteilt)</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db1"> All trades documented (entry, exit, rationale)</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db2"> Daily limit respected?</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db3"> Emotional moments identified and noted</label>
+            <label class="chk-row"><input type="checkbox" id="pm-db4"> Rule breaks noted (observed neutrally, not judged)</label>
           </div>
           <div class="field-label">Did you hit daily max loss limit (2R)?</div>
           <div class="btn-group" id="grp-maxloss" data-theme="coral">
@@ -532,27 +532,27 @@
             <button type="button" class="tog" data-val="4+">4+ — Exceeded</button>
           </div>
           <div class="field-label">Did you stop immediately after reaching the limit?</div>
-          <div class="btn-group" id="grp-stopp" data-theme="green">
+          <div class="btn-group" id="grp-stop" data-theme="green">
             <button type="button" class="tog" data-val="yes-immediately">Yes, immediately</button>
             <button type="button" class="tog" data-val="hesitant">Hesitantly</button>
             <button type="button" class="tog" data-val="no">No, kept trading</button>
             <button type="button" class="tog" data-val="n/a">Limit not reached</button>
           </div>
           <div class="field-label">How do you feel about today's result?</div>
-          <div class="btn-group" id="grp-gefuehl" data-theme="blue">
+          <div class="btn-group" id="grp-feeling" data-theme="blue">
             <button type="button" class="tog" data-val="very-satisfied">Very satisfied</button>
             <button type="button" class="tog" data-val="okay">Okay</button>
             <button type="button" class="tog" data-val="unsatisfied">Unsatisfied</button>
             <button type="button" class="tog" data-val="frustrated">Frustrated</button>
           </div>
           <div class="field-label">Was today a rule-compliant trading day?</div>
-          <div class="btn-group" id="grp-regelkonform" data-theme="green">
+          <div class="btn-group" id="grp-rulecompliant" data-theme="green">
             <button type="button" class="tog" data-val="yes">Yes, fully</button>
             <button type="button" class="tog" data-val="mostly">Mostly</button>
             <button type="button" class="tog" data-val="no">No</button>
           </div>
-          <div class="sub-label">Performance-Bewertung</div>
-          <div class="insight"><strong>Wichtig:</strong> Bewerte Prozessqualität und emotionale Kontrolle getrennt vom P&amp;L. Ein verlustreicher Tag mit perfektem Prozess ist ein 9/10 Tag.</div>
+          <div class="sub-label">Performance rating</div>
+          <div class="insight"><strong>Important:</strong> Rate process quality and emotional control separately from P&amp;L. A losing day with a perfect process is a 9/10 day.</div>
           <div class="field-label">Performance self score (1 = poor → 10 = excellent)</div>
           <div class="scale-row" id="scale-perf">
             <button type="button" class="scale-btn" data-v="1">1</button>
@@ -566,7 +566,7 @@
             <button type="button" class="scale-btn" data-v="9">9</button>
             <button type="button" class="scale-btn" data-v="10">10</button>
           </div>
-          <div class="field-label">Prozessqualität heute (1–10)</div>
+          <div class="field-label">Process quality today (1–10)</div>
           <div class="scale-row" id="scale-process">
             <button type="button" class="scale-btn" data-v="1">1</button>
             <button type="button" class="scale-btn" data-v="2">2</button>
@@ -579,7 +579,7 @@
             <button type="button" class="scale-btn" data-v="9">9</button>
             <button type="button" class="scale-btn" data-v="10">10</button>
           </div>
-          <div class="field-label">Emotionale Kontrolle heute (1–10)</div>
+          <div class="field-label">Emotional control today (1–10)</div>
           <div class="scale-row" id="scale-emoctrl">
             <button type="button" class="scale-btn" data-v="1">1</button>
             <button type="button" class="scale-btn" data-v="2">2</button>
@@ -592,10 +592,10 @@
             <button type="button" class="scale-btn" data-v="9">9</button>
             <button type="button" class="scale-btn" data-v="10">10</button>
           </div>
-          <div class="field-label">Größter Lernmoment heute</div>
-          <textarea id="txt-learning" placeholder="Formuliere als Lernerkenntnis: 'Ich habe heute gelernt, dass ich bei großen Gaps dazu neige zu...'"></textarea>
-          <div class="field-label">Was mache ich morgen konkret anders?</div>
-          <textarea id="txt-tmrw" placeholder="Konkret und umsetzbar. Keine vagen Vorsätze."></textarea>
+          <div class="field-label">Biggest learning moment today</div>
+          <textarea id="txt-learning" placeholder="Phrase it as a lesson: 'Today I learned that with large gaps I tend to...'"></textarea>
+          <div class="field-label">What will I do differently tomorrow, concretely?</div>
+          <textarea id="txt-tmrw" placeholder="Concrete and actionable. No vague resolutions."></textarea>
           <div class="pm-nav"><button type="button" class="btn pri" data-pmnext="1">Next → Emotions</button></div>
           </div>
 
@@ -612,7 +612,7 @@
             <button type="button" class="tog" data-val="boredom">Boredom</button>
           </div>
           <div class="field-label">Was there a revenge trade impulse?</div>
-          <div class="btn-group" id="grp-rache" data-theme="coral">
+          <div class="btn-group" id="grp-revenge" data-theme="coral">
             <button type="button" class="tog" data-val="no">No</button>
             <button type="button" class="tog" data-val="impulse-resisted">Impulse, resisted</button>
             <button type="button" class="tog" data-val="yes">Yes, executed</button>
@@ -628,23 +628,23 @@
             <button type="button" class="tog" data-val="stressed">Stressed</button>
             <button type="button" class="tog" data-val="tired">Tired</button>
           </div>
-          <div class="sub-label">Emotionsanalyse</div>
-          <div class="insight"><strong>Tendler:</strong> Emotionen sind Informationen über ungelöste Lernbereiche — keine Schwäche. Die Frage ist nicht "warum werde ich emotional?" sondern "was zeigt mir diese Emotion?"</div>
-          <div class="field-label">Dominante Emotion heute</div>
+          <div class="sub-label">Emotion analysis</div>
+          <div class="insight"><strong>Tendler:</strong> Emotions are information about unresolved learning areas — not a weakness. The question isn't "why am I getting emotional?" but "what is this emotion showing me?"</div>
+          <div class="field-label">Dominant emotion today</div>
           <div class="btn-group" id="grp-post-emotion" data-theme="purple">
             <button type="button" class="tog" data-key="tilt" data-val="Tilt / Frustration">Tilt / Frustration</button>
-            <button type="button" class="tog" data-key="fear" data-val="Angst">Angst</button>
-            <button type="button" class="tog" data-key="greed" data-val="Gier / FOMO">Gier / FOMO</button>
-            <button type="button" class="tog" data-key="euphoria" data-val="Arroganz / Winner-Tilt">Arroganz / Winner-Tilt</button>
-            <button type="button" class="tog" data-key="conf" data-val="Selbstvertrauen">Selbstvertrauen</button>
+            <button type="button" class="tog" data-key="fear" data-val="Fear">Fear</button>
+            <button type="button" class="tog" data-key="greed" data-val="Greed / FOMO">Greed / FOMO</button>
+            <button type="button" class="tog" data-key="euphoria" data-val="Arrogance / Winner's tilt">Arrogance / Winner's tilt</button>
+            <button type="button" class="tog" data-key="conf" data-val="Confidence">Confidence</button>
           </div>
           <div class="alert-box" id="alert-post-emotion"></div>
-          <div class="field-label">Was hat diese Emotion konkret ausgelöst?</div>
-          <textarea id="txt-emo-trigger" placeholder="So konkret wie möglich: welcher Trade, welcher Moment, welcher Gedanke..."></textarea>
-          <div class="field-label">Welche irrationale Überzeugung steckt dahinter?</div>
-          <textarea id="txt-irr-belief" placeholder="z.B. 'Ich muss diesen Verlust sofort zurückgewinnen' / 'Wenn ich diesen Trade verpasse bin ich ein Verlierer'..."></textarea>
-          <div class="field-label">Die rationale Gegenperspektive (Reframing)</div>
-          <textarea id="txt-reframe" placeholder="z.B. 'Einzelne Trades definieren meine Performance nicht. Edge entfaltet sich über hunderte Trades.'..."></textarea>
+          <div class="field-label">What specifically triggered this emotion?</div>
+          <textarea id="txt-emo-trigger" placeholder="As concrete as possible: which trade, which moment, which thought..."></textarea>
+          <div class="field-label">Which irrational belief is behind it?</div>
+          <textarea id="txt-irr-belief" placeholder="e.g. 'I must win this loss back immediately' / 'If I miss this trade I'm a loser'..."></textarea>
+          <div class="field-label">The rational counter-perspective (reframing)</div>
+          <textarea id="txt-reframe" placeholder="e.g. 'Individual trades don't define my performance. Edge plays out over hundreds of trades.'..."></textarea>
           <div class="pm-nav"><button type="button" class="btn" data-pmprev="0">← Back</button><button type="button" class="btn pri" data-pmnext="2">Next → Setups</button></div>
           </div>
 
@@ -671,7 +671,7 @@
               <textarea id="txt-worst-trade" placeholder="What should I have done differently?"></textarea></label>
           </div>
           <div class="field-label">Did you wait for your setup or force entries?</div>
-          <div class="btn-group" id="grp-geduld" data-theme="amber">
+          <div class="btn-group" id="grp-patience" data-theme="amber">
             <button type="button" class="tog" data-val="waited">Waited</button>
             <button type="button" class="tog" data-val="partially">Partially</button>
             <button type="button" class="tog" data-val="forced">Forced</button>
@@ -683,15 +683,15 @@
           <div class="sub-label" style="margin-top:0">Intentions for tomorrow</div>
           <div class="field-label">What is the one concrete thing you will do differently tomorrow?</div>
           <div class="q-hint">Specific and actionable — not 'I will be better'</div>
-          <textarea id="txt-eine-sache" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup…"></textarea>
+          <textarea id="txt-one-thing" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup…"></textarea>
           <div class="row-2col" style="margin-top:12px">
             <label class="field"><span class="fl">Max. daily loss tomorrow (€)</span>
               <textarea id="txt-max-loss" placeholder="e.g. −300€" style="min-height:48px"></textarea></label>
             <label class="field"><span class="fl">Daily target tomorrow (€)</span>
-              <textarea id="txt-tagesziel" placeholder="e.g. +200€" style="min-height:48px"></textarea></label>
+              <textarea id="txt-daily-target" placeholder="e.g. +200€" style="min-height:48px"></textarea></label>
           </div>
           <div class="field-label">How will you prepare mentally before market open tomorrow?</div>
-          <div class="btn-group" id="grp-vorbereitung" data-theme="teal">
+          <div class="btn-group" id="grp-preparation" data-theme="teal">
             <button type="button" class="tog" data-val="meditation">Meditation</button>
             <button type="button" class="tog" data-val="journaling">Journaling</button>
             <button type="button" class="tog" data-val="chart-analysis">Chart analysis</button>
@@ -706,14 +706,14 @@
             <button type="button" class="tog" data-val="unsure">Unsure</button>
           </div>
 
-          <div class="field-label" style="display:flex; justify-content:space-between; align-items:center"><span>Abschlussritual</span><span id="close-counter" style="color:var(--mu)">0/4</span></div>
-          <div class="insight"><strong>Warum ein Ritual?</strong> Das Gehirn braucht ein klares Signal, dass der Handelstag beendet ist. Loss-Hangover ist die häufigste Ursache für Revenge-Trading am Folgemorgen.</div>
+          <div class="field-label" style="display:flex; justify-content:space-between; align-items:center"><span>Closing ritual</span><span id="close-counter" style="color:var(--mu)">0/4</span></div>
+          <div class="insight"><strong>Why a ritual?</strong> The brain needs a clear signal that the trading day is over. A loss hangover is the most common cause of revenge trading the next morning.</div>
           <div class="progress-wrap"><div class="progress-fill" id="pb-close"></div></div>
           <div class="chk-grid">
-            <label class="chk-row"><input type="checkbox" id="pm-cl1"> Journal vollständig ausgefüllt &amp; gespeichert</label>
-            <label class="chk-row"><input type="checkbox" id="pm-cl2"> Charts &amp; Terminal geschlossen — kein „nochmal reinschauen"</label>
-            <label class="chk-row"><input type="checkbox" id="pm-cl3"> Körperliches Reset: Stretching, Spaziergang oder Atemübung</label>
-            <label class="chk-row"><input type="checkbox" id="pm-cl4"> Ergebnis akzeptiert — Morgen ist ein neuer Tag</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl1"> Journal fully completed &amp; saved</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl2"> Charts &amp; terminal closed — no „one more look“</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl3"> Physical reset: stretching, a walk or a breathing exercise</label>
+            <label class="chk-row"><input type="checkbox" id="pm-cl4"> Result accepted — tomorrow is a new day</label>
           </div>
 
           <div class="sub-label">Insights &amp; patterns</div>
@@ -776,6 +776,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=36"></script>
+  <script src="../js/daily.js?v=37"></script>
 </body>
 </html>
