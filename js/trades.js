@@ -96,7 +96,7 @@ async function refresh() {
         <td class="mono">${d.trades}</td>
         <td class="mono ${cls(d.r)}">${fmtR(d.r)}</td>
         <td class="mono ${cls(d.dollar)}">${d.dollar ? fmtD(d.dollar) : '—'}</td>
-        <td><span class="tag-pill ${d.result === 'plus' ? 'pill-win' : d.result === 'minus' ? 'pill-loss' : 'pill-be'}">${d.result === 'plus' ? 'PLUS' : d.result === 'minus' ? 'MINUS' : 'B/E'}</span></td>
+        <td><span class="tag-pill ${d.result === 'plus' ? 'pill-win' : d.result === 'minus' ? 'pill-loss' : 'pill-be'}">${d.result === 'plus' ? 'PLUS' : d.result === 'minus' ? 'EXPENSE' : 'B/E'}</span></td>
         <td class="mono ${cls(d.cumR)}">${fmtR(d.cumR)}</td>
       </tr>`).join('') : '<tr><td colspan="6"><div class="empty">No trades yet.</div></td></tr>'}</tbody>`;
   $('dayNote').textContent = allDays.length > 5 ? `Showing last 5 of ${allDays.length} trading days — full history in “All trades”.` : '';
