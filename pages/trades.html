@@ -23,6 +23,18 @@
     .model-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:7px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; }
     .model-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
     .model-btn.active { background:var(--acg); border-color:var(--ac); color:var(--ac); box-shadow:0 0 12px var(--acg); }
+    .shot-slot { display:block; width:100%; outline:none; }
+    .shot-empty { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; height:64px; border:.5px dashed var(--b); border-radius:8px; background:var(--card2); color:var(--mu); font-family:var(--mono); font-size:11px; letter-spacing:.3px; cursor:pointer; transition:all .12s; user-select:none; }
+    .shot-empty:hover, .shot-slot:focus .shot-empty { border-color:var(--bh); color:var(--tx); }
+    .shot-slot.dragover .shot-empty { border-style:solid; border-color:var(--ac); background:var(--acg); color:var(--ac); }
+    .shot-thumb { position:relative; display:inline-block; max-width:100%; border-radius:8px; overflow:hidden; border:.5px solid var(--b); cursor:zoom-in; line-height:0; }
+    .shot-thumb img { max-width:100%; max-height:240px; object-fit:contain; display:block; }
+    .shot-slot.dragover .shot-thumb { border-color:var(--ac); }
+    .shot-remove { position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:5px; border:none; background:rgba(0,0,0,.6); color:#fff; font-size:12px; line-height:1; cursor:pointer; display:none; align-items:center; justify-content:center; padding:0; }
+    .shot-thumb:hover .shot-remove { display:flex; }
+    .shot-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:300; cursor:zoom-out; padding:24px; }
+    .shot-overlay.show { display:flex; }
+    .shot-overlay img { max-width:94vw; max-height:94vh; object-fit:contain; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,.6); }
   </style>
 </head>
 <body>
@@ -84,10 +96,14 @@
           <span id="rr-preview" class="mono" style="color:var(--mu)"></span>
         </div>
 
-        <!-- Charts & screenshots for THIS trade -->
+        <!-- Required trade screenshot (paste / drop) + optional extra charts -->
         <div id="c-panel" style="margin-top:16px;border-top:.5px solid var(--b);padding-top:14px">
-          <div class="card-label">Charts &amp; screenshots for this trade</div>
-          <div class="mono" id="c-hint" style="font-size:11px;color:var(--mu)">Save the trade first, then attach its charts &amp; screenshots here.</div>
+          <div class="card-label">Trade screenshot <span style="color:var(--co)">*</span></div>
+          <div class="shot-slot" id="t-shot" tabindex="0"></div>
+          <div class="mono" style="font-size:10px;color:var(--mu);margin-top:6px">Paste (Ctrl+V) or drag &amp; drop an image — required to save a trade. Click it to enlarge.</div>
+
+          <div class="card-label" style="margin-top:16px">Additional charts &amp; links</div>
+          <div class="mono" id="c-hint" style="font-size:11px;color:var(--mu)">Save the trade first, then attach extra charts &amp; links here.</div>
           <div id="c-controls" style="display:none">
             <div class="grid g4" style="gap:12px">
               <label class="field" style="grid-column:span 2"><span class="fl">Title</span><input type="text" id="c-title" placeholder="e.g. entry screenshot, 5m context…"></label>
@@ -127,12 +143,15 @@
     </main>
   </div>
 
+  <!-- Fullscreen viewer for the trade screenshot -->
+  <div class="shot-overlay" id="shot-overlay"><img alt="screenshot"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=3"></script>
   <script src="../js/supabase-client.js?v=6"></script>
   <script src="../js/stats.js?v=5"></script>
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/trades.js?v=11"></script>
+  <script src="../js/trades.js?v=12"></script>
 </body>
 </html>
