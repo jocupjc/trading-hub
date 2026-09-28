@@ -5,7 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra', 'prep-adr-midline',
-  'prep-adr-wdrrb', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle',
+  'prep-adr-wdrrb', 'prep-wk-cycle',
   'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-one-thing', 'txt-max-loss', 'txt-daily-target',
   'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
@@ -124,6 +124,8 @@ function readJournal() {
   o['scale-process'] = scaleValue('scale-process');
   o['scale-emoctrl'] = scaleValue('scale-emoctrl');
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
+  o['prep-wk-high'] = wkValue('prep-wk-high');
+  o['prep-wk-low'] = wkValue('prep-wk-low');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
   BOX_SETS.forEach(s => {
@@ -150,6 +152,8 @@ function fillJournal(p) {
   setPerfScale('scale-emoctrl', (p && p['scale-emoctrl']) || '');
   renderPostInsights();
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
+  setWkGroup('prep-wk-high', (p && p['prep-wk-high']) || '');
+  setWkGroup('prep-wk-low', (p && p['prep-wk-low']) || '');
   updatePrepSummary();
   updateAdrWdrrbSummary();
   RF_KEYS.forEach(k => setRf(k, p && p['rf-' + k]));
@@ -299,6 +303,10 @@ function updateAdrWdrrbSummary() {
   const el = $('adrwdrrb-summary'); if (el) el.innerHTML = html;
   const el2 = $('adrwdrrb-summary-ooda'); if (el2) el2.innerHTML = html;
 }
+
+// Weekly-extreme single-select button groups (prep-wk-high / prep-wk-low)
+function wkValue(id) { const g = $(id); const b = g && g.querySelector('.wk-btn.on'); return b ? b.dataset.v : ''; }
+function setWkGroup(id, val) { const g = $(id); if (!g) return; g.querySelectorAll('.wk-btn').forEach(b => b.classList.toggle('on', !!val && b.dataset.v === val)); }
 
 // ── Reference screenshots — reusable slots (paste / drag&drop, one per slot) ──
 // To add a slot elsewhere: drop `<div class="shot-slot" data-shot="ID" tabindex="0"></div>`
@@ -546,6 +554,7 @@ function resetSection(key) {
     RF_KEYS.forEach(k => setRf(k, false));
     rfNewsTags = []; renderNewsTags(); updateRfBadges();
     ['prep-adr-midline', 'prep-adr-wdrrb', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle'].forEach(f => { const el = $(f); if (el) el.value = ''; });
+    setWkGroup('prep-wk-high', ''); setWkGroup('prep-wk-low', '');
     updateAdrWdrrbSummary();
     BOX_SETS.forEach(s => {
       BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
@@ -673,7 +682,7 @@ $('j-date').addEventListener('change', async () => {
 const mainEl = document.querySelector('main');
 mainEl.addEventListener('input', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
 mainEl.addEventListener('change', e => { if (e.target.id !== 'j-date') scheduleAutosave(); });
-mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .ob-dir, .cl-item, .rf-item')) scheduleAutosave(); });
+mainEl.addEventListener('click', e => { if (e.target.closest('.tog, .scale-btn, .ab, .ob-dir, .cl-item, .rf-item, .wk-btn')) scheduleAutosave(); });
 window.addEventListener('pagehide', () => { const d = $('j-date').value; if (d) writeDrafts(d); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistDate($('j-date').value, true); });
 document.querySelectorAll('.sec-head').forEach(h =>
@@ -740,6 +749,13 @@ document.querySelectorAll('[data-prep]').forEach(item => item.addEventListener('
   setPrepState(item, next);
   updatePrepSummary();
 }));
+
+// Weekly-extreme button groups — single-select (click again to clear)
+document.querySelectorAll('.wk-row').forEach(g => g.querySelectorAll('.wk-btn').forEach(b => b.addEventListener('click', () => {
+  const was = b.classList.contains('on');
+  g.querySelectorAll('.wk-btn').forEach(x => x.classList.remove('on'));
+  if (!was) b.classList.add('on');
+})));
 
 // Red Flags — click to toggle; badges reflect Ronin's caution/amplifier/signal logic
 document.querySelectorAll('.rf-item[data-rf]').forEach(item => item.addEventListener('click', () => {
