@@ -43,6 +43,7 @@ function fillForm(t) {
   syncModelBtns();
   livePreview();
   updateChartPanel(t.id || '');
+  loadTradeShot(t.id || '');
 }
 
 function clearForm() {
@@ -51,6 +52,7 @@ function clearForm() {
   syncModelBtns();
   livePreview();
   updateChartPanel('');
+  TSHOT.data = null; renderTradeShot();
 }
 
 // Model / setup quick-pick buttons ↔ the free-text input
@@ -64,6 +66,68 @@ document.querySelectorAll('#f-model-btns .model-btn').forEach(b => b.addEventLis
 }));
 $('f-model').addEventListener('input', syncModelBtns);
 
+// ── Required trade screenshot — paste / drop (same UX as the daily journal) ──
+const TSHOT = { data: null };   // { url, storage_path, linkId } | null
+let tshotActive = false;
+
+function renderTradeShot() {
+  const slot = $('t-shot'); if (!slot) return;
+  const s = TSHOT.data;
+  slot.innerHTML = (s && s.url)
+    ? `<div class="shot-thumb"><img src="${esc(s.url)}" alt="screenshot"><button type="button" class="shot-remove" title="Remove">✕</button></div>`
+    : `<div class="shot-empty">＋ paste / drop screenshot (required)</div>`;
+}
+async function setTradeShotFromFile(file) {
+  if (!file || !/^image\//.test(file.type)) return;
+  const ph = $('t-shot') && $('t-shot').querySelector('.shot-empty'); if (ph) ph.textContent = 'uploading…';
+  try {
+    const res = await DB.uploadScreenshot(file, $('f-date').value || todayStr());
+    TSHOT.data = { url: res.url, storage_path: res.storage_path || null, linkId: null };
+    renderTradeShot();
+  } catch (err) { console.error(err); Shell.toast('Upload failed'); renderTradeShot(); }
+}
+function removeTradeShot() {
+  const prev = TSHOT.data;
+  TSHOT.data = null; renderTradeShot();
+  if (prev && prev.linkId) DB.deleteLink(prev.linkId).then(() => refresh()).catch(e => console.error(e));
+}
+async function loadTradeShot(tradeId) {
+  TSHOT.data = null; renderTradeShot();
+  if (!tradeId) return;
+  try {
+    const links = await DB.getTradeLinks(tradeId);
+    const shot = (links || []).find(l => l.kind === 'screenshot');
+    if (shot) { TSHOT.data = { url: shot.url, storage_path: shot.storage_path, linkId: shot.id }; renderTradeShot(); }
+  } catch (e) { console.error(e); }
+}
+function openShotOverlay(url) { const ov = $('shot-overlay'); if (ov) { ov.querySelector('img').src = url; ov.classList.add('show'); } }
+function closeShotOverlay() { const ov = $('shot-overlay'); if (ov) { ov.classList.remove('show'); ov.querySelector('img').src = ''; } }
+
+(function initTradeShot() {
+  const slot = $('t-shot'); if (!slot) return;
+  renderTradeShot();
+  slot.addEventListener('click', e => {
+    if (e.target.closest('.shot-remove')) { e.stopPropagation(); removeTradeShot(); return; }
+    const thumb = e.target.closest('.shot-thumb');
+    if (thumb) { e.stopPropagation(); if (TSHOT.data && TSHOT.data.url) openShotOverlay(TSHOT.data.url); return; }
+    slot.focus();
+  });
+  slot.addEventListener('mouseenter', () => { tshotActive = true; });
+  slot.addEventListener('mouseleave', () => { if (document.activeElement !== slot) tshotActive = false; });
+  slot.addEventListener('focus', () => { tshotActive = true; });
+  slot.addEventListener('blur', () => { tshotActive = false; });
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragover'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('dragover'));
+  slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('dragover'); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) setTradeShotFromFile(f); });
+  document.addEventListener('paste', e => {
+    if (!tshotActive) return;
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for (const it of items) { if (it.type && it.type.indexOf('image') === 0) { const f = it.getAsFile(); if (f) { e.preventDefault(); setTradeShotFromFile(f); break; } } }
+  });
+  const ov = $('shot-overlay'); if (ov) ov.addEventListener('click', closeShotOverlay);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShotOverlay(); });
+})();
+
 // Live R preview from prices
 function livePreview() {
   const d = Stats.deriveTrade(readForm());
@@ -76,9 +140,14 @@ function livePreview() {
 async function save() {
   const t = readForm();
   if (!t.date) return Shell.toast('Pick a date');
+  if (!TSHOT.data || !TSHOT.data.url) return Shell.toast('Add a screenshot before saving');
   try {
     const saved = await DB.saveTrade(t);
-    Shell.toast('Trade saved — attach charts below or click Clear');
+    if (TSHOT.data && !TSHOT.data.linkId) {
+      const link = await DB.saveLink({ trade_id: saved.id, date: saved.date || t.date, title: 'trade screenshot', kind: 'screenshot', url: TSHOT.data.url, storage_path: TSHOT.data.storage_path });
+      TSHOT.data.linkId = link && link.id;
+    }
+    Shell.toast('Trade saved');
     fillForm(saved); // keep in edit mode so charts can be attached to this trade
     await refresh();
   } catch (e) { console.error(e); Shell.toast('Save failed'); }
