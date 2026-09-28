@@ -369,7 +369,7 @@ const ALGO = ['', 'ASS DOWN', 'ASS UP', 'MCR', 'Ranging'];
 const ACTIONS = ['WAIT', 'HUNT', 'ENTER', 'TRAIL', 'STOP'];
 const BODY = ['', 'Regulated', 'Energized', 'Anxious', 'Euphoric', 'Stressed'];
 const MIND = ['', 'Focused', 'Neutral', 'Scattered'];
-const OODA_WINDOW = '02:45-04:05';
+const OODA_WINDOW = '02:45-03:35';
 let ROWS = [];
 
 $('j-date').value = todayStr();
@@ -388,11 +388,26 @@ function buildRows(windowStr) {
 
 function opt(list, val) { return list.map(o => `<option ${o === val ? 'selected' : ''}>${o}</option>`).join(''); }
 
-// One OODA row. Fixed rows show a static time label; custom (added) rows get an editable time input.
+// Time-slot options for added OODA rows: 03:30–03:35 … 16:55–17:00 in 5-min steps.
+const OODA_SLOTS = (() => {
+  const pad = (n) => String(n).padStart(2, '0');
+  const fmt = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+  const out = [];
+  for (let m = 210; m <= 1015; m += 5) out.push(`${fmt(m)}–${fmt(m + 5)}`);
+  return out;
+})();
+function timeOpts(sel) {
+  let opts = `<option value="" ${!sel ? 'selected' : ''}>—</option>`;
+  if (sel && !OODA_SLOTS.includes(sel)) opts += `<option value="${esc(sel)}" selected>${esc(sel)}</option>`;
+  opts += OODA_SLOTS.map(s => `<option ${s === sel ? 'selected' : ''}>${s}</option>`).join('');
+  return opts;
+}
+
+// One OODA row. Fixed rows show a static time label; custom (added) rows get a time dropdown.
 function oodaRowHTML(r, d, custom) {
   const dir = (f) => `<td class="col-dir"><button type="button" class="ob-dir ${d[f] || ''}" data-dir="${f}" data-i="${r.i}" data-state="${d[f] || ''}">${d[f] || '·'}</button></td>`;
   const timeCell = custom
-    ? `<td class="col-t"><input class="ob-time" data-f="time" data-i="${r.i}" value="${esc(r.time || '')}" placeholder="hh:mm"></td>`
+    ? `<td class="col-t"><select class="ob-time" data-f="time" data-i="${r.i}">${timeOpts(r.time)}</select></td>`
     : `<td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>`;
   return `<tr data-i="${r.i}" data-time="${custom ? '' : r.time}" data-custom="${custom ? 1 : 0}">
       ${timeCell}
@@ -437,7 +452,7 @@ function addOodaRow() {
   data.rows.push({ custom: true, time: '' });
   renderTable(data);
   scheduleAutosave();
-  const inputs = document.querySelectorAll('#obody input.ob-time');
+  const inputs = document.querySelectorAll('#obody .ob-time');
   if (inputs.length) inputs[inputs.length - 1].focus();
 }
 
