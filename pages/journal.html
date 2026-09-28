@@ -175,6 +175,20 @@
     .rf-taginput { font-family:var(--mono); font-size:11px; background:transparent; border:.5px dashed var(--b); border-radius:5px; padding:2px 7px; color:var(--tx); width:90px; }
     .rf-taginput:focus { outline:none; border-style:solid; border-color:var(--bh); }
 
+    /* Reference screenshot slot (reusable) + fullscreen viewer */
+    .shot-slot { display:block; width:100%; outline:none; }
+    .shot-empty { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; height:30px; border:.5px dashed var(--b); border-radius:6px; background:var(--card); color:var(--mu); font-family:var(--mono); font-size:10px; letter-spacing:.3px; cursor:pointer; transition:all .12s; user-select:none; }
+    .shot-empty:hover, .shot-slot:focus .shot-empty { border-color:var(--bh); color:var(--tx); }
+    .shot-slot.dragover .shot-empty { border-style:solid; border-color:var(--ac); background:var(--acg); color:var(--ac); }
+    .shot-thumb { position:relative; width:100%; border-radius:6px; overflow:hidden; border:.5px solid var(--b); cursor:zoom-in; line-height:0; }
+    .shot-thumb img { width:100%; height:34px; object-fit:cover; display:block; }
+    .shot-slot.dragover .shot-thumb { border-color:var(--ac); }
+    .shot-remove { position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:4px; border:none; background:rgba(0,0,0,.55); color:#fff; font-size:11px; line-height:1; cursor:pointer; display:none; align-items:center; justify-content:center; padding:0; }
+    .shot-thumb:hover .shot-remove { display:flex; }
+    .shot-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:300; cursor:zoom-out; padding:24px; }
+    .shot-overlay.show { display:flex; }
+    .shot-overlay img { max-width:94vw; max-height:94vh; object-fit:contain; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,.6); }
+
     @media (max-width:640px){ .chk-grid { grid-template-columns:1fr; } .row-2col { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -376,7 +390,10 @@
             <div class="cl-subgroup-label">Directional bias</div>
             <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
             <div class="cl-grid">
-              <div class="cl-item" data-box2="marketState" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market state</span></div>
+              <div class="cl-item-wrap">
+                <div class="cl-item" data-box2="marketState" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market state</span></div>
+                <div class="shot-slot" data-shot="box2-marketState" tabindex="0"></div>
+              </div>
               <div class="cl-item" data-box2="vwap" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">VWAP</span></div>
               <div class="cl-item" data-box2="monthly" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Monthly Seq</span></div>
               <div class="cl-item-wrap">
@@ -770,12 +787,15 @@
     </div>
   </div>
 
+  <!-- Fullscreen viewer for reference screenshots -->
+  <div class="shot-overlay" id="shot-overlay"><img alt="reference screenshot"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=3"></script>
   <script src="../js/supabase-client.js?v=7"></script>
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=37"></script>
+  <script src="../js/daily.js?v=38"></script>
 </body>
 </html>
