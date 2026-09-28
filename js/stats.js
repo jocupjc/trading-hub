@@ -127,22 +127,22 @@ const Stats = (() => {
     if (s.count === 0) { return [{ type: 'info', text: 'No trades logged yet. Add your first trade to unlock analytics.' }]; }
 
     if (s.largestLossR < -1.15)
-      out.push({ type: 'bad', text: `Largest loss is ${s.largestLossR}R — beyond your 1R risk unit. A stop was widened or skipped. Enforce the hard 1R stop, no exceptions.` });
+      out.push({ type: 'bad', text: `Largest expense is ${s.largestLossR}R — beyond your 1R risk unit. A stop was widened or skipped. Enforce the hard 1R stop, no exceptions.` });
     else if (s.losses > 0 && s.largestLossR >= -1.05)
-      out.push({ type: 'good', text: `Largest loss is ${s.largestLossR}R — risk discipline is intact. Losers are capped at ~1R exactly as intended.` });
+      out.push({ type: 'good', text: `Largest expense is ${s.largestLossR}R — risk discipline is intact. Expenses are capped at ~1R exactly as intended.` });
 
     if (s.winRate < 40 && s.expectancy > 0)
       out.push({ type: 'info', text: `Win rate is ${s.winRate}% but expectancy is +${s.expectancy}R — you are a low-win-rate, high-R trader. Protect your winners; cutting them early kills the whole edge.` });
     if (s.winRate >= 55 && s.avgWinnerR < Math.abs(s.avgLoserR))
-      out.push({ type: 'warn', text: `Win rate is healthy (${s.winRate}%) but avg winner (${s.avgWinnerR}R) is smaller than avg loser (${s.avgLoserR}R). You are winning often but small — let winners run further.` });
+      out.push({ type: 'warn', text: `Win rate is healthy (${s.winRate}%) but avg winner (${s.avgWinnerR}R) is smaller than avg expense (${s.avgLoserR}R). You are winning often but small — let winners run further.` });
 
     if (s.expectancy > 0) out.push({ type: 'good', text: `Positive expectancy: +${s.expectancy}R per trade over ${s.count} trades. Keep executing the same process.` });
     else out.push({ type: 'bad', text: `Negative expectancy: ${s.expectancy}R per trade. Focus on eliminating your worst setups before adding size.` });
 
     if (s.profitFactor !== Infinity && s.profitFactor > 0 && s.profitFactor < 1)
-      out.push({ type: 'bad', text: `Profit factor ${s.profitFactor} (< 1.0). Gross losses currently exceed gross wins.` });
+      out.push({ type: 'bad', text: `Profit factor ${s.profitFactor} (< 1.0). Gross expenses currently exceed gross wins.` });
     else if (s.profitFactor >= 1.5)
-      out.push({ type: 'good', text: `Profit factor ${s.profitFactor === Infinity ? '∞' : s.profitFactor} — solid. Wins comfortably outpace losses.` });
+      out.push({ type: 'good', text: `Profit factor ${s.profitFactor === Infinity ? '∞' : s.profitFactor} — solid. Wins comfortably outpace expenses.` });
 
     if (s.maxLossStreak >= 3)
       out.push({ type: 'warn', text: `Max losing streak: ${s.maxLossStreak} in a row. Have a rule that pauses trading after ${Math.min(3, s.maxLossStreak)} consecutive losses to break tilt.` });

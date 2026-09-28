@@ -43,10 +43,10 @@ function monthCard(key, s, rv) {
   ].join('');
   const secondary = [
     tile('Avg Winner', fmtR(s.avgWinnerR), 'in R', 'pos'),
-    tile('Avg Loser', fmtR(s.avgLoserR), 'target ≈ -1R', 'neg'),
+    tile('Avg Expense', fmtR(s.avgLoserR), 'target ≈ -1R', 'neg'),
     tile('Best Winner', fmtR(s.bestWinnerR), 'open R (max)', 'pos'),
-    tile('Largest Loss', fmtR(s.largestLossR), 'should ≈ -1R', 'neg'),
-    tile('Profit Factor', s.profitFactor === Infinity ? '∞' : s.profitFactor, 'wins ÷ losses', s.profitFactor >= 1 ? 'pos' : 'neg'),
+    tile('Largest Expense', fmtR(s.largestLossR), 'should ≈ -1R', 'neg'),
+    tile('Profit Factor', s.profitFactor === Infinity ? '∞' : s.profitFactor, 'wins ÷ expenses', s.profitFactor >= 1 ? 'pos' : 'neg'),
     tile('Avg Contracts', s.avgContracts || '—', 'size per trade'),
     tile('Avg Points', s.avgPoints || '—', 'per trade'),
     tile('Max Drawdown', fmtR(s.maxDD), 'peak-to-trough', 'neg'),

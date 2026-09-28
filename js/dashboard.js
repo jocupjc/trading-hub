@@ -66,9 +66,9 @@ async function render() {
   const acr = `across ${s.count} trade${s.count === 1 ? '' : 's'}`;
   document.getElementById('tiles2').innerHTML = [
     tile('Avg Winner', fmtR(s.avgWinnerR), acr, 'pos'),
-    tile('Avg Loser', fmtR(s.avgLoserR), `≈ -1R · ${acr}`, 'neg'),
+    tile('Avg Expense', fmtR(s.avgLoserR), `≈ -1R · ${acr}`, 'neg'),
     tile('Best Winner', fmtR(s.bestWinnerR), acr, 'pos'),
-    tile('Largest Loss', fmtR(s.largestLossR), `≈ -1R · ${acr}`, 'neg'),
+    tile('Largest Expense', fmtR(s.largestLossR), `≈ -1R · ${acr}`, 'neg'),
     tile('Profit Factor', s.profitFactor === Infinity ? '∞' : s.profitFactor, acr, s.profitFactor >= 1 ? 'pos' : 'neg'),
     tile('Avg Contracts', s.avgContracts || '—', acr),
     tile('Avg Points', s.avgPoints || '—', acr),

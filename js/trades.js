@@ -208,7 +208,7 @@ async function refresh() {
         <td class="mono">${t.contracts ?? '—'}</td>
         <td class="mono ${cls(t._rr)}">${fmtR(t._rr)}</td>
         <td class="mono ${cls(t._dollar)}">${t._dollar ? fmtD(t._dollar) : '—'}</td>
-        <td><span class="tag-pill ${t._outcome === 'win' ? 'pill-win' : t._outcome === 'loss' ? 'pill-loss' : 'pill-be'}">${t._outcome.toUpperCase()}</span></td>
+        <td><span class="tag-pill ${t._outcome === 'win' ? 'pill-win' : t._outcome === 'loss' ? 'pill-loss' : 'pill-be'}">${t._outcome === 'loss' ? 'EXPENSE' : t._outcome.toUpperCase()}</span></td>
         <td>${esc(t.model) || '—'}</td>
         <td class="row" style="gap:4px;flex-wrap:nowrap">
           <button class="btn sm" data-edit="${t.id}">edit</button>
