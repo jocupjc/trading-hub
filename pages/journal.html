@@ -564,12 +564,12 @@
             <label class="chk-row"><input type="checkbox" id="pm-db3"> Emotional moments identified and noted</label>
             <label class="chk-row"><input type="checkbox" id="pm-db4"> Rule breaks noted (observed neutrally, not judged)</label>
           </div>
-          <div class="field-label">Did you hit daily max loss limit (2R)?</div>
+          <div class="field-label">Did you hit daily max expense limit (2R)?</div>
           <div class="btn-group" id="grp-maxloss" data-theme="coral">
             <button type="button" class="tog" data-val="yes">Yes</button>
             <button type="button" class="tog" data-val="no">No</button>
           </div>
-          <div class="field-label">How many loss trades did you have today?</div>
+          <div class="field-label">How many expense trades did you have today?</div>
           <div class="btn-group" id="grp-losses" data-theme="coral">
             <button type="button" class="tog" data-val="0">0</button>
             <button type="button" class="tog" data-val="1">1</button>
@@ -665,7 +665,7 @@
           </div>
           <div class="field-label">Describe the most emotional moment of the day.</div>
           <div class="q-hint">What triggered you? What were you thinking in that moment?</div>
-          <textarea id="txt-emotion-moment" placeholder="e.g. After the second loss trade I immediately wanted to re-enter because…"></textarea>
+          <textarea id="txt-emotion-moment" placeholder="e.g. After the second expense trade I immediately wanted to re-enter because…"></textarea>
           <div class="field-label">What was your mental state before the first trade?</div>
           <div class="btn-group" id="grp-mental" data-theme="teal">
             <button type="button" class="tog" data-val="focused">Focused</button>
@@ -729,9 +729,9 @@
           <div class="sub-label" style="margin-top:0">Intentions for tomorrow</div>
           <div class="field-label">What is the one concrete thing you will do differently tomorrow?</div>
           <div class="q-hint">Specific and actionable — not 'I will be better'</div>
-          <textarea id="txt-one-thing" placeholder="e.g. After the second loss trade I will take a 15-minute break and reassess the setup…"></textarea>
+          <textarea id="txt-one-thing" placeholder="e.g. After the second expense trade I will take a 15-minute break and reassess the setup…"></textarea>
           <div class="row-2col" style="margin-top:12px">
-            <label class="field"><span class="fl">Max. daily loss tomorrow (€)</span>
+            <label class="field"><span class="fl">Max. daily expense tomorrow (€)</span>
               <textarea id="txt-max-loss" placeholder="e.g. −300€" style="min-height:48px"></textarea></label>
             <label class="field"><span class="fl">Daily target tomorrow (€)</span>
               <textarea id="txt-daily-target" placeholder="e.g. +200€" style="min-height:48px"></textarea></label>
@@ -803,7 +803,7 @@
         <label class="field"><span class="fl">Contracts</span><input type="number" step="any" id="lt-contracts"></label>
         <label class="field"><span class="fl">R result</span><input type="number" step="any" id="lt-rr" placeholder="auto"></label>
         <label class="field"><span class="fl">$ PnL (optional)</span><input type="number" step="any" id="lt-dollar"></label>
-        <label class="field"><span class="fl">Outcome</span><select id="lt-outcome"><option value="">auto</option><option value="win">win</option><option value="loss">loss</option><option value="be">break-even</option></select></label>
+        <label class="field"><span class="fl">Outcome</span><select id="lt-outcome"><option value="">auto</option><option value="win">win</option><option value="loss">expense</option><option value="be">break-even</option></select></label>
         <label class="field" style="grid-column:span 3"><span class="fl">Model / setup</span><input type="text" id="lt-model" placeholder="e.g. RDR M7B, box reversal…"></label>
         <label class="field" style="grid-column:span 3"><span class="fl">Notes</span><input type="text" id="lt-notes"></label>
       </div>
