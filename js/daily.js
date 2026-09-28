@@ -132,6 +132,7 @@ function readJournal() {
   BOX_SETS.forEach(s => {
     BOX_KEYS.forEach(k => o[s.attr + '-' + k] = boxStateOf(s.attr, k));
     BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); o[s.attr + '-model-' + k] = el ? el.value : ''; });
+    BOX_CYCLE.forEach(k => { const el = document.querySelector(`[data-${s.attr}-note="${k}"]`); if (el) o[s.attr + '-note-' + k] = el.value; });
   });
   SHOT_SLOTS.forEach(id => o['shot-' + id] = shotData[id] || null);
   return o;
@@ -165,6 +166,7 @@ function fillJournal(p) {
   BOX_SETS.forEach(s => {
     BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, (p && p[s.attr + '-' + k]) || ''); });
     BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = (p && p[s.attr + '-model-' + k]) || ''; });
+    BOX_CYCLE.forEach(k => { const el = document.querySelector(`[data-${s.attr}-note="${k}"]`); if (el) el.value = (p && p[s.attr + '-note-' + k]) || ''; });
     updateBoxSummary(s.attr, s.summary);
   });
   SHOT_SLOTS.forEach(id => { shotData[id] = (p && p['shot-' + id]) || null; renderShot(id); });
@@ -311,9 +313,9 @@ function wkValue(id) { const g = $(id); const b = g && g.querySelector('.wk-btn.
 function setWkGroup(id, val) { const g = $(id); if (!g) return; g.querySelectorAll('.wk-btn').forEach(b => b.classList.toggle('on', !!val && b.dataset.v === val)); }
 
 // ── Reference screenshots — reusable slots (paste / drag&drop, one per slot) ──
-// To add a slot elsewhere: drop `<div class="shot-slot" data-shot="ID" tabindex="0"></div>`
-// into the markup and add "ID" here. It is persisted in the daily payload as shot-ID.
-const SHOT_SLOTS = ['box2-marketState'];
+// Slots exist for every directional-bias button of both boxes; enhanceBoxItems() injects the DOM.
+const SHOT_SLOTS = [];
+BOX_SETS.forEach(s => BOX_CYCLE.forEach(k => SHOT_SLOTS.push(s.attr + '-' + k)));
 let shotData = {};   // slotId -> { url, storage_path } | null
 let activeShotId = null;
 
@@ -371,6 +373,32 @@ function initShots() {
   const ov = $('shot-overlay'); if (ov) ov.addEventListener('click', closeShotOverlay);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShotOverlay(); });
 }
+
+// Give every directional-bias button (both boxes) a screenshot slot + a quick-note input.
+function enhanceBoxItems() {
+  BOX_SETS.forEach(s => BOX_CYCLE.forEach(k => {
+    const item = boxItem(s.attr, k);
+    if (!item) return;
+    let wrap = item.closest('.cl-item-wrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.className = 'cl-item-wrap';
+      item.parentNode.insertBefore(wrap, item);
+      wrap.appendChild(item);
+    }
+    if (!wrap.querySelector('.shot-slot')) {
+      const slot = document.createElement('div');
+      slot.className = 'shot-slot'; slot.dataset.shot = s.attr + '-' + k; slot.tabIndex = 0;
+      wrap.appendChild(slot);
+    }
+    if (!wrap.querySelector('.cl-note-input')) {
+      const note = document.createElement('input');
+      note.className = 'cl-note-input'; note.setAttribute('data-' + s.attr + '-note', k); note.placeholder = 'quick note';
+      wrap.appendChild(note);
+    }
+  }));
+}
+enhanceBoxItems();
 initShots();
 
 
@@ -561,6 +589,7 @@ function resetSection(key) {
     BOX_SETS.forEach(s => {
       BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
       BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = ''; });
+      BOX_CYCLE.forEach(k => { const el = document.querySelector(`[data-${s.attr}-note="${k}"]`); if (el) el.value = ''; });
       updateBoxSummary(s.attr, s.summary);
     });
     SHOT_SLOTS.forEach(id => { shotData[id] = null; renderShot(id); });
