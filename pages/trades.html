@@ -19,6 +19,10 @@
     .rf-dot.win { background:var(--gr); }
     .rf-dot.loss { background:var(--co); }
     .rf-dot.be { background:var(--mu); }
+    .model-btns { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }
+    .model-btn { font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:7px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; }
+    .model-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
+    .model-btn.active { background:var(--acg); border-color:var(--ac); color:var(--ac); box-shadow:0 0 12px var(--acg); }
   </style>
 </head>
 <body>
@@ -60,7 +64,17 @@
           <label class="field"><span class="fl">Outcome</span>
             <select id="f-outcome"><option value="">auto</option><option value="win">win</option><option value="loss">loss</option><option value="be">break-even</option></select></label>
 
-          <label class="field" style="grid-column:span 2"><span class="fl">Model / setup</span><input type="text" id="f-model" placeholder="e.g. RDR M7B, box reversal…"></label>
+          <div class="field" style="grid-column:span 2"><span class="fl">Model / setup</span>
+            <div class="model-btns" id="f-model-btns">
+              <button type="button" class="model-btn" data-v="M7 Candle">M7 Candle</button>
+              <button type="button" class="model-btn" data-v="Box Reversal">Box Reversal</button>
+              <button type="button" class="model-btn" data-v="RBC">RBC</button>
+              <button type="button" class="model-btn" data-v="M7X">M7X</button>
+              <button type="button" class="model-btn" data-v="Advanced">Advanced</button>
+              <button type="button" class="model-btn" data-v="Transition">Transition</button>
+              <button type="button" class="model-btn" data-v="Box Formation">Box Formation</button>
+            </div>
+            <input type="text" id="f-model" placeholder="e.g. RDR M7B, box reversal…"></div>
           <label class="field" style="grid-column:span 2"><span class="fl">Notes</span><input type="text" id="f-notes"></label>
         </div>
         <div class="row" style="margin-top:14px">
@@ -119,6 +133,6 @@
   <script src="../js/stats.js?v=5"></script>
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/trades.js?v=10"></script>
+  <script src="../js/trades.js?v=11"></script>
 </body>
 </html>
