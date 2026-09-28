@@ -17,6 +17,10 @@
     .tl { font-family:var(--mono); font-size:11px; white-space:nowrap; color:var(--tx); }
     .ob-time { font-family:var(--mono); font-size:11px; width:92px; padding:4px 4px; border:.5px solid var(--bh); border-radius:5px; background:var(--card2); color:var(--tx); }
     .ob-time:focus { outline:none; border-color:var(--ac); }
+    .wk-row { display:flex; gap:6px; flex-wrap:wrap; margin:4px 0 2px; }
+    .wk-btn { font-family:var(--mono); font-size:12px; padding:6px 14px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:40px; text-align:center; }
+    .wk-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
+    .wk-btn.on { background:var(--acg); border-color:var(--ac); color:var(--ac); box-shadow:0 0 12px var(--acg); }
     table.ooda textarea { border:none; background:transparent; min-height:26px; padding:5px 6px; font-size:12px; }
     table.ooda textarea:focus { background:var(--card2); }
     table.ooda select { border:.5px solid transparent; background-color:transparent; font-family:var(--mono); font-size:11px; padding:4px 20px 4px 7px; }
@@ -371,12 +375,24 @@
               </div>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px">
-              <label class="field"><span class="fl">This weekly extreme high</span>
-                <select id="prep-wk-high"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
-              <label class="field"><span class="fl">This weekly extreme low</span>
-                <select id="prep-wk-low"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
               <label class="field"><span class="fl">Current day weekly cycle</span>
                 <select id="prep-wk-cycle"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
+            </div>
+            <div class="field-label">This Weekly current extreme high</div>
+            <div class="wk-row" id="prep-wk-high">
+              <button type="button" class="wk-btn" data-v="D1">D1</button>
+              <button type="button" class="wk-btn" data-v="D2">D2</button>
+              <button type="button" class="wk-btn" data-v="D3">D3</button>
+              <button type="button" class="wk-btn" data-v="D4">D4</button>
+              <button type="button" class="wk-btn" data-v="D5">D5</button>
+            </div>
+            <div class="field-label">This Weekly current extreme low</div>
+            <div class="wk-row" id="prep-wk-low">
+              <button type="button" class="wk-btn" data-v="D1">D1</button>
+              <button type="button" class="wk-btn" data-v="D2">D2</button>
+              <button type="button" class="wk-btn" data-v="D3">D3</button>
+              <button type="button" class="wk-btn" data-v="D4">D4</button>
+              <button type="button" class="wk-btn" data-v="D5">D5</button>
             </div>
           </div>
 
@@ -799,6 +815,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=41"></script>
+  <script src="../js/daily.js?v=42"></script>
 </body>
 </html>
