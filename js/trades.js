@@ -40,6 +40,7 @@ function fillForm(t) {
   $('f-outcome').value = t.outcome || '';
   $('f-model').value = t.model || '';
   $('f-notes').value = t.notes || '';
+  syncModelBtns();
   livePreview();
   updateChartPanel(t.id || '');
 }
@@ -47,9 +48,21 @@ function fillForm(t) {
 function clearForm() {
   fields.forEach(k => { if (!['date', 'inst', 'dir'].includes(k)) $('f-' + k).value = ''; });
   $('f-date').value = todayStr(); $('f-outcome').value = '';
+  syncModelBtns();
   livePreview();
   updateChartPanel('');
 }
+
+// Model / setup quick-pick buttons ↔ the free-text input
+function syncModelBtns() {
+  const v = $('f-model').value.trim();
+  document.querySelectorAll('#f-model-btns .model-btn').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+}
+document.querySelectorAll('#f-model-btns .model-btn').forEach(b => b.addEventListener('click', () => {
+  $('f-model').value = ($('f-model').value.trim() === b.dataset.v) ? '' : b.dataset.v;
+  syncModelBtns();
+}));
+$('f-model').addEventListener('input', syncModelBtns);
 
 // Live R preview from prices
 function livePreview() {
