@@ -17,6 +17,9 @@
     .tl { font-family:var(--mono); font-size:11px; white-space:nowrap; color:var(--tx); }
     .ob-time { font-family:var(--mono); font-size:11px; width:92px; padding:4px 4px; border:.5px solid var(--bh); border-radius:5px; background:var(--card2); color:var(--tx); }
     .ob-time:focus { outline:none; border-color:var(--ac); }
+    .ob-timewrap { display:flex; flex-direction:column; gap:4px; align-items:flex-start; }
+    .ob-del { font-family:var(--mono); font-size:10px; line-height:1; padding:3px 7px; border-radius:5px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; }
+    .ob-del:hover { border-color:var(--co); color:var(--co); background:var(--cog); }
     .wk-row { display:flex; gap:6px; flex-wrap:wrap; margin:4px 0 2px; }
     .wk-btn { font-family:var(--mono); font-size:12px; padding:6px 14px; border-radius:8px; border:.5px solid var(--bh); background:transparent; color:var(--mu); cursor:pointer; transition:all .15s; min-width:40px; text-align:center; }
     .wk-btn:hover { color:var(--tx); border-color:rgba(255,255,255,.2); }
@@ -822,6 +825,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=44"></script>
+  <script src="../js/daily.js?v=45"></script>
 </body>
 </html>
