@@ -604,7 +604,7 @@ async function renderArchive() {
 
 $('btnSave').onclick = saveDay;
 const _btnSaveFull = $('btnSaveFull'); if (_btnSaveFull) _btnSaveFull.onclick = saveDay;
-const _SEC_NAMES = { pre: 'Pre-market', prep: 'Pre-trade prep', ooda: 'OODA live', post: 'Post-market' };
+const _SEC_NAMES = { pre: 'Pre-market', prep: 'Pre-Session Analysis', ooda: 'OODA live', post: 'Post-market' };
 document.querySelectorAll('.sec-reset').forEach(b => b.addEventListener('click', e => {
   e.stopPropagation();
   const key = b.dataset.reset;
