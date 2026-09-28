@@ -369,7 +369,7 @@ const ALGO = ['', 'ASS DOWN', 'ASS UP', 'MCR', 'Ranging'];
 const ACTIONS = ['WAIT', 'HUNT', 'ENTER', 'TRAIL', 'STOP'];
 const BODY = ['', 'Regulated', 'Energized', 'Anxious', 'Euphoric', 'Stressed'];
 const MIND = ['', 'Focused', 'Neutral', 'Scattered'];
-const OODA_WINDOW = '08:30-17:30';
+const OODA_WINDOW = '02:45-04:05';
 let ROWS = [];
 
 $('j-date').value = todayStr();
@@ -388,23 +388,34 @@ function buildRows(windowStr) {
 
 function opt(list, val) { return list.map(o => `<option ${o === val ? 'selected' : ''}>${o}</option>`).join(''); }
 
-function renderTable(data) {
-  ROWS = buildRows(OODA_WINDOW);
-  const byIdx = {}; (data.rows || []).forEach(r => byIdx[r.i] = r);
-  $('obody').innerHTML = ROWS.map(r => {
-    const d = byIdx[r.i] || {};
-    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="9"></td></tr>' : '';
-    const dir = (f) => `<td class="col-dir"><button type="button" class="ob-dir ${d[f] || ''}" data-dir="${f}" data-i="${r.i}" data-state="${d[f] || ''}">${d[f] || '·'}</button></td>`;
-    return `${sep}<tr data-i="${r.i}" data-time="${r.time}">
-      <td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>
+// One OODA row. Fixed rows show a static time label; custom (added) rows get an editable time input.
+function oodaRowHTML(r, d, custom) {
+  const dir = (f) => `<td class="col-dir"><button type="button" class="ob-dir ${d[f] || ''}" data-dir="${f}" data-i="${r.i}" data-state="${d[f] || ''}">${d[f] || '·'}</button></td>`;
+  const timeCell = custom
+    ? `<td class="col-t"><input class="ob-time" data-f="time" data-i="${r.i}" value="${esc(r.time || '')}" placeholder="hh:mm"></td>`
+    : `<td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>`;
+  return `<tr data-i="${r.i}" data-time="${custom ? '' : r.time}" data-custom="${custom ? 1 : 0}">
+      ${timeCell}
       <td><textarea data-f="obs" data-i="${r.i}" placeholder="Observe / Orient…">${esc([d.obs, d.ori].filter(Boolean).join('\n'))}</textarea></td>
       ${dir('marketState')}${dir('vwap')}${dir('seq')}${dir('ddrseq')}
       <td class="col-act"><div class="ag">${ACTIONS.map(a =>
-        `<button class="ab ${(d.acts || []).includes(a) ? 'on-' + a : ''}" data-act="${a}" data-i="${r.i}">${a}</button>`).join('')}</div></td>
+    `<button class="ab ${(d.acts || []).includes(a) ? 'on-' + a : ''}" data-act="${a}" data-i="${r.i}">${a}</button>`).join('')}</div></td>
       <td class="col-b"><select data-f="body" data-i="${r.i}">${opt(BODY, d.body || '')}</select></td>
       <td class="col-m"><select data-f="mind" data-i="${r.i}">${opt(MIND, d.mind || '')}</select></td>
     </tr>`;
+}
+
+function renderTable(data) {
+  ROWS = buildRows(OODA_WINDOW);
+  const all = data.rows || [];
+  const byIdx = {}; all.forEach(r => { if (!r.custom && r.i != null) byIdx[r.i] = r; });
+  const fixedHtml = ROWS.map(r => {
+    const d = byIdx[r.i] || {};
+    const sep = r.hourStart ? '<tr class="hoursep"><td colspan="9"></td></tr>' : '';
+    return sep + oodaRowHTML(r, d, false);
   }).join('');
+  const customHtml = all.filter(r => r.custom).map((d, k) => oodaRowHTML({ i: 'c' + k, time: d.time || '' }, d, true)).join('');
+  $('obody').innerHTML = fixedHtml + customHtml;
 
   document.querySelectorAll('#obody textarea[data-f]').forEach(t => { autoGrow(t); t.addEventListener('input', () => autoGrow(t)); });
   document.querySelectorAll('#obody .ob-dir[data-dir]').forEach(b => b.onclick = () => {
@@ -420,18 +431,34 @@ function renderTable(data) {
   highlightNow();
 }
 
+// Append one blank custom row (user types its own time), keeping existing entries.
+function addOodaRow() {
+  const data = collectOoda();
+  data.rows.push({ custom: true, time: '' });
+  renderTable(data);
+  scheduleAutosave();
+  const inputs = document.querySelectorAll('#obody input.ob-time');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
 function autoGrow(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
 
 function collectOoda() {
   const rows = [];
   document.querySelectorAll('#obody tr[data-i]').forEach(tr => {
-    const i = +tr.dataset.i;
+    const custom = tr.dataset.custom === '1';
     const g = (f) => tr.querySelector(`[data-f="${f}"]`)?.value || '';
     const dir = (f) => tr.querySelector(`.ob-dir[data-dir="${f}"]`)?.dataset.state || '';
     const acts = [...tr.querySelectorAll('.ab')].filter(b => b.classList.contains('on-' + b.dataset.act)).map(b => b.dataset.act);
     const obs = g('obs'), body = g('body'), mind = g('mind');
     const marketState = dir('marketState'), vwap = dir('vwap'), seq = dir('seq'), ddrseq = dir('ddrseq');
-    if (obs || body || mind || marketState || vwap || seq || ddrseq || acts.length) rows.push({ i, obs, marketState, vwap, seq, ddrseq, body, mind, acts });
+    const has = obs || body || mind || marketState || vwap || seq || ddrseq || acts.length;
+    if (custom) {
+      const time = g('time');
+      if (time || has) rows.push({ custom: true, time, obs, marketState, vwap, seq, ddrseq, body, mind, acts });
+    } else if (has) {
+      rows.push({ i: +tr.dataset.i, obs, marketState, vwap, seq, ddrseq, body, mind, acts });
+    }
   });
   return { rows };
 }
@@ -440,7 +467,8 @@ function highlightNow() {
   const now = new Date();
   const hm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
   document.querySelectorAll('#obody tr[data-time]').forEach(tr => {
-    const t = tr.dataset.time; const next = tr.nextElementSibling?.dataset?.time;
+    const t = tr.dataset.time; if (!t) { tr.classList.remove('now'); return; }
+    const next = tr.nextElementSibling?.dataset?.time;
     tr.classList.toggle('now', hm >= t && (!next || hm < next));
   });
 }
@@ -604,8 +632,7 @@ async function saveTradeLog() {
   catch (e) { console.error(e); Shell.toast('Save failed'); }
 }
 const _ltOpen = $('lt-open');
-if (_ltOpen) _ltOpen.addEventListener('click', e => { e.stopPropagation(); openTradeLog(); });
-['lt-entry', 'lt-stop', 'lt-exit', 'lt-dir', 'lt-rr', 'lt-outcome'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', ltPreview); });
+if (_ltOpen) _ltOpen.addEventListener('click', e => { e.stopPropagation(); openTradeLog(); });['lt-entry', 'lt-stop', 'lt-exit', 'lt-dir', 'lt-rr', 'lt-outcome'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', ltPreview); });
 const _ltSave = $('lt-save'); if (_ltSave) _ltSave.onclick = saveTradeLog;
 [$('lt-cancel'), $('lt-cancel2')].forEach(b => { if (b) b.onclick = closeTradeLog; });
 const _ltOv = $('lt-overlay'); if (_ltOv) _ltOv.addEventListener('click', e => { if (e.target === _ltOv) closeTradeLog(); });
@@ -732,6 +759,9 @@ BOX_SETS.forEach(s => document.querySelectorAll(`.cl-item[data-${s.attr}]`).forE
 // ADR position rel. to WDRRB select — mirror its directional bias into the overview
 const _adrWdrrbSel = $('prep-adr-wdrrb');
 if (_adrWdrrbSel) _adrWdrrbSel.addEventListener('change', updateAdrWdrrbSummary);
+
+const _oodaAdd = $('ooda-add-row');
+if (_oodaAdd) _oodaAdd.addEventListener('click', e => { e.stopPropagation(); addOodaRow(); });
 
 setInterval(highlightNow, 60000);
 Auth.ready.then(() => { load(todayStr()); renderArchive(); });
