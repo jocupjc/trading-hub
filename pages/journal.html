@@ -374,9 +374,13 @@
                 <div class="cl-sub" style="font-style:italic">pre-market · weekly cycle read</div>
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px">
-              <label class="field"><span class="fl">Current day weekly cycle</span>
-                <select id="prep-wk-cycle"><option value="">—</option><option>D1</option><option>D2</option><option>D3</option><option>D4</option><option>D5</option></select></label>
+            <div class="field-label" style="margin-top:6px">Current day weekly cycle</div>
+            <div class="wk-row" id="prep-wk-cycle">
+              <button type="button" class="wk-btn" data-v="D1">D1</button>
+              <button type="button" class="wk-btn" data-v="D2">D2</button>
+              <button type="button" class="wk-btn" data-v="D3">D3</button>
+              <button type="button" class="wk-btn" data-v="D4">D4</button>
+              <button type="button" class="wk-btn" data-v="D5">D5</button>
             </div>
             <div class="field-label">This Weekly current extreme high</div>
             <div class="wk-row" id="prep-wk-high">
@@ -815,6 +819,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=42"></script>
+  <script src="../js/daily.js?v=43"></script>
 </body>
 </html>
