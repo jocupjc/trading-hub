@@ -5,7 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 // ── Pre / Post fields (saved as journal type 'daily') ────────────────────────
 const JFIELDS = ['pre-trigger', 'pre-cgame', 'pre-goal', 'pre-risk', 'pre-mantra', 'prep-adr-midline',
-  'prep-adr-wdrrb', 'prep-wk-cycle',
+  'prep-adr-wdrrb',
   'txt-emotion-moment', 'txt-best-trade', 'txt-worst-trade', 'txt-one-thing', 'txt-max-loss', 'txt-daily-target',
   'txt-emo-trigger', 'txt-irr-belief', 'txt-reframe', 'txt-learning', 'txt-tmrw'];
 // Post-market reflection single-select groups (multi-select: grp-rd-emotion)
@@ -126,6 +126,7 @@ function readJournal() {
   document.querySelectorAll('[data-prep]').forEach(i => o[i.dataset.prep] = i.dataset.state || '');
   o['prep-wk-high'] = wkValue('prep-wk-high');
   o['prep-wk-low'] = wkValue('prep-wk-low');
+  o['prep-wk-cycle'] = wkValue('prep-wk-cycle');
   RF_KEYS.forEach(k => o['rf-' + k] = rfOn(k));
   o['rf-news-tags'] = rfNewsTags.slice();
   BOX_SETS.forEach(s => {
@@ -154,6 +155,7 @@ function fillJournal(p) {
   document.querySelectorAll('[data-prep]').forEach(i => setPrepState(i, (p && p[i.dataset.prep]) || ''));
   setWkGroup('prep-wk-high', (p && p['prep-wk-high']) || '');
   setWkGroup('prep-wk-low', (p && p['prep-wk-low']) || '');
+  setWkGroup('prep-wk-cycle', (p && p['prep-wk-cycle']) || '');
   updatePrepSummary();
   updateAdrWdrrbSummary();
   RF_KEYS.forEach(k => setRf(k, p && p['rf-' + k]));
@@ -553,8 +555,8 @@ function resetSection(key) {
   } else if (key === 'prep') {
     RF_KEYS.forEach(k => setRf(k, false));
     rfNewsTags = []; renderNewsTags(); updateRfBadges();
-    ['prep-adr-midline', 'prep-adr-wdrrb', 'prep-wk-high', 'prep-wk-low', 'prep-wk-cycle'].forEach(f => { const el = $(f); if (el) el.value = ''; });
-    setWkGroup('prep-wk-high', ''); setWkGroup('prep-wk-low', '');
+    ['prep-adr-midline', 'prep-adr-wdrrb'].forEach(f => { const el = $(f); if (el) el.value = ''; });
+    setWkGroup('prep-wk-high', ''); setWkGroup('prep-wk-low', ''); setWkGroup('prep-wk-cycle', '');
     updateAdrWdrrbSummary();
     BOX_SETS.forEach(s => {
       BOX_KEYS.forEach(k => { const el = boxItem(s.attr, k); if (el) setBoxState(el, ''); });
