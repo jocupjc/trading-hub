@@ -130,6 +130,7 @@ function readJournal() {
     BOX_KEYS.forEach(k => o[s.attr + '-' + k] = boxStateOf(s.attr, k));
     BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); o[s.attr + '-model-' + k] = el ? el.value : ''; });
   });
+  SHOT_SLOTS.forEach(id => o['shot-' + id] = shotData[id] || null);
   return o;
 }
 function fillJournal(p) {
@@ -160,6 +161,7 @@ function fillJournal(p) {
     BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = (p && p[s.attr + '-model-' + k]) || ''; });
     updateBoxSummary(s.attr, s.summary);
   });
+  SHOT_SLOTS.forEach(id => { shotData[id] = (p && p['shot-' + id]) || null; renderShot(id); });
   updateDebrief();
   updateClose();
 }
@@ -297,6 +299,69 @@ function updateAdrWdrrbSummary() {
   const el = $('adrwdrrb-summary'); if (el) el.innerHTML = html;
   const el2 = $('adrwdrrb-summary-ooda'); if (el2) el2.innerHTML = html;
 }
+
+// ── Reference screenshots — reusable slots (paste / drag&drop, one per slot) ──
+// To add a slot elsewhere: drop `<div class="shot-slot" data-shot="ID" tabindex="0"></div>`
+// into the markup and add "ID" here. It is persisted in the daily payload as shot-ID.
+const SHOT_SLOTS = ['box2-marketState'];
+let shotData = {};   // slotId -> { url, storage_path } | null
+let activeShotId = null;
+
+function shotSlotEl(id) { return document.querySelector(`.shot-slot[data-shot="${id}"]`); }
+function renderShot(id) {
+  const slot = shotSlotEl(id); if (!slot) return;
+  const s = shotData[id];
+  slot.innerHTML = (s && s.url)
+    ? `<div class="shot-thumb"><img src="${esc(s.url)}" alt="reference"><button type="button" class="shot-remove" title="Remove">✕</button></div>`
+    : `<div class="shot-empty">＋ paste / drop</div>`;
+}
+async function setShotFromFile(id, file) {
+  if (!file || !/^image\//.test(file.type)) return;
+  const slot = shotSlotEl(id); const ph = slot && slot.querySelector('.shot-empty');
+  if (ph) ph.textContent = 'uploading…';
+  try {
+    const res = await DB.uploadScreenshot(file, $('j-date').value || todayStr());
+    shotData[id] = { url: res.url, storage_path: res.storage_path || null };
+    renderShot(id); scheduleAutosave();
+  } catch (err) { console.error(err); Shell.toast('Upload failed'); renderShot(id); }
+}
+function removeShot(id) { shotData[id] = null; renderShot(id); scheduleAutosave(); }
+function openShotOverlay(url) { const ov = $('shot-overlay'); if (ov) { ov.querySelector('img').src = url; ov.classList.add('show'); } }
+function closeShotOverlay() { const ov = $('shot-overlay'); if (ov) { ov.classList.remove('show'); ov.querySelector('img').src = ''; } }
+
+function initShots() {
+  SHOT_SLOTS.forEach(id => {
+    const slot = shotSlotEl(id); if (!slot) return;
+    renderShot(id);
+    slot.addEventListener('click', e => {
+      if (e.target.closest('.shot-remove')) { e.stopPropagation(); removeShot(id); return; }
+      const thumb = e.target.closest('.shot-thumb');
+      if (thumb) { e.stopPropagation(); const s = shotData[id]; if (s && s.url) openShotOverlay(s.url); return; }
+      slot.focus();
+    });
+    slot.addEventListener('mouseenter', () => { activeShotId = id; });
+    slot.addEventListener('mouseleave', () => { if (document.activeElement !== slot) activeShotId = null; });
+    slot.addEventListener('focus', () => { activeShotId = id; });
+    slot.addEventListener('blur', () => { if (activeShotId === id) activeShotId = null; });
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragover'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('dragover'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault(); slot.classList.remove('dragover');
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) setShotFromFile(id, f);
+    });
+  });
+  document.addEventListener('paste', e => {
+    if (!activeShotId) return;
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for (const it of items) {
+      if (it.type && it.type.indexOf('image') === 0) { const f = it.getAsFile(); if (f) { e.preventDefault(); setShotFromFile(activeShotId, f); break; } }
+    }
+  });
+  const ov = $('shot-overlay'); if (ov) ov.addEventListener('click', closeShotOverlay);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShotOverlay(); });
+}
+initShots();
 
 
 // ── OODA config (saved as journal type 'ooda') ───────────────────────────────
@@ -444,6 +509,7 @@ function resetSection(key) {
       BOX_MODEL_KEYS.forEach(k => { const el = document.querySelector(`[data-${s.attr}-model="${k}"]`); if (el) el.value = ''; });
       updateBoxSummary(s.attr, s.summary);
     });
+    SHOT_SLOTS.forEach(id => { shotData[id] = null; renderShot(id); });
   } else if (key === 'ooda') {
     renderTable({});
   } else if (key === 'post') {
