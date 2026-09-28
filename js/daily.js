@@ -445,7 +445,7 @@ function timeOpts(sel) {
 function oodaRowHTML(r, d, custom) {
   const dir = (f) => `<td class="col-dir"><button type="button" class="ob-dir ${d[f] || ''}" data-dir="${f}" data-i="${r.i}" data-state="${d[f] || ''}">${d[f] || '·'}</button></td>`;
   const timeCell = custom
-    ? `<td class="col-t"><select class="ob-time" data-f="time" data-i="${r.i}">${timeOpts(r.time)}</select></td>`
+    ? `<td class="col-t"><div class="ob-timewrap"><select class="ob-time" data-f="time" data-i="${r.i}">${timeOpts(r.time)}</select><button type="button" class="ob-del" title="Delete this line">✕ delete</button></div></td>`
     : `<td class="col-t"><span class="tl">${r.time}–${r.end}</span></td>`;
   return `<tr data-i="${r.i}" data-time="${custom ? '' : r.time}" data-custom="${custom ? 1 : 0}">
       ${timeCell}
@@ -480,6 +480,10 @@ function renderTable(data) {
     const wasOn = b.classList.contains('on-' + b.dataset.act);
     document.querySelectorAll(`#obody .ab[data-i="${b.dataset.i}"]`).forEach(x => x.className = 'ab');
     if (!wasOn) b.classList.add('on-' + b.dataset.act);
+  });
+  document.querySelectorAll('#obody .ob-del').forEach(b => b.onclick = () => {
+    const tr = b.closest('tr'); if (tr) tr.remove();
+    scheduleAutosave();
   });
   highlightNow();
 }
