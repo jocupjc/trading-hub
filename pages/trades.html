@@ -96,26 +96,11 @@
           <span id="rr-preview" class="mono" style="color:var(--mu)"></span>
         </div>
 
-        <!-- Required trade screenshot (paste / drop) + optional extra charts -->
+        <!-- Required trade screenshot (paste / drop) -->
         <div id="c-panel" style="margin-top:16px;border-top:.5px solid var(--b);padding-top:14px">
           <div class="card-label">Trade screenshot <span style="color:var(--co)">*</span></div>
           <div class="shot-slot" id="t-shot" tabindex="0"></div>
           <div class="mono" style="font-size:10px;color:var(--mu);margin-top:6px">Paste (Ctrl+V) or drag &amp; drop an image — required to save a trade. Click it to enlarge.</div>
-
-          <div class="card-label" style="margin-top:16px">Additional charts &amp; links</div>
-          <div class="mono" id="c-hint" style="font-size:11px;color:var(--mu)">Save the trade first, then attach extra charts &amp; links here.</div>
-          <div id="c-controls" style="display:none">
-            <div class="grid g4" style="gap:12px">
-              <label class="field" style="grid-column:span 2"><span class="fl">Title</span><input type="text" id="c-title" placeholder="e.g. entry screenshot, 5m context…"></label>
-              <label class="field"><span class="fl">Kind</span>
-                <select id="c-kind"><option value="link">TradingView link</option><option value="screenshot">Screenshot upload</option></select></label>
-              <div style="display:flex;align-items:flex-end"><button class="btn pri" id="c-add" style="width:100%">Add</button></div>
-              <label class="field" id="c-wrap-url" style="grid-column:span 4"><span class="fl">TradingView URL</span><input type="text" id="c-url" placeholder="https://www.tradingview.com/x/..."></label>
-              <label class="field" id="c-wrap-file" style="grid-column:span 4;display:none"><span class="fl">Image file</span><input type="file" id="c-file" accept="image/*"></label>
-            </div>
-            <div class="mono" id="c-note" style="font-size:10px;color:var(--mu);margin-top:8px"></div>
-            <div id="c-wrap" style="margin-top:14px"></div>
-          </div>
         </div>
       </div>
 
@@ -152,6 +137,6 @@
   <script src="../js/stats.js?v=7"></script>
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
-  <script src="../js/trades.js?v=13"></script>
+  <script src="../js/trades.js?v=14"></script>
 </body>
 </html>
