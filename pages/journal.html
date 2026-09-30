@@ -100,9 +100,10 @@
     .alert-box.bad { background:var(--cog); border:.5px solid rgba(248,113,113,.35); color:var(--co); }
     .cl-sub { font-size:11px; color:var(--mu); }
     .cl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:6px; align-items:start; }
+    .cl-grid-4 { grid-template-columns:repeat(4, minmax(0,1fr)); }
     .cl-grid-6 { grid-template-columns:repeat(6, minmax(0,1fr)); }
     .cl-grid-9 { grid-template-columns:repeat(9, minmax(0,1fr)); }
-    @media (max-width:760px){ .cl-grid-6, .cl-grid-9 { grid-template-columns:repeat(3, minmax(0,1fr)); } }
+    @media (max-width:760px){ .cl-grid-4, .cl-grid-6, .cl-grid-9 { grid-template-columns:repeat(3, minmax(0,1fr)); } }
     .cl-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; border:.5px solid var(--b); background:var(--card2); cursor:pointer; user-select:none; transition:all .12s; }
     .cl-item:hover { border-color:var(--bh); }
     .cl-item.U { background:var(--grg); border-color:rgba(52,211,153,.4); }
@@ -432,7 +433,7 @@
 
             <div class="cl-subgroup-label">Directional bias</div>
             <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
-            <div class="cl-grid cl-grid-6">
+            <div class="cl-grid cl-grid-4">
               <div class="cl-item-wrap">
                 <div class="cl-item" data-box2="marketState" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market state</span></div>
                 <div class="shot-slot" data-shot="box2-marketState" tabindex="0"></div>
