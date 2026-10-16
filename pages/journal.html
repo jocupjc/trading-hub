@@ -140,6 +140,11 @@
     .cl-u-count.cl-winning { color:#0f1a14; background:var(--gr); border-color:var(--gr); font-weight:700; }
     .cl-d-count.cl-winning { color:#1a0f0f; background:var(--co); border-color:var(--co); font-weight:700; }
     .cl-item-wrap { display:flex; flex-direction:column; gap:5px; }
+    .cl-item-main { display:flex; flex-direction:column; gap:5px; }
+    /* 0230-0400 ODR directional bias as a vertical list: button | paste/drop | quick note */
+    .cl-biaslist { display:flex; flex-direction:column; gap:6px; }
+    .cl-biaslist .cl-item-wrap { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1.3fr); align-items:start; gap:8px; }
+    @media (max-width:600px){ .cl-biaslist .cl-item-wrap { grid-template-columns:1fr; } }
     .cl-model-input { font-family:var(--mono); font-size:11px; padding:4px 8px; border-radius:5px; background:var(--card); border:.5px dashed var(--b); color:var(--am); width:100%; }
     .cl-model-input:focus { outline:none; border-style:solid; border-color:var(--bh); }
     .cl-model-input::placeholder { color:var(--mu); }
@@ -433,7 +438,7 @@
 
             <div class="cl-subgroup-label">Directional bias</div>
             <div class="cl-sub" style="margin-bottom:8px">Click to cycle — Up → Down → Neutral</div>
-            <div class="cl-grid cl-grid-4">
+            <div class="cl-biaslist">
               <div class="cl-item-wrap">
                 <div class="cl-item" data-box2="marketState" data-checkonly="0"><span class="cl-badge">·</span><span class="cl-item-label">Market state</span></div>
                 <div class="shot-slot" data-shot="box2-marketState" tabindex="0"></div>
@@ -831,6 +836,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=48"></script>
+  <script src="../js/daily.js?v=49"></script>
 </body>
 </html>
