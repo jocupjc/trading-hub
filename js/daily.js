@@ -386,6 +386,15 @@ function enhanceBoxItems() {
       item.parentNode.insertBefore(wrap, item);
       wrap.appendChild(item);
     }
+    // Group the button + its optional model-tag input into one column (col 1 of the list layout).
+    if (!wrap.querySelector('.cl-item-main')) {
+      const main = document.createElement('div');
+      main.className = 'cl-item-main';
+      wrap.insertBefore(main, wrap.firstChild);
+      main.appendChild(item);
+      const model = wrap.querySelector('.cl-model-input');
+      if (model) main.appendChild(model);
+    }
     if (!wrap.querySelector('.shot-slot')) {
       const slot = document.createElement('div');
       slot.className = 'shot-slot'; slot.dataset.shot = s.attr + '-' + k; slot.tabIndex = 0;
