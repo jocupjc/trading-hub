@@ -123,6 +123,16 @@
     .cl-u-count { color:var(--gr); background:var(--grg); border:.5px solid rgba(52,211,153,.3); padding:1px 7px; border-radius:20px; }
     .cl-d-count { color:var(--co); background:var(--cog); border:.5px solid rgba(248,113,113,.3); padding:1px 7px; border-radius:20px; }
     .cl-n-count { color:var(--am); background:var(--amg); border:.5px solid rgba(245,158,11,.3); padding:1px 7px; border-radius:20px; }
+    .dir-verdict { display:none; align-items:center; gap:6px; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.8px; padding:5px 13px; border-radius:20px; border:.5px solid var(--bh); }
+    .dir-verdict.show { display:inline-flex; }
+    .dir-verdict.long { color:#0f1a14; background:var(--gr); border-color:var(--gr); box-shadow:0 0 12px var(--grg); }
+    .dir-verdict.short { color:#1a0f0f; background:var(--co); border-color:var(--co); box-shadow:0 0 12px var(--cog); }
+    .dir-verdict.neutral { color:#1a1205; background:var(--am); border-color:var(--am); box-shadow:0 0 12px var(--amg); }
+    .dir-verdict-msg { display:none; font-family:var(--mono); font-size:12.5px; font-weight:600; letter-spacing:.3px; line-height:1.5; padding:11px 14px; border-radius:9px; margin-bottom:14px; border:.5px solid var(--bh); }
+    .dir-verdict-msg.show { display:block; }
+    .dir-verdict-msg.long { color:var(--gr); background:var(--grg); border-color:rgba(52,211,153,.35); }
+    .dir-verdict-msg.short { color:var(--co); background:var(--cog); border-color:rgba(248,113,113,.35); }
+    .dir-verdict-msg.neutral { color:var(--am); background:var(--amg); border-color:rgba(245,158,11,.35); }
 
     /* Box Formation checklist — ported 1:1 from Ronin Sequence */
     .cl-block { margin-top:16px; }
@@ -317,12 +327,14 @@
         <div class="sec-head">
           <span class="section-tag">Pre-Session Analysis</span>
           <span style="display:flex;align-items:center;gap:10px">
+            <span class="dir-verdict" id="dir-verdict-prep" title="Aggregated directional bias"></span>
             <span class="cl-summary" id="prep-summary"></span>
             <button type="button" class="btn sm sec-reset" data-reset="prep">Reset</button>
             <span class="chev">▾</span>
           </span>
         </div>
         <div class="sec-body">
+          <div class="dir-verdict-msg" id="dir-verdict-msg-prep"></div>
           <!-- Red Flags — ported 1:1 from Ronin Sequence -->
           <div class="rf-block" style="margin-top:0;padding-top:0;border-top:none">
             <div class="rf-title"><span>⚑ Red Flags</span><span class="rf-badges" id="rf-badges"></span></div>
@@ -552,8 +564,9 @@
 
       <!-- ═══ OODA LIVE (middle) ═══ -->
       <div class="card jsection collapsed" style="margin-top:14px">
-        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm" id="lt-open">＋ Log trade</button><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
+        <div class="sec-head"><span class="section-tag">OODA live — Observe · Orient · Decide · Act</span><span style="display:flex;align-items:center;gap:10px"><span class="dir-verdict" id="dir-verdict-ooda" title="Aggregated directional bias"></span><button type="button" class="btn sm" id="lt-open">＋ Log trade</button><button type="button" class="btn sm sec-reset" data-reset="ooda">Reset</button><span class="chev">▾</span></span></div>
         <div class="sec-body">
+        <div class="dir-verdict-msg" id="dir-verdict-msg-ooda"></div>
         <div class="ooda-boxsum">
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">ADR pos. rel. WDRRB</span><span class="cl-summary" id="adrwdrrb-summary-ooda"></span></div>
           <div class="ooda-boxsum-item"><span class="ooda-boxsum-label">0230 – 0400 ODR</span><span class="cl-summary" id="box2-summary-ooda"></span></div>
@@ -859,6 +872,6 @@
   <script src="../js/shell.js?v=22"></script>
   <script src="../js/auth.js?v=3"></script>
   <script src="../js/stats.js?v=5"></script>
-  <script src="../js/daily.js?v=50"></script>
+  <script src="../js/daily.js?v=52"></script>
 </body>
 </html>
