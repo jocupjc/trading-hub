@@ -207,6 +207,43 @@ function updatePrepSummary() {
   const bias = (u > 0 || d > 0) && u !== d ? (u > d ? 'U' : 'D') : null;
   const biasBadge = bias ? `<span class="cl-bias cl-bias-${bias}">${bias === 'U' ? '▲ UP' : '▼ DOWN'}</span>` : '';
   el.innerHTML = `${biasBadge}${u ? `<span class="cl-u-count">${u}U</span>` : ''}${d ? `<span class="cl-d-count">${d}D</span>` : ''}${n ? `<span class="cl-n-count">${n}N</span>` : ''}`;
+  updateDirectionalVerdict();
+}
+
+// Aggregate directional verdict across all pre-session signals (prep items, both box
+// formations, ADR-vs-WDRRB) → prominent LONG / SHORT / NEUTRAL badge in both headers.
+function dirVotes() {
+  let u = 0, d = 0, n = 0;
+  document.querySelectorAll('[data-prep]').forEach(i => { const s = i.dataset.state; if (s === 'U') u++; else if (s === 'D') d++; else if (s) n++; });
+  BOX_SETS.forEach(set => BOX_CYCLE.forEach(k => { const s = boxStateOf(set.attr, k); if (s === 'U') u++; else if (s === 'D') d++; else if (s === 'N') n++; }));
+  const sel = $('prep-adr-wdrrb'); const v = sel ? sel.value : '';
+  if (/^Above/i.test(v)) u++; else if (/^Below/i.test(v)) d++; else if (/^Spanning/i.test(v)) n++;
+  return { u, d, n };
+}
+function updateDirectionalVerdict() {
+  const { u, d, n } = dirVotes();
+  let cls = '', label = '';
+  if (u + d + n === 0) { cls = ''; }
+  else if (u > d) { cls = 'long'; label = '▲ LONG'; }
+  else if (d > u) { cls = 'short'; label = '▼ SHORT'; }
+  else { cls = 'neutral'; label = '◆ NEUTRAL'; }
+  const title = cls ? `${u} up · ${d} down · ${n} neutral` : 'Aggregated directional bias';
+  ['dir-verdict-prep', 'dir-verdict-ooda'].forEach(id => {
+    const el = $(id); if (!el) return;
+    el.className = 'dir-verdict' + (cls ? ' show ' + cls : '');
+    el.textContent = label;
+    el.title = title;
+  });
+  const msgMap = {
+    long: '▲ Bias LONG detected — look for long trades until directional change.',
+    short: '▼ Bias SHORT detected — look for short trades until directional change.',
+    neutral: '◆ No clear bias detected — wait for more data before committing.'
+  };
+  ['dir-verdict-msg-prep', 'dir-verdict-msg-ooda'].forEach(id => {
+    const el = $(id); if (!el) return;
+    el.className = 'dir-verdict-msg' + (cls ? ' show ' + cls : '');
+    el.textContent = cls ? msgMap[cls] : '';
+  });
 }
 
 // ── Red Flags — ported 1:1 from Ronin Sequence ───────────────────────────────
@@ -294,6 +331,7 @@ function updateBoxSummary(attr, summaryId) {
   }
   if (el) el.innerHTML = html;
   if (el2) el2.innerHTML = html;
+  updateDirectionalVerdict();
 }
 
 // ADR position rel. to WDRRB → directional bias (Above=Up, Below=Down, Spanning=Neutral)
@@ -306,6 +344,7 @@ function updateAdrWdrrbSummary() {
     : bias === 'N' ? '<span class="cl-bias cl-bias-N">◆ NEUTRAL BIAS</span>' : '';
   const el = $('adrwdrrb-summary'); if (el) el.innerHTML = html;
   const el2 = $('adrwdrrb-summary-ooda'); if (el2) el2.innerHTML = html;
+  updateDirectionalVerdict();
 }
 
 // Weekly-extreme single-select button groups (prep-wk-high / prep-wk-low)
