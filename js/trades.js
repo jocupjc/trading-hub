@@ -65,51 +65,62 @@ document.querySelectorAll('#f-model-btns .model-btn').forEach(b => b.addEventLis
 }));
 $('f-model').addEventListener('input', syncModelBtns);
 
-// ── Paste TradingView Long/Short position tooltip → auto-fill entry/target/stop ──
-// Extracts the three price levels (entry, profit/target, stop) from the copied
-// tooltip text. Works with EN and DE labels; number order does not matter.
-function parseTvTooltip(text) {
-  if (!text || !text.trim()) return null;
-  const norm = text.replace(/\u00a0/g, ' ');
-  const out = { direction: null, entry: null, target: null, stop: null };
+// ── Paste TradingView Long/Short position tool → auto-fill entry/stop/target ──
+// TradingView puts the drawing on the clipboard as text/html carrying a
+// `data-tradingview-clip` JSON. sources[0].source has the entry (points[0].price),
+// direction (type …Long/…Short) and stop/profit levels in TICKS; multiply by the
+// instrument tick size to get absolute prices.
+const TV_TICK = { ES: 0.25, MES: 0.25, NQ: 0.25, MNQ: 0.25, CL: 0.01, MCL: 0.01, GC: 0.1, MGC: 0.1, RTY: 0.1, M2K: 0.1, YM: 1, MYM: 1 };
 
-  if (/\bshort\b/i.test(norm)) out.direction = 'SHORT';
-  else if (/\blong\b/i.test(norm)) out.direction = 'LONG';
-
-  // First number following a label; strips thousand separators (US format).
-  const grab = (labels) => {
-    const re = new RegExp('(?:' + labels + ')[^0-9\\-]*(-?\\d[\\d,]*(?:\\.\\d+)?)', 'i');
-    const m = norm.match(re);
-    if (!m) return null;
-    const n = parseFloat(m[1].replace(/,/g, ''));
-    return isNaN(n) ? null : n;
-  };
-
-  out.entry = grab('entry\\s*price|entry|einstiegs?preis|einstieg');
-  out.target = grab('profit\\s*level|take\\s*profit|target|profit|gewinn(?:level)?|kursziel|ziel');
-  out.stop = grab('stop\\s*level|stop\\s*loss|stop|verlust');
-
-  if (out.entry === null && out.target === null && out.stop === null) return null;
-  return out;
+function tvSymbolRoot(symbol) {
+  // "CME_MINI:ES1!" → "ES"; "MNQ1!" → "MNQ"
+  return String(symbol || '').split(':').pop().replace(/[0-9!]+$/, '').toUpperCase();
 }
 
-function applyTvTooltip(text) {
-  const p = parseTvTooltip(text);
-  if (!p) { Shell.toast('No position data found in the pasted text'); return; }
-  const parts = [];
-  if (p.direction) { $('f-dir').value = p.direction; parts.push(p.direction); }
-  if (p.entry !== null) { $('f-entry').value = p.entry; parts.push('entry'); }
-  if (p.target !== null) { $('f-target').value = p.target; parts.push('target'); }
-  if (p.stop !== null) { $('f-stop').value = p.stop; parts.push('stop'); }
+function extractTvClip(html) {
+  if (!html) return null;
+  let el;
+  try { el = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-tradingview-clip]'); }
+  catch { return null; }
+  if (!el) return null;
+  let src;
+  try { src = JSON.parse(el.getAttribute('data-tradingview-clip')).sources[0].source; }
+  catch { return null; }
+  if (!src || !/RiskReward/i.test(src.type || '')) return null;
+  const st = src.state || {};
+  const isShort = /Short/i.test(src.type);
+  const entry = src.points && src.points[0] ? src.points[0].price : null;
+  const root = tvSymbolRoot(st.symbol);
+  const tick = TV_TICK[root] || 0.25;
+  const sign = isShort ? -1 : 1;
+  const round = (v) => (v == null ? null : parseFloat((Math.round(v / tick) * tick).toFixed(6)));
+  const stop = (entry != null && st.stopLevel != null) ? round(entry - sign * st.stopLevel * tick) : null;
+  const target = (entry != null && st.profitLevel != null) ? round(entry + sign * st.profitLevel * tick) : null;
+  return { direction: isShort ? 'SHORT' : 'LONG', entry: entry != null ? round(entry) : null, stop, target, symbol: root };
+}
+
+function applyTvClip(c) {
+  if (c.direction) $('f-dir').value = c.direction;
+  if (c.symbol && cfg.INSTRUMENTS.includes(c.symbol)) $('f-inst').value = c.symbol;
+  if (c.entry != null) $('f-entry').value = c.entry;
+  if (c.stop != null) $('f-stop').value = c.stop;
+  if (c.target != null) $('f-target').value = c.target;
   livePreview();
-  Shell.toast('Filled: ' + parts.join(' · '));
+  const parts = [c.direction, c.symbol, c.entry != null ? 'entry' : null, c.stop != null ? 'stop' : null, c.target != null ? 'target' : null].filter(Boolean);
+  Shell.toast('Filled from TradingView: ' + parts.join(' · '));
 }
 
 $('f-tv-paste').addEventListener('paste', (e) => {
-  const text = e.clipboardData && e.clipboardData.getData('text');
-  if (text) { e.preventDefault(); $('f-tv-paste').value = text; applyTvTooltip(text); }
+  const cd = e.clipboardData; if (!cd) return;
+  const clip = extractTvClip(cd.getData('text/html'));
+  if (clip) {
+    e.preventDefault();
+    applyTvClip(clip);
+    $('f-tv-paste').value = `${clip.symbol || ''} ${clip.direction} · entry ${clip.entry} · stop ${clip.stop} · target ${clip.target}`.trim();
+  } else {
+    Shell.toast('Copy the position tool in TradingView (click it, Ctrl+C), then paste here');
+  }
 });
-$('f-tv-paste').addEventListener('input', (e) => { if (e.target.value) applyTvTooltip(e.target.value); });
 
 
 // ── Required trade screenshot — paste / drop (same UX as the daily journal) ──
