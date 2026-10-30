@@ -48,6 +48,7 @@ function fillForm(t) {
 function clearForm() {
   fields.forEach(k => { if (!['date', 'inst', 'dir'].includes(k)) $('f-' + k).value = ''; });
   $('f-date').value = todayStr(); $('f-outcome').value = '';
+  $('f-tv-paste').value = '';
   syncModelBtns();
   livePreview();
   TSHOT.data = null; renderTradeShot();
@@ -63,6 +64,53 @@ document.querySelectorAll('#f-model-btns .model-btn').forEach(b => b.addEventLis
   syncModelBtns();
 }));
 $('f-model').addEventListener('input', syncModelBtns);
+
+// ── Paste TradingView Long/Short position tooltip → auto-fill entry/target/stop ──
+// Extracts the three price levels (entry, profit/target, stop) from the copied
+// tooltip text. Works with EN and DE labels; number order does not matter.
+function parseTvTooltip(text) {
+  if (!text || !text.trim()) return null;
+  const norm = text.replace(/\u00a0/g, ' ');
+  const out = { direction: null, entry: null, target: null, stop: null };
+
+  if (/\bshort\b/i.test(norm)) out.direction = 'SHORT';
+  else if (/\blong\b/i.test(norm)) out.direction = 'LONG';
+
+  // First number following a label; strips thousand separators (US format).
+  const grab = (labels) => {
+    const re = new RegExp('(?:' + labels + ')[^0-9\\-]*(-?\\d[\\d,]*(?:\\.\\d+)?)', 'i');
+    const m = norm.match(re);
+    if (!m) return null;
+    const n = parseFloat(m[1].replace(/,/g, ''));
+    return isNaN(n) ? null : n;
+  };
+
+  out.entry = grab('entry\\s*price|entry|einstiegs?preis|einstieg');
+  out.target = grab('profit\\s*level|take\\s*profit|target|profit|gewinn(?:level)?|kursziel|ziel');
+  out.stop = grab('stop\\s*level|stop\\s*loss|stop|verlust');
+
+  if (out.entry === null && out.target === null && out.stop === null) return null;
+  return out;
+}
+
+function applyTvTooltip(text) {
+  const p = parseTvTooltip(text);
+  if (!p) { Shell.toast('No position data found in the pasted text'); return; }
+  const parts = [];
+  if (p.direction) { $('f-dir').value = p.direction; parts.push(p.direction); }
+  if (p.entry !== null) { $('f-entry').value = p.entry; parts.push('entry'); }
+  if (p.target !== null) { $('f-target').value = p.target; parts.push('target'); }
+  if (p.stop !== null) { $('f-stop').value = p.stop; parts.push('stop'); }
+  livePreview();
+  Shell.toast('Filled: ' + parts.join(' · '));
+}
+
+$('f-tv-paste').addEventListener('paste', (e) => {
+  const text = e.clipboardData && e.clipboardData.getData('text');
+  if (text) { e.preventDefault(); $('f-tv-paste').value = text; applyTvTooltip(text); }
+});
+$('f-tv-paste').addEventListener('input', (e) => { if (e.target.value) applyTvTooltip(e.target.value); });
+
 
 // ── Required trade screenshot — paste / drop (same UX as the daily journal) ──
 const TSHOT = { data: null };   // { url, storage_path, linkId } | null
